@@ -1,18 +1,24 @@
 (function () {
-  function Worker(inbox, inProgress, outbox) {
+  let currentId = 1;
 
+  function Worker(inbox, inProgress, outbox) {
     const work = () => {
       if (inbox.hasWork()) {
-        let work = inbox.move(inProgress);
-        setTimeout(() => inProgress.move(outbox, work), work.estimate())
+        let workItem = inbox.move(inProgress);
+        setTimeout(() => {
+          inProgress.move(outbox, workItem);
+          work();
+        }, workItem.estimate)
       }
     };
     return { work }
   }
 
+
   function WorkItem(size) {
+    const id = currentId++;
     return {
-      estimate: () => { return size }
+      estimate: size,
     };
   }
 
@@ -24,7 +30,7 @@
     };
 
     const pull = () => {
-      let item = work.pop();
+      let item = work.shift();
       return item;
     };
 
@@ -34,14 +40,13 @@
           work.splice(i, 1);
         }
       }
-      to.push(item);
+      to.add(item);
       return item;
     };
 
     return {
       hasWork: () => {return work.length > 0},
-      pull,
-      push,
+      add: push,
       move,
       items: () => work.map(w => w)
     };
