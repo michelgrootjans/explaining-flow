@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest && npm bundle",
+    "test": "jest --watchAll",
     "bundle": "browserify src/*.js > dist/index.js"
   },
   "keywords": [],
