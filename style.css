@@ -1,0 +1,15 @@
+ul {
+  list-style: none;
+}
+
+li.queue, li.work {
+  float: left;
+  min-width: 100px;
+}
+
+ul.cards li {
+  text-align: center;
+  padding: 5px;
+  margin: 5px;
+  background-color: yellow;
+}
