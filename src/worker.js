@@ -48,7 +48,8 @@
       hasWork: () => {return work.length > 0},
       add: push,
       move,
-      items: () => work.map(w => w)
+      items: () => work.map(w => w),
+      name
     };
   }
 

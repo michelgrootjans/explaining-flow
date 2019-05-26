@@ -1,9 +1,13 @@
 const {Worker, WorkItem, WorkList} = require('./worker');
 
-inbox = new WorkList();
-inProgress = new WorkList();
-outbox = new WorkList();
-worker = new Worker(inbox, inProgress, outbox);
-
+let inbox = new WorkList('inbox');
+let inProgress = new WorkList('in progress');
+let outbox = new WorkList('outbox');
 inbox.push(new WorkItem(1000));
-setTimeout(worker.work, 1000);
+inbox.push(new WorkItem(1000));
+inbox.push(new WorkItem(1000));
+inbox.push(new WorkItem(1000));
+inbox.push(new WorkItem(1000));
+inbox.push(new WorkItem(1000));
+
+new Worker(inbox, inProgress, outbox).work();
