@@ -1,3 +1,5 @@
+const PubSub = require('pubsub-js');
+
 (function () {
   let currentId = 1;
 
@@ -11,12 +13,11 @@
         }, workItem.estimate)
       }
     };
-    return { work }
+    return {work}
   }
 
 
   function WorkItem(size) {
-    const id = currentId++;
     return {
       estimate: size,
     };
@@ -24,6 +25,9 @@
 
   function WorkList(name) {
     let work = [];
+    let id = currentId++;
+
+    PubSub.publish('worklist.created', {id, name});
 
     const push = item => {
       work.push(item);
@@ -35,8 +39,8 @@
     };
 
     const move = (to, item = pull()) => {
-      for(let i = 0; i < work.length; i++){
-        if ( work[i] === item) {
+      for (let i = 0; i < work.length; i++) {
+        if (work[i] === item) {
           work.splice(i, 1);
         }
       }
@@ -45,11 +49,14 @@
     };
 
     return {
-      hasWork: () => {return work.length > 0},
+      hasWork: () => {
+        return work.length > 0
+      },
       add: push,
       move,
       items: () => work.map(w => w),
-      name
+      name,
+      id
     };
   }
 
