@@ -2,9 +2,9 @@ ul {
   list-style: none;
 }
 
-li.queue, li.work {
+li.column {
   float: left;
-  min-width: 100px;
+  min-width: 150px;
 }
 
 ul.cards li {

@@ -19,6 +19,7 @@ const PubSub = require('pubsub-js');
 
   function WorkItem(size) {
     return {
+      id: currentId++,
       estimate: size,
     };
   }
@@ -31,6 +32,7 @@ const PubSub = require('pubsub-js');
 
     const push = item => {
       work.push(item);
+      PubSub.publish('workitem.added', {columnId: id, item});
     };
 
     const pull = () => {
