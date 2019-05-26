@@ -7,9 +7,7 @@
         setTimeout(() => inProgress.move(outbox, work), work.estimate())
       }
     };
-    return {
-      work: work
-    }
+    return { work }
   }
 
   function WorkItem(size) {
