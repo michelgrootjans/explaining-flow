@@ -13,5 +13,9 @@
   "devDependencies": {
     "browserify": "^16.2.3",
     "jest": "^24.8.0"
+  },
+  "dependencies": {
+    "jquery": "^3.4.1",
+    "pubsub-js": "^1.7.0"
   }
 }

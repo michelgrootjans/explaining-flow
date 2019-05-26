@@ -1,47 +1,26 @@
-const Worker = require('../src/worker');
-
-function WorkItem() {
-  return {};
-}
+const {Worker, WorkItem, WorkList} = require('../src/worker');
 
 describe('a worker', () => {
   beforeEach(() => {
-    worker = new Worker();
+    inbox = new WorkList();
+    inProgress = new WorkList();
+    outbox = new WorkList();
+    worker = new Worker(inbox, inProgress, outbox);
   });
 
   it('can be idle', () => {
-    let inbox = [];
-    let outbox = [];
-    worker.work(inbox, outbox);
-    expect(inbox).toEqual([]);
-    expect(outbox).toEqual([]);
+    expect(inbox.items()).toEqual([]);
+    expect(inProgress.items()).toEqual([]);
+    expect(outbox.items()).toEqual([]);
   });
 
-  it('picks one item', () => {
-    let inbox = [new WorkItem()];
-    let outbox = [];
-    worker.work(inbox, outbox);
+  it('finish one item', () => {
+    let workItem = new WorkItem(1);
+    inbox.push(workItem);
+    worker.work();
 
-    expect(inbox).toEqual([]);
-    expect(outbox).toEqual([new WorkItem()]);
-  });
-
-  it('picks one item at the time', () => {
-    let inbox = [new WorkItem(), new WorkItem()];
-    let outbox = [];
-    worker.work(inbox, outbox);
-
-    expect(inbox).toEqual([new WorkItem()]);
-    expect(outbox).toEqual([new WorkItem()]);
-  });
-
-  it('picks one item after the other', () => {
-    let inbox = [new WorkItem(), new WorkItem()];
-    let outbox = [];
-    worker.work(inbox, outbox);
-    worker.work(inbox, outbox);
-
-    expect(inbox).toEqual([]);
-    expect(outbox).toEqual([new WorkItem(), new WorkItem()]);
+    expect(inbox.items()).toEqual([]);
+    expect(inProgress.items()).toEqual([]);
+    expect(outbox.items()).toEqual([workItem]);
   });
 });
