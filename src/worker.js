@@ -1,27 +1,10 @@
-const PubSub = require('pubsub-js');
-
 (function () {
   function Worker(inbox, inProgress, outbox) {
 
     const work = () => {
-      if (inProgress.hasWork()) {
-        let work = inProgress.pull();
-        work.increment();
-        if(work.isDone()) {
-          outbox.push(work)
-        } else {
-          inProgress.push(work);
-        }
-      }
-
-      else if (inbox.hasWork()) {
-        let work = inbox.pull();
-        work.increment();
-        if(work.isDone()) {
-          outbox.push(work)
-        } else {
-          inProgress.push(work);
-        }
+      if (inbox.hasWork()) {
+        let work = inbox.move(inProgress);
+        setTimeout(() => inProgress.move(outbox, work), work.estimate())
       }
     };
     return {
@@ -30,31 +13,38 @@ const PubSub = require('pubsub-js');
   }
 
   function WorkItem(size) {
-    let workToDo = size;
     return {
-      increment: () => workToDo -= 1,
-      isDone: () => { return workToDo <= 0 }
+      estimate: () => { return size }
     };
   }
 
-  function WorkList() {
+  function WorkList(name) {
     let work = [];
 
     const push = item => {
       work.push(item);
-      PubSub.publish('column.work-added', {column: this, work: item});
     };
 
     const pull = () => {
       let item = work.pop();
-      PubSub.publish('column.work-removed', {column: this, work: item});
+      return item;
+    };
+
+    const move = (to, item = pull()) => {
+      for(let i = 0; i < work.length; i++){
+        if ( work[i] === item) {
+          work.splice(i, 1);
+        }
+      }
+      to.push(item);
       return item;
     };
 
     return {
       hasWork: () => {return work.length > 0},
-      pull: pull,
-      push: push,
+      pull,
+      push,
+      move,
       items: () => work.map(w => w)
     };
   }
