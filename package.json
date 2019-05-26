@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest --watchAll",
+    "refactor": "jest && npm run bundle && git commit -am 'refactor' || git reset --hard",
     "bundle": "browserify src/*.js > dist/index.js"
   },
   "keywords": [],
