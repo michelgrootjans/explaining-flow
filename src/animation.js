@@ -5,11 +5,14 @@ const $ = require('jquery');
   const initialize = () => {
     PubSub.subscribe('worklist.created', (topic, subject) => {
       const $column = $('<li/>');
-      $column.addClass('column').data('column-id', subject.id);
-      $column.append($('<h2/>').text(subject.name));
-      $column.append($('<ul/>').addClass('cards'));
+
+      console.log({topic, subject})
 
       $('#dashboard').append($column);
+      $column.addClass('column');
+      $column.attr('data-column-id', subject.id);
+      $column.append($('<h2/>').text(subject.name));
+      $column.append($('<ul/>').addClass('cards'));
       PubSub.publish('worklist.shown', subject)
     });
 

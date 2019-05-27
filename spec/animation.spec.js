@@ -19,9 +19,10 @@ describe('animation', () => {
 
     it('should be added to the dashboard', done => {
       PubSub.subscribe('worklist.shown', () => {
-        expect($('#dashboard li.column').data('column-id')).toBe(todo.id);
+        expect($('#dashboard li.column').attr('data-column-id')).toBe(`${todo.id}`);
         expect($('#dashboard li h2').text()).toBe('todo');
         expect($('#dashboard li.column ul').attr('class')).toBe('cards');
+        console.log($('#dashboard').html());
         done();
       });
 
@@ -30,7 +31,8 @@ describe('animation', () => {
 
     it('shows work items', done => {
       PubSub.subscribe('workitem.shown', (topic, subject) => {
-        expect($('#dashboard li.column ul.cards li').text()).toBe(`${workItem.id}`);
+        expect($(`[data-column-id="${todo.id}"] li`).text())
+          .toBe(`${workItem.id}`);
         done();
       });
 
