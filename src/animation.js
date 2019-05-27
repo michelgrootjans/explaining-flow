@@ -10,9 +10,8 @@ const $ = require('jquery');
         .append($('<h2/>').text(subject.name))
         .append($('<ul/>').addClass('cards'));
 
-      console.log({topic, subject})
-
       $('#dashboard').append($column);
+
       PubSub.publish('worklist.shown', subject)
     });
 
