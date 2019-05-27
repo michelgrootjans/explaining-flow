@@ -18,7 +18,7 @@ const $ = require('jquery');
     PubSub.subscribe('workitem.added', (topic, subject) => {
       let $card = $('<li/>').text(subject.item.id);
 
-      $(`li .cards`).append($card);
+      $(`[data-column-id="${subject.columnId}"] .cards`).append($card);
 
       PubSub.publish('workitem.shown', subject)
     });
