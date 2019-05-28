@@ -1,13 +1,13 @@
 require('./animation').initialize();
-const {Worker, WorkItem, WorkList} = require('./worker');
+const {Worker, WorkItem, WorkList, Backlog, DoneList} = require('./worker');
 
-let backlog = new WorkList('backlog');
+let backlog = new Backlog();
 let dev = new WorkList('development');
 let readyForReview = new WorkList('-');
 let review = new WorkList('review');
 let readyForQA = new WorkList('-');
 let qa = new WorkList('QA');
-let prod = new WorkList('done');
+let prod = new DoneList();
 
 function generateTaskDuration(duration) {
   return Math.floor((Math.random() * duration) + 1);;
