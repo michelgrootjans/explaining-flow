@@ -1,5 +1,4 @@
 require('./animation').initialize();
-const {NormalDistribution} =require('normal-distribution');
 const {Worker, WorkItem, WorkList, Backlog, DoneList} = require('./worker');
 
 let backlog = new Backlog();
@@ -11,11 +10,11 @@ let qa = new WorkList('QA');
 let prod = new DoneList();
 
 function generateTaskDuration(duration) {
-  return Math.floor((Math.random() * duration) + 1);;
+  return Math.floor((Math.random() * duration) + 1);
 }
 
 for (let i = 0; i < 100; i++) {
-  backlog.add(new WorkItem(generateTaskDuration(new NormalDistribution(1000, 1))));
+  backlog.add(new WorkItem(generateTaskDuration(1000)));
 }
 
 setTimeout(() => {
