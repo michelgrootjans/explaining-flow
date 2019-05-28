@@ -42,8 +42,7 @@ const PubSub = require('pubsub-js');
     };
 
     const pull = () => {
-      let item = work.shift();
-      return item;
+      return work.shift();
     };
 
     function _remove(item) {
@@ -70,6 +69,7 @@ const PubSub = require('pubsub-js');
       add,
       move,
       name,
+      pull,
       id
     };
   }
