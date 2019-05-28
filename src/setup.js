@@ -1,5 +1,5 @@
 require('./animation').initialize();
-const NormalDistribution =require('normal-distribution');
+const {NormalDistribution} =require('normal-distribution');
 const {Worker, WorkItem, WorkList, Backlog, DoneList} = require('./worker');
 
 let backlog = new Backlog();
