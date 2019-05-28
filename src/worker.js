@@ -3,7 +3,12 @@ const PubSub = require('pubsub-js');
 (function () {
   let currentId = 1;
 
-  function Worker(inbox, inProgress, outbox, nominalSpeed=1) {
+  function Worker(inbox, inProgress, outbox, nominalSpeed = 1) {
+    let queues = {
+      from: inbox,
+      during: inProgress,
+      to: outbox
+    }
     let waitingToken = 0;
     const work = () => {
       if (inbox.hasWork()) {
@@ -13,7 +18,7 @@ const PubSub = require('pubsub-js');
         setTimeout(() => {
           inProgress.move(outbox, workItem);
           work();
-        }, workItem.estimate * (1/nominalSpeed))
+        }, workItem.estimate * (1 / nominalSpeed))
       } else {
         waitingToken = PubSub.subscribe('workitem.added', (topic, subject) => {
           if (subject.columnId === inbox.id) work();
