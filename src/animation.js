@@ -34,8 +34,8 @@ const Stats = require('./stats');
 
     PubSub.subscribe('workitem.done', (topic, items) => {
       const stats = new Stats(items);
-      $('#throughput').text(stats.throughput);
-      $('#leadtime').text(stats.leadTime);
+      $('#throughput').text(Math.round(stats.throughput*100)/100);
+      $('#leadtime').text(Math.round(stats.leadTime*100)/100);
     })
   };
 
