@@ -8,10 +8,10 @@ const PubSub = require('pubsub-js');
       from: inbox,
       during: inProgress,
       to: outbox
-    }
+    };
     let waitingToken = 0;
     const work = () => {
-      if (inbox.hasWork()) {
+      if (queues.from.hasWork()) {
         PubSub.unsubscribe(waitingToken);
         let workItem = inbox.peek();
         inbox.move(inProgress, workItem);
