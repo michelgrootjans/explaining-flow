@@ -13,15 +13,15 @@ const PubSub = require('pubsub-js');
     const work = () => {
       if (queues.from.hasWork()) {
         PubSub.unsubscribe(waitingToken);
-        let workItem = inbox.peek();
-        inbox.move(inProgress, workItem);
+        let workItem = queues.from.peek();
+        queues.from.move(inProgress, workItem);
         setTimeout(() => {
           inProgress.move(outbox, workItem);
           work();
         }, workItem.estimate * (1 / nominalSpeed))
       } else {
         waitingToken = PubSub.subscribe('workitem.added', (topic, subject) => {
-          if (subject.columnId === inbox.id) work();
+          if (subject.columnId === queues.from.id) work();
         })
       }
     };
