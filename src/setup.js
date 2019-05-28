@@ -6,10 +6,10 @@ let inProgress = new WorkList('in progress');
 let outbox = new WorkList('outbox');
 
 inbox.add(new WorkItem(1000));
-// inbox.add(new WorkItem(1000));
-// inbox.add(new WorkItem(1000));
+inbox.add(new WorkItem(1000));
+inbox.add(new WorkItem(1000));
 // inbox.add(new WorkItem(1000));
 // inbox.add(new WorkItem(1000));
 // inbox.add(new WorkItem(1000));
 
-// new Worker(inbox, inProgress, outbox).work();
+new Worker(inbox, inProgress, outbox).work();
