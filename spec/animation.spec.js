@@ -58,4 +58,24 @@ describe('animation', () => {
       worker.work()
     })
   });
+
+  describe('stats', () => {
+    beforeEach(() => {
+      jest.useFakeTimers();
+      PubSub.clearAllSubscriptions();
+      animation.initialize();
+      document.body.innerHTML =
+        '<span id="throughput"></span><span id="leadtime"></span>\n';
+    });
+
+    it('shows on workitem done', function () {
+      PubSub.publish('workitem.done',
+        [{startTime: new Date(2000,1,1, 0,0,0), endTime: new Date(2000,1,1, 0,0,2)}]
+      );
+      jest.runAllTimers();
+      expect($('#throughput').text()).toBe("0.5");
+      expect($('#leadtime').text()).toBe("2");
+    });
+  });
 });
+

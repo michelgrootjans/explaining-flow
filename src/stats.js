@@ -6,8 +6,15 @@ module.exports = function (items) {
   const averageLeadTime = relevantItems.map(item => (item.endTime - item.startTime)/1000)
     .reduce((sum, duration) => sum + duration, 0)/relevantItems.length;
 
+  const minTime = relevantItems.map(item => item.startTime)
+    .reduce((oldest, current) => oldest < current ? oldest : current)
+  const maxTime = relevantItems.map(item => item.endTime)
+    .reduce((newest, current) => newest > current ? newest : current)
+
+  let throughput = relevantItems.length / ((maxTime - minTime)/1000);
+
   return {
     leadTime: averageLeadTime,
-    throughput: 1
+    throughput: throughput
   }
 };

@@ -93,6 +93,7 @@ const PubSub = require('pubsub-js');
     backlog.add = (item) => {
       item.endTime = Date.now();
       originalRemove(item);
+      PubSub.publish('workitem.done', backlog.items())
     };
 
     return backlog;

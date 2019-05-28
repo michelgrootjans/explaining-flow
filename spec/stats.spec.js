@@ -30,7 +30,17 @@ describe('calculate basic stats', () => {
     ]);
     expect(stats).toEqual({
       leadTime: 2,
-      throughput: 1
+      throughput: 0.5
+    })
+  });
+  it('calculates for two items of 1 seconds', function () {
+    let stats = new Stats([
+      {startTime: new Date(2000,1,1, 0,0,0), endTime: new Date(2000,1,1, 0,0,1)},
+      {startTime: new Date(2000,1,1, 0,0,0), endTime: new Date(2000,1,1, 0,0,1)}
+    ]);
+    expect(stats).toEqual({
+      leadTime: 1,
+      throughput: 2
     })
   });
 });

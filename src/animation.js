@@ -1,5 +1,6 @@
 const PubSub = require('pubsub-js');
 const $ = require('jquery');
+const Stats = require('./stats');
 
 (function () {
   const initialize = () => {
@@ -30,6 +31,12 @@ const $ = require('jquery');
       let $card = $(`${selector}`);
       $card.remove();
     });
+
+    PubSub.subscribe('workitem.done', (topic, items) => {
+      const stats = new Stats(items);
+      $('#throughput').text(stats.throughput);
+      $('#leadtime').text(stats.leadTime);
+    })
   };
 
   module.exports = {initialize};
