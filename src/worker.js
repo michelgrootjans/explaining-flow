@@ -8,7 +8,8 @@ const PubSub = require('pubsub-js');
     const work = () => {
       if (inbox.hasWork()) {
         PubSub.unsubscribe(waitingToken);
-        let workItem = inbox.move(inProgress);
+        let workItem = inbox.peek();
+        inbox.move(inProgress, workItem);
         setTimeout(() => {
           inProgress.move(outbox, workItem);
           work();
@@ -54,7 +55,7 @@ const PubSub = require('pubsub-js');
       PubSub.publish('workitem.removed', {columnId: id, item});
     }
 
-    const move = (to, item = pull()) => {
+    const move = (to, item) => {
       _remove(item);
       to.add(item);
       PubSub.publish('workitem.moved', {from: id, to: to.id, item});
@@ -66,6 +67,7 @@ const PubSub = require('pubsub-js');
         return work.length > 0
       },
       items: () => work.map(w => w),
+      peek: () => work[0],
       add,
       move,
       name,

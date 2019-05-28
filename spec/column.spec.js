@@ -11,6 +11,7 @@ describe('columns', () => {
     expect(workItem.startTime).toBeUndefined();
     expect(workItem.endTime).toBeUndefined();
   });
+
   it('start marks a story', () => {
     const now = Date.now();
     jest.spyOn(Date, 'now').mockImplementationOnce(() => now);
@@ -24,6 +25,7 @@ describe('columns', () => {
     expect(workItem.startTime).toEqual(now);
     expect(workItem.endTime).toBeUndefined();
   });
+
   it('done marks a story', () => {
     const now = Date.now();
     jest.spyOn(Date, 'now').mockImplementationOnce(() => now);
