@@ -14,9 +14,9 @@ const PubSub = require('pubsub-js');
       if (queues.from.hasWork()) {
         PubSub.unsubscribe(waitingToken);
         let workItem = queues.from.peek();
-        queues.from.move(inProgress, workItem);
+        queues.from.move(queues.during, workItem);
         setTimeout(() => {
-          inProgress.move(outbox, workItem);
+          queues.during.move(outbox, workItem);
           work();
         }, workItem.estimate * (1 / nominalSpeed))
       } else {
