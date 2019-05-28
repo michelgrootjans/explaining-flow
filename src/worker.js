@@ -3,7 +3,7 @@ const PubSub = require('pubsub-js');
 (function () {
   let currentId = 1;
 
-  function Worker(inbox, inProgress, outbox, nominalSpeed = 1) {
+  function OldWorker(inbox, inProgress, outbox, nominalSpeed = 1) {
     let queues = {
       inbox: inbox,
       inProgress: inProgress,
@@ -105,5 +105,5 @@ const PubSub = require('pubsub-js');
     return backlog;
   }
 
-  module.exports = {Worker, WorkItem, WorkList, Backlog, DoneList};
+  module.exports = {Worker: OldWorker, WorkItem, WorkList, Backlog, DoneList};
 })();
