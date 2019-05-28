@@ -9,17 +9,13 @@ let readyForQA = new WorkList('');
 let qa = new WorkList('QA');
 let prod = new WorkList('done');
 
-function generateTaskDuration() {
-  return Math.floor((Math.random() * 2000) + 1);;
+function generateTaskDuration(duration) {
+  return Math.floor((Math.random() * duration) + 1);;
 }
 
-backlog.add(new WorkItem(generateTaskDuration()));
-backlog.add(new WorkItem(generateTaskDuration()));
-backlog.add(new WorkItem(generateTaskDuration()));
-backlog.add(new WorkItem(generateTaskDuration()));
-backlog.add(new WorkItem(generateTaskDuration()));
-backlog.add(new WorkItem(generateTaskDuration()));
-backlog.add(new WorkItem(generateTaskDuration()));
+for (let i = 0; i < 100; i++) {
+  backlog.add(new WorkItem(generateTaskDuration(2000)));
+}
 
 setTimeout(() => {
   new Worker(backlog, dev, readyForReview).work();
