@@ -5,8 +5,8 @@ let backlog = new Backlog();
 let dev = new WorkList('development');
 let readyForReview = new WorkList('-');
 let review = new WorkList('review');
-// let readyForQA = new WorkList('-');
-// let qa = new WorkList('QA');
+let readyForQA = new WorkList('-');
+let qa = new WorkList('QA');
 let prod = new DoneList();
 
 function generateTaskDuration(duration) {
@@ -19,6 +19,6 @@ for (let i = 0; i < 100; i++) {
 
 setTimeout(() => {
   new Worker(backlog, dev, readyForReview).work();
-  new Worker(readyForReview, review, prod).work();
-  // new Worker(readyForQA, qa, prod, 0.8).work();
+  new Worker(readyForReview, review, readyForQA).work();
+  new Worker(readyForQA, qa, prod).work();
 }, 1000);
