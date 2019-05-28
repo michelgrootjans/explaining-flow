@@ -78,7 +78,7 @@ const PubSub = require('pubsub-js');
     let backlog = new WorkList('backlog');
     const originalRemove = backlog.move;
 
-    backlog.move = (to, item) => {
+    backlog.move = (to, item = backlog.pull()) => {
       item.startTime = Date.now();
       originalRemove(to, item);
     };
