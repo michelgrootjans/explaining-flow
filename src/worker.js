@@ -4,13 +4,19 @@ const PubSub = require('pubsub-js');
   let currentId = 1;
 
   function Worker(inbox, inProgress, outbox) {
+    let waitingToken = 0;
     const work = () => {
       if (inbox.hasWork()) {
+        PubSub.unsubscribe(waitingToken);
         let workItem = inbox.move(inProgress);
         setTimeout(() => {
           inProgress.move(outbox, workItem);
           work();
         }, workItem.estimate)
+      } else {
+        waitingToken = PubSub.subscribe('workitem.added', (topic, subject) => {
+          if (subject.columnId === inbox.id) work();
+        })
       }
     };
     return {work}

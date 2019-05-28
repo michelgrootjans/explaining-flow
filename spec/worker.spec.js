@@ -10,7 +10,7 @@ describe('a worker', () => {
   });
 
   describe('without tasks', () => {
-    it('doesnt work', () => {
+    it('doesnt crash', () => {
       worker.work();
       jest.runAllTimers();
       expect(inbox.items()).toEqual([]);
@@ -22,8 +22,8 @@ describe('a worker', () => {
   describe('with one task', () => {
     it('works on the item', () => {
       let workItem = new WorkItem(1000);
-      inbox.add(workItem);
       worker.work();
+      inbox.add(workItem);
 
       jest.advanceTimersByTime(500);
       expect(inbox.items()).toEqual([]);
@@ -33,8 +33,8 @@ describe('a worker', () => {
 
     it('finished the item', () => {
       let workItem = new WorkItem(1000);
-      inbox.add(workItem);
       worker.work();
+      inbox.add(workItem);
 
       jest.advanceTimersByTime(1000);
       expect(inbox.items()).toEqual([]);
