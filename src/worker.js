@@ -23,14 +23,14 @@ const PubSub = require('pubsub-js');
   }
 
 
-  function WorkItem(size) {
+  function WorkItem(size = 1000) {
     return {
       id: currentId++,
       estimate: size,
     };
   }
 
-  function WorkList(name) {
+  function WorkList(name="work") {
     let work = [];
     let id = currentId++;
 
@@ -74,5 +74,29 @@ const PubSub = require('pubsub-js');
     };
   }
 
-  module.exports = {Worker, WorkItem, WorkList};
+  function Backlog(){
+    let backlog = new WorkList('backlog');
+    const originalRemove = backlog.move;
+
+    backlog.move = (to, item) => {
+      item.startTime = Date.now();
+      originalRemove(to, item);
+    };
+
+    return backlog;
+  }
+
+  function DoneList(){
+    let backlog = new WorkList('done');
+    const originalRemove = backlog.add;
+
+    backlog.add = (item) => {
+      item.endTime = Date.now();
+      originalRemove(item);
+    };
+
+    return backlog;
+  }
+
+  module.exports = {Worker, WorkItem, WorkList, Backlog, DoneList};
 })();
