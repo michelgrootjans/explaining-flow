@@ -69,7 +69,6 @@ const PubSub = require('pubsub-js');
       add,
       move,
       name,
-      pull,
       id
     };
   }
@@ -78,7 +77,7 @@ const PubSub = require('pubsub-js');
     let backlog = new WorkList('backlog');
     const originalRemove = backlog.move;
 
-    backlog.move = (to, item = backlog.pull()) => {
+    backlog.move = (to, item) => {
       item.startTime = Date.now();
       originalRemove(to, item);
     };
