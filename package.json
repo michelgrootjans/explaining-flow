@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "jquery": "^3.4.1",
+    "normal-distribution": "0.0.7",
     "pubsub-js": "^1.7.0"
   }
 }
