@@ -5,23 +5,23 @@ const PubSub = require('pubsub-js');
 
   function Worker(inbox, inProgress, outbox, nominalSpeed = 1) {
     let queues = {
-      from: inbox,
-      during: inProgress,
-      to: outbox
+      inbox: inbox,
+      inProgress: inProgress,
+      outbox: outbox
     };
     let waitingToken = 0;
     const work = () => {
-      if (queues.from.hasWork()) {
+      if (queues.inbox.hasWork()) {
         PubSub.unsubscribe(waitingToken);
-        let workItem = queues.from.peek();
-        queues.from.move(queues.during, workItem);
+        let workItem = queues.inbox.peek();
+        queues.inbox.move(queues.inProgress, workItem);
         setTimeout(() => {
-          queues.during.move(outbox, workItem);
+          queues.inProgress.move(queues.outbox, workItem);
           work();
         }, workItem.estimate * (1 / nominalSpeed))
       } else {
         waitingToken = PubSub.subscribe('workitem.added', (topic, subject) => {
-          if (subject.columnId === queues.from.id) work();
+          if (subject.columnId === queues.inbox.id) work();
         })
       }
     };
