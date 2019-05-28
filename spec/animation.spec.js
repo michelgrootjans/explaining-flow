@@ -30,10 +30,8 @@ describe('animation', () => {
 
     it('shows work items', done => {
       PubSub.subscribe('workitem.shown', (topic, subject) => {
-        expect($(`[data-column-id="${todo.id}"] li`).text())
-          .toBe(`${workItem.id}`);
-        expect($(`[data-column-id="${finished.id}"] li`).text())
-          . not.toBe(`${workItem.id}`);
+        expect($(`[data-column-id="${todo.id}"]     [data-card-id="${workItem.id}"]`).length).toBe(1);
+        expect($(`[data-column-id="${finished.id}"] [data-card-id="${workItem.id}"]`).length).toBe(0);
         done();
       });
 
@@ -43,5 +41,21 @@ describe('animation', () => {
       todo.add(workItem);
     });
 
+    it('a worker picks up an item', done => {
+      PubSub.subscribe('workitem.moved', (topic, subject) => {
+        expect($(`[data-column-id="${inbox.id}"]      [data-card-id="${workItem.id}"]`).length).toBe(0);
+        expect($(`[data-column-id="${inProgress.id}"] [data-card-id="${workItem.id}"]`).length).toBe(1);
+        expect($(`[data-column-id="${outbox.id}"]     [data-card-id="${workItem.id}"]`).length).toBe(0);
+        done();
+      });
+
+      const inbox = new WorkList('inbox');
+      const inProgress = new WorkList('in progress');
+      const outbox = new WorkList('outbox');
+      const worker = new Worker(inbox, inProgress, outbox);
+      let workItem = new WorkItem(1000);
+      inbox.add(workItem);
+      worker.work()
+    })
   });
 });

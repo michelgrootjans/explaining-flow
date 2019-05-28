@@ -16,11 +16,19 @@ const $ = require('jquery');
     });
 
     PubSub.subscribe('workitem.added', (topic, subject) => {
-      let $card = $('<li/>').text(subject.item.id);
+      let $card = $('<li/>')
+        .attr('data-card-id', subject.item.id)
+        .text(subject.item.id);
 
       $(`[data-column-id="${subject.columnId}"] .cards`).append($card);
 
       PubSub.publish('workitem.shown', subject)
+    });
+
+    PubSub.subscribe('workitem.removed', (topic, subject) => {
+      let selector = `[data-column-id="${subject.columnId}"] [data-card-id="${subject.item.id}"]`;
+      let $card = $(`${selector}`);
+      $card.remove();
     });
   };
 

@@ -30,7 +30,7 @@ const PubSub = require('pubsub-js');
 
     PubSub.publish('worklist.created', {id, name});
 
-    const push = item => {
+    const add = item => {
       work.push(item);
       PubSub.publish('workitem.added', {columnId: id, item});
     };
@@ -40,13 +40,19 @@ const PubSub = require('pubsub-js');
       return item;
     };
 
-    const move = (to, item = pull()) => {
+    function _remove(item) {
       for (let i = 0; i < work.length; i++) {
         if (work[i] === item) {
           work.splice(i, 1);
         }
       }
+      PubSub.publish('workitem.removed', {columnId: id, item});
+    }
+
+    const move = (to, item = pull()) => {
+      _remove(item);
       to.add(item);
+      PubSub.publish('workitem.moved', {from: id, to: to.id, item});
       return item;
     };
 
@@ -54,9 +60,9 @@ const PubSub = require('pubsub-js');
       hasWork: () => {
         return work.length > 0
       },
-      add: push,
-      move,
       items: () => work.map(w => w),
+      add,
+      move,
       name,
       id
     };
