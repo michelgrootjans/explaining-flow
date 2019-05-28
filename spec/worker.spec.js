@@ -84,5 +84,11 @@ describe('a worker', () => {
       expect(outbox.items()).toEqual([workItem1, workItem2]);
     });
 
+
   });
 });
+
+describe('a worker works at his own speed', () => {
+
+})
+
