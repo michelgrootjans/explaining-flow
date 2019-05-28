@@ -19,6 +19,6 @@ for (let i = 0; i < 100; i++) {
 
 setTimeout(() => {
   new Worker(backlog, dev, readyForReview, 1).work();
-  new Worker(readyForReview, review, prod, 0.9).work();
+  new Worker(readyForReview, review, prod, 1).work();
   // new Worker(readyForQA, qa, prod, 0.8).work();
 }, 1000);
