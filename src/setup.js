@@ -12,4 +12,6 @@ inbox.add(new WorkItem(1000));
 // inbox.add(new WorkItem(1000));
 // inbox.add(new WorkItem(1000));
 
-new Worker(inbox, inProgress, outbox).work();
+setTimeout(() => {
+  new Worker(inbox, inProgress, outbox).work();
+}, 1000);
