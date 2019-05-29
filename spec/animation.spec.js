@@ -3,7 +3,7 @@ const $ = require('jquery');
 const animation = require('../src/animation');
 
 const {Worker, WorkItem, WorkList} = require('../src/worker');
-
+const Board = require('../src/board');
 
 describe('animation', () => {
   beforeAll(() => {
@@ -50,12 +50,13 @@ describe('animation', () => {
       });
 
       const inbox = new WorkList('inbox');
-      const inProgress = new WorkList('in progress');
+      const inProgress = new WorkList('dev');
       const outbox = new WorkList('outbox');
-      const worker = new Worker(inbox, inProgress, outbox);
-      let workItem = new WorkItem(1000);
-      inbox.add(workItem);
-      worker.work()
+      const board = new Board(inbox, inProgress, outbox);
+      let workItem = new WorkItem({dev: 1000});
+      board.addWorkItems(workItem);
+      board.addWorkers(new Worker({dev: 1000}));
+      board.runSimulation()
     })
   });
 

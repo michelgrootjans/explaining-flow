@@ -21,21 +21,21 @@ const Stats = require('./stats');
         .attr('data-card-id', subject.item.id)
         .text(subject.item.id);
 
-      $(`[data-column-id="${subject.columnId}"] .cards`).append($card);
+      $(`[data-column-id="${subject.column.id}"] .cards`).append($card);
 
       PubSub.publish('workitem.shown', subject)
     });
 
     PubSub.subscribe('workitem.removed', (topic, subject) => {
-      let selector = `[data-column-id="${subject.columnId}"] [data-card-id="${subject.item.id}"]`;
+      let selector = `[data-column-id="${subject.column.id}"] [data-card-id="${subject.item.id}"]`;
       let $card = $(`${selector}`);
       $card.remove();
     });
 
     PubSub.subscribe('workitem.done', (topic, items) => {
       const stats = new Stats(items);
-      $('#throughput').text(Math.round(stats.throughput*1000)/1000);
-      $('#leadtime').text(Math.round(stats.leadTime*1000)/1000);
+      $('#throughput').text(Math.round(stats.throughput * 1000) / 1000);
+      $('#leadtime').text(Math.round(stats.leadTime * 1000) / 1000);
     })
   };
 

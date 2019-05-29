@@ -1,85 +1,79 @@
 const PubSub = require('pubsub-js');
+const TimeAdjustments = require('./timeAdjustments');
 
 (function () {
-  let currentId = 1;
 
-  function Worker(inbox, inProgress, outbox, skills) {
-    let queues = {
-      inbox: inbox,
-      inProgress: inProgress,
-      outbox: outbox
-    };
-    skills = skills || {
-      dev: 1
-    }
+  function Worker(skills = {dev: 1}) {
+    let queues = {};
     let waitingToken = 0;
-    const work = () => {
+    let idle = true;
+
+    let self = {
+      work,
+      workOn,
+      canDo: (skill) => skills[skill] && skills[skill] > 0,
+      assignColumns: (inbox, inProgress, outbox) => {
+        queues = {inbox, inProgress, outbox}
+      },
+      isIdle: () => idle
+    };
+
+    function calculateTimeoutFor(workItem, skill) {
+      return 1000 * TimeAdjustments.multiplicator() * workItem.work[skill] / skills[skill];
+    }
+
+    function work() {
       if (queues.inbox.hasWork()) {
         PubSub.unsubscribe(waitingToken);
         let workItem = queues.inbox.peek();
         queues.inbox.move(queues.inProgress, workItem);
-        let skill = inProgress.necessarySkill;
+        let skill = queues.inProgress.necessarySkill;
         setTimeout(() => {
           queues.inProgress.move(queues.outbox, workItem);
-          work();
-        }, workItem.work[skill] * (1 / skills[skill]))
+          PubSub.publish('worker.idle', self);
+        }, calculateTimeoutFor(workItem, skill))
       } else {
         waitingToken = PubSub.subscribe('workitem.added', (topic, subject) => {
-          if (subject.columnId === queues.inbox.id) work();
+          if (subject.column.id === queues.inbox.id) work();
         })
       }
-    };
-    return {work}
+    }
+
+    function workOn(item) {
+      // if (queues.inbox.hasWork()) {
+      //   PubSub.unsubscribe(waitingToken);
+      //   let workItem = queues.inbox.peek();
+      //   queues.inbox.move(queues.inProgress, workItem);
+      //   let skill = queues.inProgress.necessarySkill;
+      //   setTimeout(() => {
+      //     queues.inProgress.move(queues.outbox, workItem);
+      //     PubSub.publish('worker.idle', self);
+      //   }, calculateTimeoutFor(workItem, skill))
+      // } else {
+      //   waitingToken = PubSub.subscribe('workitem.added', (topic, subject) => {
+      //     if (subject.column.id === queues.inbox.id) work();
+      //   })
+      // }
+    }
+
+    return self
   }
 
   let workItemCounter = 1;
 
-  function WorkItem(size = 1000) {
-    work = {
-      ux: size,
-      dev: size,
-      review: size,
-      qa: size
-    };
+  function WorkItem(work) {
     return {
       id: workItemCounter++,
-      estimate: size,
-      work: work
+      work
     };
   }
 
-  function WorkList(name="dev", necessarySkill = name) {
+  let workListCounter = 1;
+
+  function WorkList(name = "dev", necessarySkill = name) {
     let work = [];
-    let id = currentId++;
-
-    PubSub.publish('worklist.created', {id, name});
-
-    const add = item => {
-      work.push(item);
-      PubSub.publish('workitem.added', {columnId: id, item});
-    };
-
-    const pull = () => {
-      return work.shift();
-    };
-
-    function _remove(item) {
-      for (let i = 0; i < work.length; i++) {
-        if (work[i] === item) {
-          work.splice(i, 1);
-        }
-      }
-      PubSub.publish('workitem.removed', {columnId: id, item});
-    }
-
-    const move = (to, item) => {
-      _remove(item);
-      to.add(item);
-      PubSub.publish('workitem.moved', {from: id, to: to.id, item});
-      return item;
-    };
-
-    return {
+    let id = workListCounter++;
+    let column = {
       hasWork: () => {
         return work.length > 0
       },
@@ -91,9 +85,38 @@ const PubSub = require('pubsub-js');
       id,
       necessarySkill: necessarySkill
     };
+
+    PubSub.publish('worklist.created', {id, name});
+
+    function add(item) {
+      work.push(item);
+      PubSub.publish('workitem.added', {item, column});
+    }
+
+    const pull = () => {
+      return work.shift();
+    };
+
+    function _remove(item) {
+      for (let i = 0; i < work.length; i++) {
+        if (work[i] === item) {
+          work.splice(i, 1);
+        }
+      }
+      PubSub.publish('workitem.removed', {item, column});
+    }
+
+    function move(to, item) {
+      _remove(item);
+      to.add(item);
+      PubSub.publish('workitem.moved', {from: column, to, item});
+      return item;
+    }
+
+    return column;
   }
 
-  function Backlog(){
+  function Backlog() {
     let backlog = new WorkList('backlog', 'dev');
     const originalRemove = backlog.move;
 
@@ -105,7 +128,7 @@ const PubSub = require('pubsub-js');
     return backlog;
   }
 
-  function DoneList(){
+  function DoneList() {
     let backlog = new WorkList('done', 'dev');
     const originalRemove = backlog.add;
 

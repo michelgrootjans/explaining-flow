@@ -1,24 +1,33 @@
+const $ = require('jquery');
 require('./animation').initialize();
+
 const {Worker, WorkItem, WorkList, Backlog, DoneList} = require('./worker');
+const Board = require('./board');
+const TimeAdjustments = require('./timeAdjustments');
 
-let backlog = new Backlog();
-// let ux = new WorkList('ux');
-// let readyForDev = new WorkList('-');
-let dev = new WorkList('dev');
-// let readyForQA = new WorkList('-');
-// let qa = new WorkList('qa');
-let prod = new DoneList();
+TimeAdjustments.speedUpBy(20);
 
-function generateTaskDuration(duration) {
-  return Math.floor((Math.random() * duration) + 1);
+let board = new Board(
+  new Backlog(),
+  new WorkList('dev'),
+  new DoneList()
+);
+
+board.addWorkers(
+  new Worker({dev: 1}),
+);
+
+function randomDuration(average=1.0, spread=0.2) {
+  return average + (Math.random() - 0.5) * spread;
 }
 
-for (let i = 0; i < 100; i++) {
-  backlog.add(new WorkItem(generateTaskDuration(1000)));
-}
+board.addWorkItems(...
+  [...Array(100).keys()]
+    .map(() => new WorkItem({
+        ux: randomDuration(),
+        dev: randomDuration(),
+        qa: randomDuration(),
+      })
+    ));
 
-setTimeout(() => {
-  // new Worker(backlog, ux, prod).work();
-  new Worker(backlog, dev, prod).work();
-  // new Worker(readyForQA, qa, prod).work();
-}, 1000);
+board.runSimulation();
