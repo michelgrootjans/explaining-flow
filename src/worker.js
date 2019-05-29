@@ -50,7 +50,7 @@ const PubSub = require('pubsub-js');
     };
   }
 
-  function WorkList(name="work", necessarySkill = 'dev') {
+  function WorkList(name="dev", necessarySkill = 'dev') {
     let work = [];
     let id = currentId++;
 
