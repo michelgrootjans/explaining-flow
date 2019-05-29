@@ -23,7 +23,7 @@ const PubSub = require('pubsub-js');
         setTimeout(() => {
           queues.inProgress.move(queues.outbox, workItem);
           work();
-        }, workItem.work['dev'] * (1 / nominalSpeed))
+        }, workItem.work['dev'] * (1 / skills['dev']))
       } else {
         waitingToken = PubSub.subscribe('workitem.added', (topic, subject) => {
           if (subject.columnId === queues.inbox.id) work();
