@@ -2,11 +2,11 @@ require('./animation').initialize();
 const {Worker, WorkItem, WorkList, Backlog, DoneList} = require('./worker');
 
 let backlog = new Backlog();
-let dev = new WorkList('development');
-let readyForReview = new WorkList('-');
-let review = new WorkList('review');
-let readyForQA = new WorkList('-');
-let qa = new WorkList('QA');
+// let ux = new WorkList('ux');
+// let readyForDev = new WorkList('-');
+let dev = new WorkList('dev');
+// let readyForQA = new WorkList('-');
+// let qa = new WorkList('QA');
 let prod = new DoneList();
 
 function generateTaskDuration(duration) {
@@ -18,7 +18,7 @@ for (let i = 0; i < 100; i++) {
 }
 
 setTimeout(() => {
-  new Worker(backlog, dev, readyForReview).work();
-  new Worker(readyForReview, review, readyForQA).work();
-  new Worker(readyForQA, qa, prod).work();
+  // new Worker(backlog, ux, prod).work();
+  new Worker(backlog, dev, prod).work();
+  // new Worker(readyForQA, qa, prod).work();
 }, 1000);

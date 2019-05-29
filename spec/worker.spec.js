@@ -74,15 +74,13 @@ describe('a worker', () => {
       expect(outbox.items()).toEqual([workItem1]);
     });
 
-    it('finished the second item', () => {
+    it('finishes the second item', () => {
       jest.advanceTimersByTime(1500);
 
       expect(inbox.items()).toEqual([]);
       expect(inProgress.items()).toEqual([]);
       expect(outbox.items()).toEqual([workItem1, workItem2]);
     });
-
-
   });
 });
 

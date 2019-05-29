@@ -2,6 +2,10 @@ ul {
   list-style: none;
 }
 
+li h2 {
+  text-align: center;
+}
+
 li.column {
   float: left;
   min-width: 150px;
