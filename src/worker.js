@@ -10,9 +10,7 @@ const PubSub = require('pubsub-js');
       outbox: outbox
     };
     skills = skills || {
-      ux: nominalSpeed,
-      dev: nominalSpeed,
-      qa: nominalSpeed
+      dev: nominalSpeed
     }
     let waitingToken = 0;
     const work = () => {
