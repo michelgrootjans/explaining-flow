@@ -1,24 +1,31 @@
 require('./animation').initialize();
-const {Worker, WorkItem, WorkList, Backlog, DoneList} = require('./worker');
+const {generateWorkItems, randomDuration} = require('./generator');
 
-let backlog = new Backlog();
-// let ux = new WorkList('ux');
-// let readyForDev = new WorkList('-');
-let dev = new WorkList('dev');
-// let readyForQA = new WorkList('-');
-// let qa = new WorkList('qa');
-let prod = new DoneList();
+const {Worker, WorkList} = require('./worker');
+const Board = require('./board');
+const TimeAdjustments = require('./timeAdjustments');
+require('./stats').initialize();
 
-function generateTaskDuration(duration) {
-  return Math.floor((Math.random() * duration) + 1);
-}
 
-for (let i = 0; i < 100; i++) {
-  backlog.add(new WorkItem(generateTaskDuration(1000)));
-}
+TimeAdjustments.speedUpBy(20);
 
-setTimeout(() => {
-  // new Worker(backlog, ux, prod).work();
-  new Worker(backlog, dev, prod).work();
-  // new Worker(readyForQA, qa, prod).work();
-}, 1000);
+let board = new Board(
+  new WorkList('Backlog'),
+  new WorkList('dev'),
+  // new WorkList('-'),
+  // new WorkList('qa'),
+  new WorkList('Done')
+);
+
+board.addWorkers(
+  new Worker({dev: randomDuration(1, 0.2)}),
+  // new Worker({qa: randomDuration(1, 0.2)}),
+);
+
+board.addWorkItems(...generateWorkItems({
+    dev: randomDuration(),
+    // qa: randomDuration()
+  },
+));
+
+board.runSimulation();

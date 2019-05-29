@@ -1,47 +1,98 @@
 const Stats = require('../src/stats');
+const PubSub = require('pubsub-js');
 
 describe('calculate basic stats', () => {
-  it('has no output for no input', function () {
-    let stats = new Stats([]);
-    expect(stats).toEqual({
-      leadTime: 0,
-      throughput: 0
-    })
+  beforeEach(() => {
+    PubSub.clearAllSubscriptions();
+    Stats.initialize();
   });
-  it('has no output for no valid input', function () {
-    let stats = new Stats([{}, {}, {}]);
-    expect(stats).toEqual({
-      leadTime: 0,
-      throughput: 0
-    })
+
+  it('start', done => {
+    after(1).times('stats.calculated', (topic, stats) => {
+      expect(stats).toEqual({
+        throughput: 0,
+        leadTime: 0,
+        workInProgress: 1
+      });
+      done();
+    });
+
+    PubSub.publish('workitem.started', {});
   });
-  it('calculates for an item of 1 second', function () {
-    let stats = new Stats([
-      {startTime: new Date(2000,1,1, 0,0,0), endTime: new Date(2000,1,1, 0,0,1)}
-    ]);
-    expect(stats).toEqual({
-      leadTime: 1,
-      throughput: 1
-    })
+
+  it('start-start', done => {
+    after(2).times('stats.calculated', (topic, stats) => {
+      expect(stats).toEqual({
+        throughput: 0,
+        leadTime: 0,
+        workInProgress: 2
+      });
+      done();
+    });
+
+    PubSub.publish('workitem.started', {});
+    PubSub.publish('workitem.started', {});
   });
-  it('calculates for an item of 2 seconds', function () {
-    let stats = new Stats([
-      {startTime: new Date(2000,1,1, 0,0,0), endTime: new Date(2000,1,1, 0,0,2)}
-    ]);
-    expect(stats).toEqual({
-      leadTime: 2,
-      throughput: 0.5
-    })
+
+  it('start-finish(1)', done => {
+    after(2).times('stats.calculated', (topic, stats) => {
+      expect(stats).toEqual({
+        throughput: 1,
+        leadTime: 1,
+        workInProgress: 0
+      });
+      done();
+    });
+
+    PubSub.publish('workitem.started', {});
+    PubSub.publish('workitem.finished', {startTime: time(0), endTime: time(1),});
   });
-  it('calculates for two items of 1 seconds', function () {
-    let stats = new Stats([
-      {startTime: new Date(2000,1,1, 0,0,0), endTime: new Date(2000,1,1, 0,0,1)},
-      {startTime: new Date(2000,1,1, 0,0,0), endTime: new Date(2000,1,1, 0,0,1)}
-    ]);
-    expect(stats).toEqual({
-      leadTime: 1,
-      throughput: 2
-    })
+
+  it('start-start-finish(1)', done => {
+    after(3).times('stats.calculated', (topic, stats) => {
+      expect(stats).toEqual({
+        throughput: 1,
+        leadTime: 1,
+        workInProgress: 1
+      });
+      done();
+    });
+
+    PubSub.publish('workitem.started', {});
+    PubSub.publish('workitem.started', {});
+    PubSub.publish('workitem.finished', {startTime: time(0), endTime: time(1),});
   });
+
+  it('start-start-finish(2)', done => {
+    after(2).times('stats.calculated', (topic, stats) => {
+      expect(stats).toEqual({
+        throughput: 0.5,
+        leadTime: 2,
+        workInProgress: 0
+      });
+      done();
+    });
+
+    PubSub.publish('workitem.started', {});
+    PubSub.publish('workitem.finished', {startTime: time(0), endTime: time(2),});
+  });
+
+  function time(second) {
+    return new Date(2000,1,1, 0,0,second+1);
+  }
+
+  function after(turns) {
+    let callCounter = 0;
+    return {
+      times: (message, f) => {
+        PubSub.subscribe(message, (topic, subject) => {
+          callCounter++;
+          if (callCounter === turns) {
+            f(topic, subject);
+          }
+        });
+      }
+    }
+  }
 });
 

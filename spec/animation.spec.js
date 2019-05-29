@@ -3,7 +3,7 @@ const $ = require('jquery');
 const animation = require('../src/animation');
 
 const {Worker, WorkItem, WorkList} = require('../src/worker');
-
+const Board = require('../src/board');
 
 describe('animation', () => {
   beforeAll(() => {
@@ -50,31 +50,36 @@ describe('animation', () => {
       });
 
       const inbox = new WorkList('inbox');
-      const inProgress = new WorkList('in progress');
+      const inProgress = new WorkList('dev');
       const outbox = new WorkList('outbox');
-      const worker = new Worker(inbox, inProgress, outbox);
-      let workItem = new WorkItem(1000);
-      inbox.add(workItem);
-      worker.work()
+      const board = new Board(inbox, inProgress, outbox);
+      let workItem = new WorkItem({dev: 1000});
+      board.addWorkItems(workItem);
+      board.addWorkers(new Worker({dev: 1000}));
+      board.runSimulation()
     })
   });
 
   describe('stats', () => {
     beforeEach(() => {
-      jest.useFakeTimers();
       PubSub.clearAllSubscriptions();
       animation.initialize();
       document.body.innerHTML =
-        '<span id="throughput"></span><span id="leadtime"></span>\n';
+        '<span id="throughput"></span><span id="leadtime"></span><span id="wip"></span>';
     });
 
-    it('shows on workitem done', function () {
-      PubSub.publish('workitem.done',
-        [{startTime: new Date(2000,1,1, 0,0,0), endTime: new Date(2000,1,1, 0,0,2)}]
-      );
-      jest.runAllTimers();
-      expect($('#throughput').text()).toBe("0.5");
-      expect($('#leadtime').text()).toBe("2");
+    it('shows on workitem done', done => {
+      PubSub.subscribe('stats.shown', (topic, subject) => {
+        expect($('#throughput').text()).toBe("1");
+        expect($('#leadtime').text()).toBe("2");
+        expect($('#wip').text()).toBe("3");
+        done()
+      });
+      PubSub.publish('stats.calculated', {
+        throughput: 1,
+        leadTime: 2,
+        workInProgress: 3
+      });
     });
   });
 });
