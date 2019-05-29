@@ -9,6 +9,11 @@ const PubSub = require('pubsub-js');
       inProgress: inProgress,
       outbox: outbox
     };
+    let skills = {
+      ux: nominalSpeed,
+      dev: nominalSpeed,
+      qa: nominalSpeed
+    }
     let waitingToken = 0;
     const work = () => {
       if (queues.inbox.hasWork()) {
