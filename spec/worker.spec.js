@@ -1,15 +1,5 @@
 const {Worker, WorkItem, WorkList} = require('../src/worker');
-
-function Board(...columns) {
-  let addWorkers = (...workers) => workers.forEach(worker => worker.work());
-  let addWorkItems = (...items) => items.forEach(item => columns[0].add(item));
-
-  return {
-    addWorkers,
-    addWorkItems,
-    items: () => columns.map(column => column.items())
-  }
-}
+const Board = require('../src/board');
 
 describe('a worker', () => {
   beforeEach(() => {
