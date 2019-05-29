@@ -29,10 +29,18 @@ const PubSub = require('pubsub-js');
   }
 
   let workItemCounter = 1;
+
   function WorkItem(size = 1000) {
+    work = {
+      ux: size,
+      dev: size,
+      review: size,
+      qa: size
+    }
     return {
       id: workItemCounter++,
       estimate: size,
+      work: work
     };
   }
 
