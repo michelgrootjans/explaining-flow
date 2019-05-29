@@ -20,10 +20,11 @@ const PubSub = require('pubsub-js');
         PubSub.unsubscribe(waitingToken);
         let workItem = queues.inbox.peek();
         queues.inbox.move(queues.inProgress, workItem);
+        let skill = 'dev';
         setTimeout(() => {
           queues.inProgress.move(queues.outbox, workItem);
           work();
-        }, workItem.work['dev'] * (1 / skills['dev']))
+        }, workItem.work[skill] * (1 / skills[skill]))
       } else {
         waitingToken = PubSub.subscribe('workitem.added', (topic, subject) => {
           if (subject.columnId === queues.inbox.id) work();
