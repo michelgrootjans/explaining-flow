@@ -36,7 +36,7 @@ const PubSub = require('pubsub-js');
       dev: size,
       review: size,
       qa: size
-    }
+    };
     return {
       id: workItemCounter++,
       estimate: size,
