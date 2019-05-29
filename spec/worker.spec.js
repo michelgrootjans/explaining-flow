@@ -1,11 +1,12 @@
 const {Worker, WorkItem, WorkList} = require('../src/worker');
 
 function Board(...columns) {
-  let addWorkers = (...workers) => {
-    workers.forEach(worker => worker.work());
-  };
+  let addWorkers = (...workers) => workers.forEach(worker => worker.work());
+  let addWorkItems = (...items) => items.forEach(item => columns[0].add(item));
+
   return {
-    addWorkers: addWorkers
+    addWorkers,
+    addWorkItems
   }
 }
 
@@ -32,7 +33,7 @@ describe('a worker', () => {
   describe('with one task', () => {
     beforeEach(() => {
       workItem = new WorkItem(1000);
-      inbox.add(workItem);
+      board.addWorkItems(workItem);
       board.addWorkers(worker);
     });
     it('works on the item', () => {
