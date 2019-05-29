@@ -6,7 +6,7 @@ let backlog = new Backlog();
 // let readyForDev = new WorkList('-');
 let dev = new WorkList('dev');
 // let readyForQA = new WorkList('-');
-// let qa = new WorkList('QA');
+// let qa = new WorkList('qa');
 let prod = new DoneList();
 
 function generateTaskDuration(duration) {

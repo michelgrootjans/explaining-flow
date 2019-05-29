@@ -4,7 +4,7 @@ describe('a worker', () => {
   beforeEach(() => {
     jest.useFakeTimers();
     inbox = new WorkList('Inbox');
-    inProgress = new WorkList('In Progress');
+    inProgress = new WorkList('dev');
     outbox = new WorkList('Outbox');
     worker = new Worker(inbox, inProgress, outbox);
   });
@@ -88,7 +88,7 @@ describe('workers work at their own speed', () => {
   describe('nominal worker', function () {
     beforeEach(() => {
       inbox = new WorkList('Inbox');
-      inProgress = new WorkList('In Progress');
+      inProgress = new WorkList('dev');
       outbox = new WorkList('Outbox');
       workItem = new WorkItem(1000);
       inbox.add(workItem);
@@ -115,7 +115,7 @@ describe('workers work at their own speed', () => {
   describe('slow worker', function () {
     beforeEach(() => {
       inbox = new WorkList('Inbox');
-      inProgress = new WorkList('In Progress');
+      inProgress = new WorkList('dev');
       outbox = new WorkList('Outbox');
       workItem = new WorkItem(1000);
       inbox.add(workItem);
