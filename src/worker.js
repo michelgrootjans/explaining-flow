@@ -20,7 +20,7 @@ const PubSub = require('pubsub-js');
         PubSub.unsubscribe(waitingToken);
         let workItem = queues.inbox.peek();
         queues.inbox.move(queues.inProgress, workItem);
-        let skill = 'dev';
+        let skill = inProgress.necessarySkill;
         setTimeout(() => {
           queues.inProgress.move(queues.outbox, workItem);
           work();
@@ -90,7 +90,8 @@ const PubSub = require('pubsub-js');
       add,
       move,
       name,
-      id
+      id,
+      necessarySkill: 'dev'
     };
   }
 
