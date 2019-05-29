@@ -6,7 +6,8 @@ function Board(...columns) {
 
   return {
     addWorkers,
-    addWorkItems
+    addWorkItems,
+    items: () => columns.map(column => column.items())
   }
 }
 
@@ -24,9 +25,7 @@ describe('a worker', () => {
     it('doesnt crash', () => {
       board.addWorkers(worker);
       jest.runAllTimers();
-      expect(inbox.items()).toEqual([]);
-      expect(inProgress.items()).toEqual([]);
-      expect(outbox.items()).toEqual([]);
+      expect(board.items()).toEqual([[], [], []]);
     });
   });
 
@@ -38,18 +37,12 @@ describe('a worker', () => {
     });
     it('works on the item', () => {
       jest.advanceTimersByTime(999);
-
-      expect(inbox.items()).toEqual([]);
-      expect(inProgress.items()).toEqual([workItem]);
-      expect(outbox.items()).toEqual([]);
+      expect(board.items()).toEqual([[], [workItem], []]);
     });
 
     it('finished the item', () => {
       jest.advanceTimersByTime(1000);
-
-      expect(inbox.items()).toEqual([]);
-      expect(inProgress.items()).toEqual([]);
-      expect(outbox.items()).toEqual([workItem]);
+      expect(board.items()).toEqual([[], [], [workItem]]);
     });
   });
 
@@ -58,39 +51,26 @@ describe('a worker', () => {
       workItem1 = new WorkItem(1000);
       workItem2 = new WorkItem(500);
       board.addWorkers(worker);
-      inbox.add(workItem1);
-      inbox.add(workItem2);
+      board.addWorkItems(workItem1, workItem2);
     });
     it('works on the first item', () => {
       jest.advanceTimersByTime(999);
-
-      expect(inbox.items()).toEqual([workItem2]);
-      expect(inProgress.items()).toEqual([workItem1]);
-      expect(outbox.items()).toEqual([]);
+      expect(board.items()).toEqual([[workItem2], [workItem1], []]);
     });
 
     it('finished the first item and starts on the second', () => {
       jest.advanceTimersByTime(1000);
-
-      expect(inbox.items()).toEqual([]);
-      expect(inProgress.items()).toEqual([workItem2]);
-      expect(outbox.items()).toEqual([workItem1]);
+      expect(board.items()).toEqual([[], [workItem2], [workItem1]]);
     });
 
     it('almost finishes the second', () => {
       jest.advanceTimersByTime(1499);
-
-      expect(inbox.items()).toEqual([]);
-      expect(inProgress.items()).toEqual([workItem2]);
-      expect(outbox.items()).toEqual([workItem1]);
+      expect(board.items()).toEqual([[], [workItem2], [workItem1]]);
     });
 
     it('finishes the second item', () => {
       jest.advanceTimersByTime(1500);
-
-      expect(inbox.items()).toEqual([]);
-      expect(inProgress.items()).toEqual([]);
-      expect(outbox.items()).toEqual([workItem1, workItem2]);
+      expect(board.items()).toEqual([[], [], [workItem1, workItem2]]);
     });
   });
 });
