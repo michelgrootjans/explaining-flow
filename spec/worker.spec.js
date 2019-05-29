@@ -1,17 +1,27 @@
 const {Worker, WorkItem, WorkList} = require('../src/worker');
 
+function Board(...columns) {
+  let addWorkers = (...workers) => {
+    workers.forEach(worker => worker.work());
+  };
+  return {
+    addWorkers: addWorkers
+  }
+}
+
 describe('a worker', () => {
   beforeEach(() => {
     jest.useFakeTimers();
     inbox = new WorkList('in');
     inProgress = new WorkList('dev');
     outbox = new WorkList('out');
+    board = new Board(inbox, inProgress, outbox);
     worker = new Worker(inbox, inProgress, outbox);
   });
 
   describe('without tasks', () => {
     it('doesnt crash', () => {
-      worker.work();
+      board.addWorkers(worker);
       jest.runAllTimers();
       expect(inbox.items()).toEqual([]);
       expect(inProgress.items()).toEqual([]);
@@ -22,8 +32,8 @@ describe('a worker', () => {
   describe('with one task', () => {
     beforeEach(() => {
       workItem = new WorkItem(1000);
-      worker.work();
       inbox.add(workItem);
+      board.addWorkers(worker);
     });
     it('works on the item', () => {
       jest.advanceTimersByTime(999);
@@ -46,7 +56,7 @@ describe('a worker', () => {
     beforeEach(() => {
       workItem1 = new WorkItem(1000);
       workItem2 = new WorkItem(500);
-      worker.work();
+      board.addWorkers(worker);
       inbox.add(workItem1);
       inbox.add(workItem2);
     });
