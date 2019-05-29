@@ -8,7 +8,7 @@ describe('a worker', () => {
     inProgress = new WorkList('dev');
     outbox = new WorkList('out');
     board = new Board(inbox, inProgress, outbox);
-    worker = new Worker(inbox, inProgress, outbox, 1, {dev: 1});
+    worker = new Worker(inbox, inProgress, outbox, {dev: 1});
   });
 
   describe('without tasks', () => {
@@ -73,7 +73,7 @@ describe('workers work at their own speed', () => {
       outbox = new WorkList('Outbox');
       workItem = new WorkItem(1000);
       inbox.add(workItem);
-      new Worker(inbox, inProgress, outbox, 1).work();
+      new Worker(inbox, inProgress, outbox, {dev: 1}).work();
     });
     it('starts instantly', () => {
       expect(inbox.items()).toEqual([]);
@@ -100,7 +100,7 @@ describe('workers work at their own speed', () => {
       outbox = new WorkList('Outbox');
       workItem = new WorkItem(1000);
       inbox.add(workItem);
-      new Worker(inbox, inProgress, outbox, 0.5).work();
+      new Worker(inbox, inProgress, outbox, {dev: 0.5}).work();
     });
     it('starts instantly', () => {
       expect(inbox.items()).toEqual([]);
