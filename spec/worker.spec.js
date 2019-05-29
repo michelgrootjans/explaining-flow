@@ -3,9 +3,9 @@ const {Worker, WorkItem, WorkList} = require('../src/worker');
 describe('a worker', () => {
   beforeEach(() => {
     jest.useFakeTimers();
-    inbox = new WorkList('Inbox');
+    inbox = new WorkList('in');
     inProgress = new WorkList('dev');
-    outbox = new WorkList('Outbox');
+    outbox = new WorkList('out');
     worker = new Worker(inbox, inProgress, outbox);
   });
 
