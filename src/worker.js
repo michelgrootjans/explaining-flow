@@ -3,13 +3,13 @@ const PubSub = require('pubsub-js');
 (function () {
   let currentId = 1;
 
-  function Worker(inbox, inProgress, outbox, nominalSpeed = 1) {
+  function Worker(inbox, inProgress, outbox, nominalSpeed = 1, skills) {
     let queues = {
       inbox: inbox,
       inProgress: inProgress,
       outbox: outbox
     };
-    let skills = {
+    skills = skills || {
       ux: nominalSpeed,
       dev: nominalSpeed,
       qa: nominalSpeed

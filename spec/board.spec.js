@@ -8,7 +8,7 @@ describe('a worker', () => {
     inProgress = new WorkList('dev');
     outbox = new WorkList('out');
     board = new Board(inbox, inProgress, outbox);
-    worker = new Worker(inbox, inProgress, outbox);
+    worker = new Worker(inbox, inProgress, outbox, 1, {dev: 1});
   });
 
   describe('without tasks', () => {
