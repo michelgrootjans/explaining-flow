@@ -50,7 +50,7 @@ const PubSub = require('pubsub-js');
     };
   }
 
-  function WorkList(name="work") {
+  function WorkList(name="work", necessarySkill = 'dev') {
     let work = [];
     let id = currentId++;
 
@@ -91,12 +91,12 @@ const PubSub = require('pubsub-js');
       move,
       name,
       id,
-      necessarySkill: 'dev'
+      necessarySkill: necessarySkill
     };
   }
 
   function Backlog(){
-    let backlog = new WorkList('backlog');
+    let backlog = new WorkList('backlog', 'dev');
     const originalRemove = backlog.move;
 
     backlog.move = (to, item) => {
@@ -108,7 +108,7 @@ const PubSub = require('pubsub-js');
   }
 
   function DoneList(){
-    let backlog = new WorkList('done');
+    let backlog = new WorkList('done', 'dev');
     const originalRemove = backlog.add;
 
     backlog.add = (item) => {
