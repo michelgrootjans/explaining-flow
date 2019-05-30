@@ -62,20 +62,24 @@ describe('animation', () => {
 
   describe('stats', () => {
     beforeEach(() => {
-      jest.useFakeTimers();
       PubSub.clearAllSubscriptions();
       animation.initialize();
       document.body.innerHTML =
-        '<span id="throughput"></span><span id="leadtime"></span>\n';
+        '<span id="throughput"></span><span id="leadtime"></span><span id="wip"></span>';
     });
 
-    it('shows on workitem done', function () {
-      PubSub.publish('workitem.done',
-        [{startTime: new Date(2000,1,1, 0,0,0), endTime: new Date(2000,1,1, 0,0,2)}]
-      );
-      jest.runAllTimers();
-      expect($('#throughput').text()).toBe("0.5");
-      expect($('#leadtime').text()).toBe("2");
+    it('shows on workitem done', done => {
+      PubSub.subscribe('stats.shown', (topic, subject) => {
+        expect($('#throughput').text()).toBe("1");
+        expect($('#leadtime').text()).toBe("2");
+        expect($('#wip').text()).toBe("3");
+        done()
+      });
+      PubSub.publish('stats.calculated', {
+        throughput: 1,
+        leadTime: 2,
+        workInProgress: 3
+      });
     });
   });
 });

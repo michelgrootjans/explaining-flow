@@ -116,30 +116,5 @@ const TimeAdjustments = require('./timeAdjustments');
     return column;
   }
 
-  function Backlog() {
-    let backlog = new WorkList('backlog', 'dev');
-    const originalRemove = backlog.move;
-
-    backlog.move = (to, item) => {
-      item.startTime = Date.now();
-      originalRemove(to, item);
-    };
-
-    return backlog;
-  }
-
-  function DoneList() {
-    let backlog = new WorkList('done', 'dev');
-    const originalRemove = backlog.add;
-
-    backlog.add = (item) => {
-      item.endTime = Date.now();
-      originalRemove(item);
-      PubSub.publish('workitem.done', backlog.items())
-    };
-
-    return backlog;
-  }
-
-  module.exports = {Worker, WorkItem, WorkList, Backlog, DoneList};
+  module.exports = {Worker, WorkItem, WorkList};
 })();

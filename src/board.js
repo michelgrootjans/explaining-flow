@@ -12,7 +12,11 @@
         workers.push(worker);
       });
     };
-    let addWorkItems = (...items) => items.forEach(item => columns[0].add(item));
+
+    const backlog = () => columns[0];
+    const done = () => columns[columns.length-1];
+
+    let addWorkItems = (...items) => items.forEach(item => backlog().add(item));
     let runSimulation = () => workers.forEach(worker => {
       worker.work();
     });
@@ -26,6 +30,20 @@
         .filter(worker => worker.canDo(subject.column.necessarySkill))[0];
       if (availableWorker) {
         availableWorker.workOn(topic.item);
+      }
+    });
+
+    PubSub.subscribe('workitem.added', (topic, subject) => {
+      if (subject.column.id === done().id) {
+        subject.item.endTime = Date.now();
+        PubSub.publish('workitem.finished', subject.item);
+      }
+    });
+
+    PubSub.subscribe('workitem.removed', (topic, subject) => {
+      if (subject.column.id === backlog().id) {
+        subject.item.startTime = Date.now();
+        PubSub.publish('workitem.started', subject.item);
       }
     });
 

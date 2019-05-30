@@ -4,6 +4,8 @@ const Board = require('../src/board');
 describe('a worker', () => {
   beforeEach(() => {
     jest.useFakeTimers();
+    now = Date.now();
+    jest.spyOn(Date, 'now').mockImplementation(() => now);
     board = new Board(
       new WorkList('in'),
       new WorkList('dev'),
@@ -30,11 +32,15 @@ describe('a worker', () => {
     it('works on the item', () => {
       jest.advanceTimersByTime(999);
       expect(board.items()).toEqual([[], [workItem], []]);
+      expect(workItem.startTime).toBe(now);
+      expect(workItem.endTime).toBeUndefined();
     });
 
     it('finished the item', () => {
       jest.advanceTimersByTime(1000);
       expect(board.items()).toEqual([[], [], [workItem]]);
+      expect(workItem.startTime).toBe(now);
+      expect(workItem.endTime).toBe(now);
     });
   });
 
@@ -49,21 +55,37 @@ describe('a worker', () => {
     it('works on the first item', () => {
       jest.advanceTimersByTime(999);
       expect(board.items()).toEqual([[workItem2], [workItem1], []]);
+      expect(workItem1.startTime).toBe(now);
+      expect(workItem1.endTime).toBeUndefined();
+      expect(workItem2.startTime).toBeUndefined();
+      expect(workItem2.endTime).toBeUndefined();
     });
 
     it('finished the first item and starts on the second', () => {
       jest.advanceTimersByTime(1000);
       expect(board.items()).toEqual([[], [workItem2], [workItem1]]);
+      expect(workItem1.startTime).toBe(now);
+      expect(workItem1.endTime).toBe(now);
+      expect(workItem2.startTime).toBe(now);
+      expect(workItem2.endTime).toBeUndefined();
     });
 
     it('almost finishes the second', () => {
       jest.advanceTimersByTime(1999);
       expect(board.items()).toEqual([[], [workItem2], [workItem1]]);
+      expect(workItem1.startTime).toBe(now);
+      expect(workItem1.endTime).toBe(now);
+      expect(workItem2.startTime).toBe(now);
+      expect(workItem2.endTime).toBeUndefined();
     });
 
     it('finishes the second item', () => {
       jest.advanceTimersByTime(2000);
       expect(board.items()).toEqual([[], [], [workItem1, workItem2]]);
+      expect(workItem1.startTime).toBe(now);
+      expect(workItem1.endTime).toBe(now);
+      expect(workItem2.startTime).toBe(now);
+      expect(workItem2.endTime).toBe(now);
     });
   });
 });

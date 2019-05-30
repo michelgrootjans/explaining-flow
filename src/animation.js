@@ -32,11 +32,13 @@ const Stats = require('./stats');
       $card.remove();
     });
 
-    PubSub.subscribe('workitem.done', (topic, items) => {
-      const stats = new Stats(items);
+    PubSub.subscribe('stats.calculated', (topic, stats) => {
       $('#throughput').text(Math.round(stats.throughput * 1000) / 1000);
       $('#leadtime').text(Math.round(stats.leadTime * 1000) / 1000);
-    })
+      $('#wip').text(stats.workInProgress);
+      PubSub.publish('stats.shown', stats);
+    });
+
   };
 
   module.exports = {initialize};

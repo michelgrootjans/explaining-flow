@@ -1,33 +1,35 @@
-const $ = require('jquery');
 require('./animation').initialize();
+const {generateWorkItems, randomBetween} = require('./generator');
 
-const {Worker, WorkItem, WorkList, Backlog, DoneList} = require('./worker');
+const {Worker, WorkList} = require('./worker');
 const Board = require('./board');
 const TimeAdjustments = require('./timeAdjustments');
+require('./stats').initialize();
+
 
 TimeAdjustments.speedUpBy(20);
 
 let board = new Board(
-  new Backlog(),
+  new WorkList('Backlog'),
+  new WorkList('ux'),
+  new WorkList('-'),
   new WorkList('dev'),
-  new DoneList()
+  new WorkList('-'),
+  new WorkList('qa'),
+  new WorkList('Done')
 );
 
 board.addWorkers(
-  new Worker({dev: 1}),
+  new Worker({ux: randomBetween(0.8, 1.2)}),
+  new Worker({dev: randomBetween(0.8, 1.2)}),
+  new Worker({qa: randomBetween(0.8, 1.2)}),
 );
 
-function randomDuration(average=1.0, spread=0.2) {
-  return average + (Math.random() - 0.5) * spread;
-}
-
-board.addWorkItems(...
-  [...Array(100).keys()]
-    .map(() => new WorkItem({
-        ux: randomDuration(),
-        dev: randomDuration(),
-        qa: randomDuration(),
-      })
-    ));
+board.addWorkItems(...generateWorkItems({
+    ux: randomBetween(0.8, 1.2),
+    dev: randomBetween(0.8, 1.2),
+    qa: randomBetween(0.8, 1.2)
+  },
+));
 
 board.runSimulation();
