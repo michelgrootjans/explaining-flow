@@ -5,21 +5,11 @@ const TimeAdjustments = require('./timeAdjustments');
 
   let workerCounter = 1;
   function Worker(skills = {dev: 1}) {
-    let queues = {};
-    let waitingToken = 0;
     let idle = true;
     const id = workerCounter++;
 
     let worker = {
-      canDo: skill => {
-        let ability = skills[skill] && skills[skill] > 0;
-        // console.log({worker: id, can: skill, ability})
-        return ability;
-      },
-      assignColumns: (inbox, inProgress, outbox) => {
-        queues = {inbox, inProgress, outbox}
-      },
-      isIdle: () => idle,
+      canWorkOn: skill => idle && skills[skill] && skills[skill] > 0,
       startWorkingOn,
       id
     };
@@ -29,17 +19,17 @@ const TimeAdjustments = require('./timeAdjustments');
     }
 
     function startWorkingOn(inbox, inProgress, outbox) {
-      let workItem = inbox.peek();
-      if(workItem) {
+      let item = inbox.peek();
+      if(item) {
         idle = false;
-        inbox.move(inProgress, workItem);
         let skill = inProgress.necessarySkill;
-        // console.log({action: 'doing ' + skill, worker: id, item: workItem.id})
-        let timeout = calculateTimeoutFor(workItem, skill);
+        // console.log({action: `starting ${skill}`, worker: id, item: item.id})
+        inbox.move(inProgress, item);
+        let timeout = calculateTimeoutFor(item, skill);
         setTimeout(() => {
           idle = true;
-          // console.log({action: 'finished ' + skill, worker: id, item: workItem.id, after: timeout})
-          inProgress.move(outbox, workItem);
+          // console.log({action: `finished ${skill}`, worker: id, item: item.id, after: timeout})
+          inProgress.move(outbox, item);
           PubSub.publish('worker.idle', worker);
         }, timeout)
       }
@@ -49,7 +39,6 @@ const TimeAdjustments = require('./timeAdjustments');
   }
 
   let workItemCounter = 1;
-
   function WorkItem(work) {
     return {
       id: workItemCounter++,
@@ -58,8 +47,7 @@ const TimeAdjustments = require('./timeAdjustments');
   }
 
   let workListCounter = 1;
-
-  function WorkList(name = "dev", necessarySkill = name) {
+  function WorkList(skill = "dev") {
     let work = [];
     let id = workListCounter++;
     let column = {
@@ -70,12 +58,10 @@ const TimeAdjustments = require('./timeAdjustments');
       peek: () => work[0],
       add,
       move,
-      name,
+      name: skill,
       id,
-      necessarySkill
+      necessarySkill: skill
     };
-
-    PubSub.publish('worklist.created', {id, name});
 
     function add(item) {
       work.push(item);
@@ -96,10 +82,8 @@ const TimeAdjustments = require('./timeAdjustments');
     }
 
     function move(to, item) {
-      // console.log({action: 'moving', item: item.id, from: column.id, to: to.id})
       _remove(item);
       to.add(item);
-      PubSub.publish('workitem.moved', {from: column, to, item});
       return item;
     }
 

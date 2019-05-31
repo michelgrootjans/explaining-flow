@@ -1,29 +1,34 @@
 require('./animation').initialize();
 const {generateWorkItems, randomBetween} = require('./generator');
-
 const {Worker, WorkList} = require('./worker');
+const {LimitBoardWip} = require('../src/strategies');
 const Board = require('./board');
 const TimeAdjustments = require('./timeAdjustments');
 require('./stats').initialize();
 
 
-TimeAdjustments.speedUpBy(20);
+TimeAdjustments.speedUpBy(1);
 
 let board = new Board(
-  new WorkList('ux'),
   new WorkList('dev'),
   new WorkList('qa'),
 );
 
+new LimitBoardWip(2);
+
 board.addWorkers(
-  new Worker({ux: randomBetween(0.8, 1.2)}),
-  new Worker({dev: randomBetween(0.8, 1.2)}),
-  new Worker({qa: randomBetween(0.8, 1.2)}),
+  new Worker({dev: 1}),
+  new Worker({qa: 1}),
 );
 
-board.addWorkItems(...generateWorkItems({
-    ux: randomBetween(0.5, 1.5),
-    dev: randomBetween(0.5, 1.5),
-    qa: randomBetween(0.5, 1.5),
-  },
+board.addWorkItems(...generateWorkItems(() => ({
+    dev: 1,
+    qa: 1.5,
+  }), 3
 ));
+
+const PubSub = require('pubsub-js');
+const log = (topic, subject) => console.log({topic, subject});
+PubSub.subscribe('board', log)
+PubSub.subscribe('worker', log)
+PubSub.subscribe('workitem', log)

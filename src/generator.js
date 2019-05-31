@@ -1,8 +1,8 @@
 const {WorkItem} = require('./worker');
 (function () {
-  function generateWorkItems(work) {
-    return [...Array(100).keys()]
-      .map(() => new WorkItem(work)
+  function generateWorkItems(work, numberOfWorkItems = 200) {
+    return [...Array(numberOfWorkItems).keys()]
+      .map(() => new WorkItem(work())
       );
   }
 

@@ -15,7 +15,6 @@ const Stats = require('./stats');
         $('#board').append($column);
 
       });
-      PubSub.publish('board.shown', {})
     });
 
     PubSub.subscribe('workitem.added', (topic, subject) => {
@@ -25,8 +24,6 @@ const Stats = require('./stats');
         .text(subject.item.id);
 
       $(`[data-column-id="${subject.column.id}"] .cards`).append($card);
-
-      PubSub.publish('workitem.shown', subject)
     });
 
     PubSub.subscribe('workitem.removed', (topic, subject) => {
@@ -36,10 +33,9 @@ const Stats = require('./stats');
     });
 
     PubSub.subscribe('stats.calculated', (topic, stats) => {
-      $('#throughput').text(Math.round(stats.throughput * 1000) / 1000);
-      $('#leadtime').text(Math.round(stats.leadTime * 1000) / 1000);
+      $('#throughput').text(Math.round(stats.throughput * 100) / 100);
+      $('#leadtime').text(Math.round(stats.leadTime * 100) / 100);
       $('#wip').text(stats.workInProgress);
-      PubSub.publish('stats.shown', stats);
     });
 
   };
