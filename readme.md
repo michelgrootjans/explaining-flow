@@ -20,6 +20,7 @@ This project is written in a RDD fashion: Readme Driven Development. This means 
 - Allow multiple developers with the same skillset
 - Introduce [swarming](https://blog.crisp.se/2009/06/26/henrikkniberg)
 - Add a graph for lead times, throughput and WIP
+- Add stats for workers
 
 ### Done
 

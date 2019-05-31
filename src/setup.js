@@ -10,13 +10,9 @@ require('./stats').initialize();
 TimeAdjustments.speedUpBy(20);
 
 let board = new Board(
-  new WorkList('Backlog'),
   new WorkList('ux'),
-  new WorkList('-'),
   new WorkList('dev'),
-  new WorkList('-'),
   new WorkList('qa'),
-  new WorkList('Done')
 );
 
 board.addWorkers(
@@ -26,10 +22,8 @@ board.addWorkers(
 );
 
 board.addWorkItems(...generateWorkItems({
-    ux: randomBetween(0.8, 1.2),
-    dev: randomBetween(0.8, 1.2),
-    qa: randomBetween(0.8, 1.2)
+    ux: randomBetween(0.5, 1.5),
+    dev: randomBetween(0.5, 1.5),
+    qa: randomBetween(0.5, 1.5),
   },
 ));
-
-board.runSimulation();

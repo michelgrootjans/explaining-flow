@@ -10,53 +10,84 @@ describe('animation', () => {
     $.fx.off = true;
   });
 
-  describe('a new todo list', () => {
+  describe('a simple dashboard', () => {
     beforeEach(() => {
       PubSub.clearAllSubscriptions();
       animation.initialize();
-      document.body.innerHTML = '<ul id="dashboard"></ul>';
+      document.body.innerHTML = '<ul id="board"></ul>';
     });
 
-    it('should be added to the dashboard', done => {
-      PubSub.subscribe('worklist.shown', () => {
-        expect($('#dashboard li.column').attr('data-column-id')).toBe(`${todo.id}`);
-        expect($('#dashboard li h2').text()).toBe('todo');
-        expect($('#dashboard li.column ul').attr('class')).toBe('cards');
-        done();
-      });
+    describe('with only dev', () => {
+      it('should have a backlog', done => {
+        PubSub.subscribe('board.shown', () => {
+          let $backlog = $('#board li:nth-child(1)');
+          expect($backlog.attr('class')).toBe('column queue');
+          expect($backlog.text()).toBe('Backlog');
+          expect($backlog.find('ul').attr('class')).toBe('cards');
+          done();
+        });
 
-      const todo = new WorkList('todo');
+        const board = new Board(new WorkList('dev'));
+      });
+      it('should have a dev', done => {
+        PubSub.subscribe('board.shown', () => {
+          let $dev = $('#board li:nth-child(2)');
+          expect($dev.attr('class')).toBe('column work');
+          expect($dev.attr('data-column-id')).toBe(`${dev.id}`);
+          expect($dev.text()).toBe('dev');
+          expect($dev.find('ul').attr('class')).toBe('cards');
+          done();
+        });
+
+        const dev = new WorkList('dev');
+        const board = new Board(dev);
+      });
+      it('should have a done', done => {
+        PubSub.subscribe('board.shown', () => {
+          let $done = $('#board li:nth-child(3)');
+          expect($done.attr('class')).toBe('column queue');
+          expect($done.text()).toBe('Done');
+          expect($done.find('ul').attr('class')).toBe('cards');
+          done();
+        });
+
+        const board = new Board(new WorkList('dev'));
+      });
     });
 
     it('shows work items', done => {
       PubSub.subscribe('workitem.shown', (topic, subject) => {
-        expect($(`[data-column-id="${todo.id}"]     [data-card-id="${workItem.id}"]`).length).toBe(1);
-        expect($(`[data-column-id="${finished.id}"] [data-card-id="${workItem.id}"]`).length).toBe(0);
+        const $card = $('#board li:nth-child(1) .cards li');
+        expect($card.attr('data-card-id')).toBe(`${workItem.id}`);
+        expect($card.attr('class')).toBe('card');
+
+        expect($('#board li:nth-child(2) .cards li').length).toBe(0);
+        expect($('#board li:nth-child(3) .cards li').length).toBe(0);
+
         done();
       });
 
-      const todo = new WorkList('todo');
-      const finished = new WorkList('finished');
-      let workItem = new WorkItem(1000);
-      todo.add(workItem);
+      const board = new Board(new WorkList('dev'));
+      let workItem = new WorkItem({dev: 1000});
+      board.addWorkItems(workItem);
     });
 
     it('a worker picks up an item', done => {
       PubSub.subscribe('workitem.moved', (topic, subject) => {
-        expect($(`[data-column-id="${inbox.id}"]      [data-card-id="${workItem.id}"]`).length).toBe(0);
-        expect($(`[data-column-id="${inProgress.id}"] [data-card-id="${workItem.id}"]`).length).toBe(1);
-        expect($(`[data-column-id="${outbox.id}"]     [data-card-id="${workItem.id}"]`).length).toBe(0);
+        expect($('#board li:nth-child(1) .cards li').length).toBe(0);
+
+        const $card = $('#board li:nth-child(2) .cards li');
+        expect($card.attr('data-card-id')).toBe(`${workItem.id}`);
+        expect($card.attr('class')).toBe('card');
+
+        expect($('#board li:nth-child(3) .cards li').length).toBe(0);
         done();
       });
 
-      const inbox = new WorkList('inbox');
-      const inProgress = new WorkList('dev');
-      const outbox = new WorkList('outbox');
-      const board = new Board(inbox, inProgress, outbox);
+      const board = new Board(new WorkList('dev'));
+      board.addWorkers(new Worker({dev: 1}))
       let workItem = new WorkItem({dev: 1000});
       board.addWorkItems(workItem);
-      board.addWorkers(new Worker({dev: 1000}));
-      board.runSimulation()
     })
   });
 

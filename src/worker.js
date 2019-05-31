@@ -3,60 +3,49 @@ const TimeAdjustments = require('./timeAdjustments');
 
 (function () {
 
+  let workerCounter = 1;
   function Worker(skills = {dev: 1}) {
     let queues = {};
     let waitingToken = 0;
     let idle = true;
+    const id = workerCounter++;
 
-    let self = {
-      work,
-      workOn,
-      canDo: (skill) => skills[skill] && skills[skill] > 0,
+    let worker = {
+      canDo: skill => {
+        let ability = skills[skill] && skills[skill] > 0;
+        // console.log({worker: id, can: skill, ability})
+        return ability;
+      },
       assignColumns: (inbox, inProgress, outbox) => {
         queues = {inbox, inProgress, outbox}
       },
-      isIdle: () => idle
+      isIdle: () => idle,
+      startWorkingOn,
+      id
     };
 
     function calculateTimeoutFor(workItem, skill) {
       return 1000 * TimeAdjustments.multiplicator() * workItem.work[skill] / skills[skill];
     }
 
-    function work() {
-      if (queues.inbox.hasWork()) {
-        PubSub.unsubscribe(waitingToken);
-        let workItem = queues.inbox.peek();
-        queues.inbox.move(queues.inProgress, workItem);
-        let skill = queues.inProgress.necessarySkill;
+    function startWorkingOn(inbox, inProgress, outbox) {
+      let workItem = inbox.peek();
+      if(workItem) {
+        idle = false;
+        inbox.move(inProgress, workItem);
+        let skill = inProgress.necessarySkill;
+        // console.log({action: 'doing ' + skill, worker: id, item: workItem.id})
+        let timeout = calculateTimeoutFor(workItem, skill);
         setTimeout(() => {
-          queues.inProgress.move(queues.outbox, workItem);
-          PubSub.publish('worker.idle', self);
-        }, calculateTimeoutFor(workItem, skill))
-      } else {
-        waitingToken = PubSub.subscribe('workitem.added', (topic, subject) => {
-          if (subject.column.id === queues.inbox.id) work();
-        })
+          idle = true;
+          // console.log({action: 'finished ' + skill, worker: id, item: workItem.id, after: timeout})
+          inProgress.move(outbox, workItem);
+          PubSub.publish('worker.idle', worker);
+        }, timeout)
       }
     }
 
-    function workOn(item) {
-      // if (queues.inbox.hasWork()) {
-      //   PubSub.unsubscribe(waitingToken);
-      //   let workItem = queues.inbox.peek();
-      //   queues.inbox.move(queues.inProgress, workItem);
-      //   let skill = queues.inProgress.necessarySkill;
-      //   setTimeout(() => {
-      //     queues.inProgress.move(queues.outbox, workItem);
-      //     PubSub.publish('worker.idle', self);
-      //   }, calculateTimeoutFor(workItem, skill))
-      // } else {
-      //   waitingToken = PubSub.subscribe('workitem.added', (topic, subject) => {
-      //     if (subject.column.id === queues.inbox.id) work();
-      //   })
-      // }
-    }
-
-    return self
+    return worker
   }
 
   let workItemCounter = 1;
@@ -83,7 +72,7 @@ const TimeAdjustments = require('./timeAdjustments');
       move,
       name,
       id,
-      necessarySkill: necessarySkill
+      necessarySkill
     };
 
     PubSub.publish('worklist.created', {id, name});
@@ -107,6 +96,7 @@ const TimeAdjustments = require('./timeAdjustments');
     }
 
     function move(to, item) {
+      // console.log({action: 'moving', item: item.id, from: column.id, to: to.id})
       _remove(item);
       to.add(item);
       PubSub.publish('workitem.moved', {from: column, to, item});

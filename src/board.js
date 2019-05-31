@@ -1,57 +1,85 @@
+const {WorkList} = require('./worker');
+
 (function () {
-  let Board = function (...columns) {
-    let workers = [];
+  let Board = function (...c) {
+    const columns = [];
+    const workers = [];
+    const backlogColumn = () => columns[0];
+    const firstWorkColumn = () => columns[1];
+    const doneColumn = () => columns[columns.length-1];
 
-    let addWorkers = (...newWorkers) => {
-      newWorkers.forEach(worker => {
-        for (let i = 1; i < columns.length; i += 2) {
-          if (worker.canDo(columns[i].necessarySkill)) {
-            worker.assignColumns(columns[i-1], columns[i], columns[i+1])
-          }
-        }
-        workers.push(worker);
-      });
-    };
+    columns.push(new WorkList('Backlog'));
+    for (let i = 0; i < c.length; i++) {
+      columns.push(c[i]);
+      columns.push(new WorkList('-'));
+    }
+    doneColumn().name = 'Done';
 
-    const backlog = () => columns[0];
-    const done = () => columns[columns.length-1];
+    for (let i = 0; i < columns.length; i++) {
+      if (i % 2 === 0) {
+        let queueColumn = columns[i];
+        queueColumn.type = 'queue';
+        queueColumn.workColumn = columns[i + 1];
+      } else {
+        let workColumn = columns[i];
+        workColumn.type = 'work';
+        workColumn.inbox = columns[i - 1];
+        workColumn.outbox= columns[i + 1];
+      }
+    }
 
-    let addWorkItems = (...items) => items.forEach(item => backlog().add(item));
-    let runSimulation = () => workers.forEach(worker => {
-      worker.work();
-    });
+    PubSub.publish('board.ready', {columns});
+
+    const addWorkers = (...newWorkers) => newWorkers.forEach(worker => workers.push(worker));
+    const addWorkItems = (...items) => items.forEach(item => backlogColumn().add(item));
 
     PubSub.subscribe('worker.idle', (topic, worker) => {
-      worker.work();
-    });
-
-    PubSub.subscribe('workitem.added', (topic, subject) => {
-      let availableWorker = workers.filter(worker => worker.isIdle())
-        .filter(worker => worker.canDo(subject.column.necessarySkill))[0];
-      if (availableWorker) {
-        availableWorker.workOn(topic.item);
+      // console.log({topic, worker: worker.id});
+      for (let i = 1; i < columns.length - 1; i += 2) {
+        const inbox = columns[i - 1];
+        const workColumn = columns[i];
+        let outbox = columns[i + 1];
+        const availableWorker = workers.filter(worker => worker.isIdle())
+          .filter(worker => worker.canDo(workColumn.necessarySkill))[0];
+        if (availableWorker) {
+          worker.startWorkingOn(inbox, workColumn, outbox)
+        }
       }
     });
 
     PubSub.subscribe('workitem.added', (topic, subject) => {
-      if (subject.column.id === done().id) {
+      // console.log({topic, column: subject.column.id, item: subject.item.id});
+      if(subject.column.type === 'work') return;
+      workers.forEach(worker => {
+        for (let i = 1; i < columns.length - 1; i += 2) {
+          const inbox = columns[i - 1];
+          const workColumn = columns[i];
+          let outbox = columns[i + 1];
+          if (!inbox.hasWork()) continue;
+          const availableWorker = workers.filter(worker => worker.isIdle())
+            .filter(worker => worker.canDo(workColumn.necessarySkill))[0];
+          if (availableWorker) {
+            availableWorker.startWorkingOn(inbox, workColumn, outbox);
+            return;
+          }
+        }
+      })
+    });
+
+    PubSub.subscribe('workitem.added', (topic, subject) => {
+      if (subject.column.id === firstWorkColumn().id) {
+        subject.item.startTime = Date.now();
+        PubSub.publish('workitem.started', subject.item);
+      }
+      if (subject.column.id === doneColumn().id) {
         subject.item.endTime = Date.now();
         PubSub.publish('workitem.finished', subject.item);
       }
     });
 
-    PubSub.subscribe('workitem.removed', (topic, subject) => {
-      if (subject.column.id === backlog().id) {
-        subject.item.startTime = Date.now();
-        PubSub.publish('workitem.started', subject.item);
-      }
-    });
-
-
     return {
       addWorkers,
       addWorkItems,
-      runSimulation,
       items: () => columns.map(column => column.items())
     }
   };

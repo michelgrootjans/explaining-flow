@@ -12,8 +12,9 @@ li.column {
 }
 
 ul.cards li {
+  width: 100%;
   text-align: center;
   padding: 5px;
-  margin: 5px;
+  margin: 5px 0px;
   background-color: yellow;
 }

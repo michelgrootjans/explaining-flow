@@ -4,20 +4,23 @@ const Stats = require('./stats');
 
 (function () {
   const initialize = () => {
-    PubSub.subscribe('worklist.created', (topic, subject) => {
-      const $column = $('<li/>')
-        .addClass('column')
-        .attr('data-column-id', subject.id)
-        .append($('<h2/>').text(subject.name))
-        .append($('<ul/>').addClass('cards'));
+    PubSub.subscribe('board.ready', (topic, {columns}) => {
+      columns.forEach(column => {
+        const $column = $('<li/>')
+          .addClass(`column ${column.type}`)
+          .attr('data-column-id', column.id)
+          .append($('<h2/>').text(column.name))
+          .append($('<ul/>').addClass('cards'));
 
-      $('#dashboard').append($column);
+        $('#board').append($column);
 
-      PubSub.publish('worklist.shown', subject)
+      });
+      PubSub.publish('board.shown', {})
     });
 
     PubSub.subscribe('workitem.added', (topic, subject) => {
       let $card = $('<li/>')
+        .addClass('card')
         .attr('data-card-id', subject.item.id)
         .text(subject.item.id);
 
