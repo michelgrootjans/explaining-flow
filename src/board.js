@@ -67,13 +67,16 @@ const {WorkList} = require('./worker');
     });
 
     PubSub.subscribe('workitem.added', (topic, subject) => {
+      const item = subject.item;
       if (subject.column.id === firstWorkColumn().id) {
-        subject.item.startTime = Date.now();
-        PubSub.publish('workitem.started', subject.item);
+        item.startTime = Date.now();
+        PubSub.publish('workitem.started', item);
       }
       if (subject.column.id === doneColumn().id) {
-        subject.item.endTime = Date.now();
-        PubSub.publish('workitem.finished', subject.item);
+        item.endTime = Date.now();
+        item.duration = item.endTime - item.startTime;
+        PubSub.publish('workitem.finished', item);
+        // console.log({item: item})
       }
     });
 
