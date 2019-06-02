@@ -39,7 +39,7 @@ window.onload = function () {
         steppedLine: true,
         lineTension: 0,
         data: wip,
-        backgroundColor: 'rgba(255, 206, 86, 0)',
+        backgroundColor: 'rgba(255, 206, 86, 0.1)',
         borderColor: 'rgba(255, 206, 86, 1)',
         borderWidth: 1,
         pointRadius: 0.5,
