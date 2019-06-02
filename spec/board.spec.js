@@ -3,8 +3,11 @@ const Board = require('../src/board');
 const PubSub = require('pubsub-js');
 
 describe('a worker', () => {
+  beforeEach(PubSub.clearAllSubscriptions);
+  beforeEach(jest.useFakeTimers);
+  afterEach(jest.runAllTimers);
+
   beforeEach(() => {
-    jest.useFakeTimers();
     now = Date.now();
     jest.spyOn(Date, 'now').mockImplementation(() => now);
     board = new Board(
@@ -56,14 +59,19 @@ describe('a worker', () => {
 
   describe('with two tasks', () => {
     beforeEach(() => {
-      workItem1 = new WorkItem({dev: 1});
-      workItem2 = new WorkItem({dev: 1});
-      board.addWorkItems(workItem1, workItem2);
       board.addWorkers(new Worker({dev: 1}));
+      workItem1 = new WorkItem({dev: 1});
+      workItem1.name = "one"
+      workItem2 = new WorkItem({dev: 1});
+      workItem2.name = "two"
+      board.addWorkItems(workItem1, workItem2);
+      jest.advanceTimersByTime(0);
     });
     it('works on the first item', () => {
       jest.advanceTimersByTime(999);
-      expect(board.items()).toEqual([[workItem2], [workItem1], []]);
+      expect(board.items()[0]).toContain(workItem2);
+      expect(board.items()[1]).toContain(workItem1);
+      expect(board.items()[2]).toEqual([]);
       expect(workItem1.startTime).toBe(now);
       expect(workItem1.endTime).toBeUndefined();
       expect(workItem2.startTime).toBeUndefined();
@@ -72,7 +80,9 @@ describe('a worker', () => {
 
     it('finishes the first item and starts on the second', () => {
       jest.advanceTimersByTime(1000);
-      expect(board.items()).toEqual([[], [workItem2], [workItem1]]);
+      expect(board.items()[0]).toEqual([]);
+      expect(board.items()[1]).toContain(workItem2);
+      expect(board.items()[2]).toContain(workItem1);
       expect(workItem1.startTime).toBe(now);
       expect(workItem1.endTime).toBe(now);
       expect(workItem2.startTime).toBe(now);
@@ -81,7 +91,9 @@ describe('a worker', () => {
 
     it('almost finishes the second', () => {
       jest.advanceTimersByTime(1999);
-      expect(board.items()).toEqual([[], [workItem2], [workItem1]]);
+      expect(board.items()[0]).toEqual([]);
+      expect(board.items()[1]).toContain(workItem2);
+      expect(board.items()[2]).toContain(workItem1);
       expect(workItem1.startTime).toBe(now);
       expect(workItem1.endTime).toBe(now);
       expect(workItem2.startTime).toBe(now);
@@ -90,7 +102,9 @@ describe('a worker', () => {
 
     it('finishes the second item', () => {
       jest.advanceTimersByTime(2000);
-      expect(board.items()).toEqual([[], [], [workItem1, workItem2]]);
+      expect(board.items()[0]).toEqual([]);
+      expect(board.items()[1]).toEqual([]);
+      expect(board.items()[2]).toContain(workItem1, workItem2);
       expect(workItem1.startTime).toBe(now);
       expect(workItem1.endTime).toBe(now);
       expect(workItem2.startTime).toBe(now);
@@ -100,6 +114,10 @@ describe('a worker', () => {
 });
 
 describe('workers work at their own speed', () => {
+  beforeEach(PubSub.clearAllSubscriptions);
+  beforeEach(jest.useFakeTimers);
+  afterEach(jest.runAllTimers);
+
   beforeEach(() => {
     board = new Board(
       new WorkList('dev')
@@ -148,12 +166,14 @@ describe('workers work at their own speed', () => {
 });
 
 describe('a typical workflow', () => {
+  beforeEach(PubSub.clearAllSubscriptions);
+  beforeEach(jest.useFakeTimers);
+  afterEach(jest.runAllTimers);
+
   var board = undefined;
   var workItem1 = undefined;
   var workItem2 = undefined;
   beforeEach(() => {
-    PubSub.clearAllSubscriptions();
-    jest.useFakeTimers();
     board = new Board(
       new WorkList('dev'),
       new WorkList('qa')
@@ -165,17 +185,22 @@ describe('a typical workflow', () => {
     workItem1 = new WorkItem({dev: 1, qa: 2});
     workItem2 = new WorkItem({dev: 2, qa: 1});
     board.addWorkItems(workItem1, workItem2);
-  });
-  it('before events', () => {
-    expect(board.items()).toEqual([[workItem1, workItem2], [], [], [], []]);
+    jest.advanceTimersByTime(0);
   });
   it('starts normally', () => {
-    jest.advanceTimersByTime(1);
-    expect(board.items()).toEqual([[workItem2], [workItem1], [], [], []]);
+    expect(board.items()[0]).toEqual([workItem2]);
+    expect(board.items()[1]).toEqual([workItem1]);
+    expect(board.items()[2]).toEqual([]);
+    expect(board.items()[3]).toEqual([]);
+    expect(board.items()[4]).toEqual([]);
   });
   it('after 1 tick', () => {
     jest.advanceTimersByTime(1000);
-    expect(board.items()).toEqual([[], [workItem2], [], [workItem1], []]);
+    expect(board.items()[0]).toEqual([]);
+    expect(board.items()[1]).toContain(workItem2);
+    expect(board.items()[2]).toEqual([]);
+    expect(board.items()[3]).toContain(workItem1);
+    expect(board.items()[4]).toEqual([]);
   });
   it('after 2 ticks', () => {
     jest.advanceTimersByTime(2000);

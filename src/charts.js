@@ -28,10 +28,11 @@ window.onload = function () {
       }, {
         label: 'wip',
         type: 'line',
+        steppedLine: true,
         lineTension: 0,
         data: [],
         backgroundColor: 'rgba(255, 206, 86, 0)',
-        borderColor: 'rgba(255, 206, 86, 0.5)',
+        borderColor: 'rgba(255, 206, 86, 1)',
         borderWidth: 1
       }]
   };
