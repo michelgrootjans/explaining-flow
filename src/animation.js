@@ -33,10 +33,30 @@ const Stats = require('./stats');
     });
 
     PubSub.subscribe('stats.calculated', (topic, stats) => {
-      $('#throughput').text(Math.round(stats.throughput * 100) / 100);
-      $('#leadtime').text(Math.round(stats.leadTime * 100) / 100);
+      $('#throughput').text(round(stats.throughput));
+      $('#leadtime').text(round(stats.leadTime));
       $('#wip').text(stats.workInProgress);
     });
+
+    PubSub.subscribe('worker.created', (topic, worker) => {
+      const $worker = $('<li/>')
+        .addClass('worker')
+        .attr('data-worker-id', worker.id)
+        .append($('<span/>').addClass('name').text(`${worker.id}-(dev): `))
+        .append($('<span/>').addClass('stat').text('0%'));
+
+      $('#worker-stats ul.workers').append($worker)
+    });
+
+    PubSub.subscribe('worker.stats.updated', (topic, stats) => {
+      var efficiency = round(stats.stats.efficiency * 100)
+      $(`#worker-stats [data-worker-id="${stats.workerId}"] .stat`)
+        .text(`${efficiency}%`);
+    });
+
+    function round(number, positions = 2) {
+      return Math.round(number * Math.pow(10, positions)) / Math.pow(10, positions);
+    }
 
   };
 

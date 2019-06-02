@@ -11,8 +11,13 @@ const TimeAdjustments = require('./timeAdjustments');
     let worker = {
       canWorkOn: skill => idle && skills[skill] && skills[skill] > 0,
       startWorkingOn,
+      name: renderName(),
       id
     };
+
+    function renderName() {
+      return `${id}-(${Object.keys(skills)})`;
+    }
 
     function calculateTimeoutFor(workItem, skill) {
       return 1000 * TimeAdjustments.multiplicator() * workItem.work[skill] / skills[skill];
@@ -22,6 +27,7 @@ const TimeAdjustments = require('./timeAdjustments');
       let item = inbox.peek();
       if(item) {
         idle = false;
+        PubSub.publish('worker.working', worker);
         let skill = inProgress.necessarySkill;
         // console.log({action: `starting ${skill}`, worker: id, item: item.id})
         inbox.move(inProgress, item);
@@ -35,6 +41,7 @@ const TimeAdjustments = require('./timeAdjustments');
       }
     }
 
+    PubSub.publish('worker.created', worker);
     return worker
   }
 
