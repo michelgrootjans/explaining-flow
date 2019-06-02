@@ -16,6 +16,7 @@ This project is written in a RDD fashion: Readme Driven Development. This means 
 ### Todo
 
 - Introduce [swarming](https://blog.crisp.se/2009/06/26/henrikkniberg)
+- Introduce #mobprogramming
 - Compare 2 simulations with the same work
 
 ### Busy
