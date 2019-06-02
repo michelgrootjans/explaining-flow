@@ -3,13 +3,12 @@ With this project, you can simulate team structure and see the effect on your te
 
 ## Using the simulator
 ### Initialization
-npm install
-npm run bundle
+`npm install`
 
 ### Running
-open `index.html`
+`npm run bundle`
 
-To modify the team structure, look at `src/setup.js` and adapt to your wishes. Then `npm run bundle` again and refresh `index.html`
+To modify the team structure, look at `src/setup.js` and adapt to your wishes. Then `npm run bundle` again to reopen `index.html`
 
 ## Roadmap
 This project is written in a RDD fashion: Readme Driven Development. This means that this readme is the only feature tracking tool. Here are the upcoming features:
@@ -21,7 +20,6 @@ This project is written in a RDD fashion: Readme Driven Development. This means 
 - Add stats for workers
 
 ### Busy
-- Introduce WIP limits
 
 ### Done
 
@@ -30,3 +28,4 @@ This project is written in a RDD fashion: Readme Driven Development. This means 
 - Randomize workload per story
 - Randomize skill level for each developer
 - Add a graph for lead times, throughput and WIP
+- Introduce WIP limits
