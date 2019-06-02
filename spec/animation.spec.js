@@ -100,5 +100,29 @@ describe('animation', () => {
       expect($('#wip').text()).toBe("3");
     });
   });
+
+  describe('worker-stats', () => {
+    beforeEach(() => {
+      document.body.innerHTML =
+        '<div id="worker-stats"><ul class="workers"></ul></div>';
+    });
+
+    it('adds new workers', () => {
+      const worker = new Worker({dev: 0});
+      jest.runAllTimers();
+      expect($(`#worker-stats [data-worker-id="${worker.id}"]`).text())
+        .toEqual(`${worker.id}-(dev): 0%`);
+    });
+
+    it('stat update', () => {
+      const worker = new Worker({dev: 0});
+      const newStats = {workerId: worker.id, stats: {efficiency: 0.9500111}};
+      PubSub.publish('worker.stats.updated', newStats);
+      jest.runAllTimers();
+      expect($(`#worker-stats [data-worker-id="${worker.id}"]`).text())
+        .toEqual(`${worker.name}: 95%`);
+    });
+
+  })
 });
 

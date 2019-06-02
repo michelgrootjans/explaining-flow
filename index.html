@@ -7,23 +7,29 @@
     <script src="dist/index.js"></script>
 </head>
 <body>
-    <canvas id="myChart" width="500px" height="100px"></canvas>
     <div id="stats">
-        <div>
-            Lead time:
-            <span id="leadtime"></span>
-            days
+        <canvas id="myChart" width="500px" height="100px"></canvas>
+        <div id="numbers">
+            <div>
+                Lead time:
+                <span id="leadtime">infinity</span>
+                days
+            </div>
+            <div>
+                Throughput:
+                <span id="throughput">0</span>
+                stories/day
+            </div>
+            <div>
+                WIP:
+                <span id="wip">0</span>
+                stories
+            </div>
+            <div id="worker-stats">
+                Workers
+                <ul class="workers"></ul>
+            </div>
         </div>
-    </div>
-    <div>
-        Throughput:
-        <span id="throughput"></span>
-        stories/day
-    </div>
-    <div>
-        WIP:
-        <span id="wip"></span>
-        stories
     </div>
     <ul id="board"></ul>
 </body>

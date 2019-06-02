@@ -1,8 +1,8 @@
-ul {
+#board, #board ul {
   list-style: none;
 }
 
-li h2 {
+#board li h2 {
   text-align: center;
 }
 
@@ -18,3 +18,4 @@ ul.cards li {
   margin: 5px 0px;
   background-color: yellow;
 }
+
