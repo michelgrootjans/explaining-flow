@@ -1,7 +1,7 @@
 require('./animation').initialize();
 const {generateWorkItems, randomBetween} = require('./generator');
 const {Worker, WorkList} = require('./worker');
-const {LimitBoardWip} = require('../src/strategies');
+const {LimitBoardWip, DynamicLimitBoardWip} = require('../src/strategies');
 const Board = require('./board');
 const TimeAdjustments = require('./timeAdjustments');
 require('./stats').initialize();
