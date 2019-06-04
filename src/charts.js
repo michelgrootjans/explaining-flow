@@ -14,7 +14,7 @@ window.onload = function () {
     labels: [],
     datasets: [
       {
-        label: 'throughput',
+        label: 'throughput (a.k.a. velocity)',
         type: 'line',
         lineTension: 0,
         data: throughput,

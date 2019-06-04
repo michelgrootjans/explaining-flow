@@ -1,21 +1,37 @@
 #board, #board ul {
-  list-style: none;
+    list-style: none;
 }
 
 #board li h2 {
-  text-align: center;
+    text-align: center;
 }
 
 li.column {
-  float: left;
-  min-width: 150px;
+    float: left;
+    min-width: 150px;
 }
 
 ul.cards li {
-  width: 100%;
-  text-align: center;
-  padding: 5px;
-  margin: 5px 0px;
-  background-color: yellow;
+    width: 100%;
+    text-align: center;
+    padding: 5px;
+    margin: 5px 0px;
+    background-color: yellow;
 }
 
+#throughput {
+    color: rgb(54, 162, 235);
+    font-weight: bold;
+}
+
+#leadtime {
+    color: rgb(255, 99, 132);
+    font-weight: bold;
+
+}
+
+#wip {
+    color: rgb(255, 206, 86);
+    font-weight: bold;
+
+}
