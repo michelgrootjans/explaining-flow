@@ -8,7 +8,7 @@
 
 li.column {
     float: left;
-    min-width: 150px;
+    width: 150px;
 }
 
 ul.cards li {
@@ -19,19 +19,21 @@ ul.cards li {
     background-color: yellow;
 }
 
-#throughput {
-    color: rgb(54, 162, 235);
+#throughput, #leadtime, #wip {
     font-weight: bold;
 }
 
-#leadtime {
-    color: rgb(255, 99, 132);
-    font-weight: bold;
-
+.throughput {
+    background-color: rgba(54, 162, 235, 0.1);
+    border: rgb(54, 162, 235) solid 1px;
 }
 
-#wip {
-    color: rgb(255, 206, 86);
-    font-weight: bold;
+.leadtime {
+    background-color: rgba(255, 99, 132, 0.1);
+    border: rgb(255, 99, 132) solid 1px;
+}
 
+.wip {
+    background-color: rgba(255, 206, 86, 0.1);
+    border: rgb(255, 206, 86) solid 1px;
 }
