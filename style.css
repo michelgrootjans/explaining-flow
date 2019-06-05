@@ -23,6 +23,10 @@ ul.cards li {
     font-weight: bold;
 }
 
+#numbers {
+    width: 300px;
+}
+
 .throughput {
     background-color: rgba(54, 162, 235, 0.1);
     border: rgb(54, 162, 235) solid 1px;
