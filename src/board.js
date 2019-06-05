@@ -68,8 +68,16 @@ const {WorkList} = require('./worker');
       if (columnWithWork) {
         if (columnWithWork.inbox === backlogColumn() && !allowNewWork)
           return;
+
         const availableWorker = workers
-          .filter(worker => worker.canWorkOn(columnWithWork.necessarySkill))[0];
+          .filter(worker => worker.canWorkOn(columnWithWork.necessarySkill))
+          .reduce((bestCandidate, worker) => {
+            if(!bestCandidate) return worker;
+            const bestScore = bestCandidate.canWorkOn(columnWithWork.necessarySkill);
+            const currentScore = worker.canWorkOn(columnWithWork.necessarySkill);
+            return bestScore > currentScore ? bestCandidate : worker;
+          });
+
         if (availableWorker) {
           // console.log({action: 'start working', reason: `${topic}`, item: columnWithWork.inbox.peek().id, worker: availableWorker.id, column: columnWithWork.name})
           availableWorker.startWorkingOn(columnWithWork.inbox, columnWithWork, columnWithWork.outbox);
