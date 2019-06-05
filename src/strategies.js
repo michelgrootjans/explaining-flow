@@ -64,5 +64,23 @@ const PubSub = require('pubsub-js');
     return {};
   }
 
-  module.exports = {LimitBoardWip, DynamicLimitBoardWip}
+  function WipUp(step=10) {
+    let counter = 0;
+    let wipLimit = 1;
+    let limiter = new LimitBoardWip(wipLimit);
+
+
+    PubSub.subscribe('workitem.finished', () => {
+      counter++;
+      if (counter % step == 0) {
+        wipLimit++;
+        limiter.updateLimit(wipLimit);
+      }
+    });
+
+
+    return {};
+  }
+
+  module.exports = {LimitBoardWip, DynamicLimitBoardWip, WipUp}
 })();
