@@ -8,8 +8,13 @@ const TimeAdjustments = require('./timeAdjustments');
     let idle = true;
     const id = workerCounter++;
 
+    function canWorkOn(skill) {
+      if(!idle) return 0;
+      return workSpeedFor(skill);
+    }
+
     let worker = {
-      canWorkOn: skill => idle && skills[skill] && skills[skill] > 0,
+      canWorkOn,
       startWorkingOn,
       name: renderName(),
       id
@@ -19,8 +24,12 @@ const TimeAdjustments = require('./timeAdjustments');
       return `${id}-(${Object.keys(skills)})`;
     }
 
+    function workSpeedFor(skill) {
+      return skills[skill] || skills['all'] || skills['rest'];
+    }
+
     function calculateTimeoutFor(workItem, skill) {
-      return 1000 * TimeAdjustments.multiplicator() * workItem.work[skill] / skills[skill];
+      return 1000 * TimeAdjustments.multiplicator() * workItem.work[skill] / workSpeedFor(skill);
     }
 
     function startWorkingOn(inbox, inProgress, outbox) {
