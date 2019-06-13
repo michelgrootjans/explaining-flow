@@ -66,10 +66,10 @@ window.onload = function () {
           ticks: {
             beginAtZero: true
           },
-          scaleLabel: {
-            display: true,
-            labelString: 'lead time + WIP'
-          }
+          // scaleLabel: {
+          //   display: true,
+          //   labelString: 'lead time + WIP'
+          // }
         // },{
         //   id: 'right-y-axis',
         //   type: 'linear',
