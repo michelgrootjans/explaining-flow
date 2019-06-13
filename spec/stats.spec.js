@@ -1,15 +1,15 @@
 const Stats = require('../src/stats');
-const PubSub = require('pubsub-js');
+const {publish, subscribe, clearAllSubscriptions} = require('pubsub-js');
 
 describe('calculate basic stats', () => {
   beforeEach(() => {
-    PubSub.clearAllSubscriptions();
+    clearAllSubscriptions();
     Stats.initialize();
   });
 
   it('start', done => {
     given(() => [
-      PubSub.publish('workitem.started', {startTime: 1})
+      publish('workitem.started', {startTime: 1})
     ])
       .then('stats.calculated', (topic, stats) => {
         expect(stats).toMatchObject({
@@ -24,8 +24,8 @@ describe('calculate basic stats', () => {
 
   it('start-start', done => {
     given(() => [
-      PubSub.publish('workitem.started', {startTime: 1}),
-      PubSub.publish('workitem.started', {startTime: 1})
+      publish('workitem.started', {startTime: 1}),
+      publish('workitem.started', {startTime: 1})
     ])
       .then('stats.calculated', (topic, stats) => {
         expect(stats).toMatchObject({
@@ -40,8 +40,8 @@ describe('calculate basic stats', () => {
 
   it('start-finish(1)', done => {
     given(() => [
-      PubSub.publish('workitem.started', {}),
-      PubSub.publish('workitem.finished', {startTime: time(0), endTime: time(1),})
+      publish('workitem.started', {}),
+      publish('workitem.finished', {startTime: time(0), endTime: time(1),})
     ])
       .then('stats.calculated', (topic, stats) => {
         expect(stats).toMatchObject({
@@ -56,9 +56,9 @@ describe('calculate basic stats', () => {
 
   it('start-start-finish(1)', done => {
     given(() => [
-      PubSub.publish('workitem.started', {}),
-      PubSub.publish('workitem.started', {}),
-      PubSub.publish('workitem.finished', {startTime: time(0), endTime: time(1),}),
+      publish('workitem.started', {}),
+      publish('workitem.started', {}),
+      publish('workitem.finished', {startTime: time(0), endTime: time(1),}),
     ])
       .then('stats.calculated', (topic, stats) => {
         expect(stats).toMatchObject({
@@ -72,8 +72,8 @@ describe('calculate basic stats', () => {
 
   it('start-start-finish(2)', done => {
     given(() => [
-      PubSub.publish('workitem.started', {}),
-      PubSub.publish('workitem.finished', {startTime: time(0), endTime: time(2),}),
+      publish('workitem.started', {}),
+      publish('workitem.finished', {startTime: time(0), endTime: time(2),}),
     ])
       .then('stats.calculated', (topic, stats) => {
         expect(stats).toMatchObject({
@@ -87,16 +87,16 @@ describe('calculate basic stats', () => {
 
   it('realistic example', done => {
     given(() => [
-      PubSub.publish('workitem.started', {}),
-      PubSub.publish('workitem.started', {}),
-      PubSub.publish('workitem.finished', {startTime: time(0), endTime: time(1),}),
-      PubSub.publish('workitem.started', {}),
-      PubSub.publish('workitem.finished', {startTime: time(0), endTime: time(3),}),
-      PubSub.publish('workitem.started', {}),
-      PubSub.publish('workitem.finished', {startTime: time(1), endTime: time(5),}),
-      PubSub.publish('workitem.started', {}),
-      PubSub.publish('workitem.finished', {startTime: time(3), endTime: time(4),}),
-      PubSub.publish('workitem.started', {}),
+      publish('workitem.started', {}),
+      publish('workitem.started', {}),
+      publish('workitem.finished', {startTime: time(0), endTime: time(1),}),
+      publish('workitem.started', {}),
+      publish('workitem.finished', {startTime: time(0), endTime: time(3),}),
+      publish('workitem.started', {}),
+      publish('workitem.finished', {startTime: time(1), endTime: time(5),}),
+      publish('workitem.started', {}),
+      publish('workitem.finished', {startTime: time(3), endTime: time(4),}),
+      publish('workitem.started', {}),
     ])
       .then('stats.calculated', (topic, stats) => {
         expect(stats).toMatchObject({
@@ -122,7 +122,7 @@ describe('calculate basic stats', () => {
     let callCounter = 0;
     return {
       then: (message, f) => {
-        PubSub.subscribe(message, (topic, subject) => {
+        subscribe(message, (topic, subject) => {
           callCounter++;
           if (callCounter === expectedEvents.length) {
             f(topic, subject);
