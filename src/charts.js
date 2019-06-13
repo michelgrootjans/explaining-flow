@@ -14,6 +14,17 @@ window.onload = function () {
     labels: [],
     datasets: [
       {
+        label: 'throughput (a.k.a. velocity)',
+        type: 'line',
+        lineTension: 0,
+        data: throughput,
+        backgroundColor: 'rgba(54, 162, 235, 0.1)',
+        borderColor: 'rgba(54, 162, 235, 1)',
+        borderWidth: 1,
+        pointRadius: 0.5,
+        yAxisID: 'left-y-axis',
+      },
+      {
         label: 'leadtime',
         type: 'line',
         lineTension: 0,
@@ -34,17 +45,6 @@ window.onload = function () {
         borderWidth: 1,
         pointRadius: 0.5,
         yAxisID: 'left-y-axis',
-      },
-      {
-        label: 'throughput (a.k.a. velocity)',
-        type: 'line',
-        lineTension: 0,
-        data: throughput,
-        backgroundColor: 'rgba(54, 162, 235, 0.1)',
-        borderColor: 'rgba(54, 162, 235, 1)',
-        borderWidth: 1,
-        pointRadius: 0.5,
-        yAxisID: 'right-y-axis',
       },
     ]
   };
@@ -70,17 +70,17 @@ window.onload = function () {
             display: true,
             labelString: 'lead time + WIP'
           }
-        },{
-          id: 'right-y-axis',
-          type: 'linear',
-          position: 'right',
-          ticks: {
-            beginAtZero: true
-          },
-          scaleLabel: {
-            display: true,
-            labelString: 'throughput'
-          }
+        // },{
+        //   id: 'right-y-axis',
+        //   type: 'linear',
+        //   position: 'right',
+        //   ticks: {
+        //     beginAtZero: true
+        //   },
+        //   scaleLabel: {
+        //     display: true,
+        //     labelString: 'throughput'
+        //   }
         }]
       }
     }
