@@ -11,15 +11,21 @@ new WorkerStats();
 TimeAdjustments.speedUpBy(1);
 
 let board = new Board(
+  new WorkList('ux'),
   new WorkList('dev'),
+  new WorkList('qa'),
 );
 
 board.addWorkers(
+  new Worker({ux: 1}),
   new Worker({dev: 1}),
+  new Worker({qa: 1}),
 );
 
 board.addWorkItems(...generateWorkItems(() => ({
-    dev: 1,
+    ux: randomBetween(0,2),
+    dev: randomBetween(0,2),
+    qa: randomBetween(0,2),
   }), 50
 ));
 
