@@ -34,7 +34,7 @@ const PubSub = require('pubsub-js');
         return;
       if(stats.workInProgress === limiter.limit())
         counter++;
-      if (counter >= 20) {
+      if (counter >= 50) {
         counter = 0;
         key = stats.sliding.leadTime(10) / stats.sliding.throughput(10);
         const newMeasurement = {limit: limiter.limit(), key};

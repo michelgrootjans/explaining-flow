@@ -42,7 +42,7 @@ const Stats = require('./stats');
       const $worker = $('<li/>')
         .addClass('worker')
         .attr('data-worker-id', worker.id)
-        .append($('<span/>').addClass('name').text(`${worker.name}: `))
+        .append($('<span/>').addClass('name').text(`${worker.name()}: `))
         .append($('<span/>').addClass('stat').text('0%'));
 
       $('#worker-stats ul.workers').append($worker)

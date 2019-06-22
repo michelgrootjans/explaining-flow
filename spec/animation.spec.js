@@ -111,7 +111,7 @@ describe('animation', () => {
       const worker = new Worker({dev: 0});
       jest.runAllTimers();
       expect($(`#worker-stats [data-worker-id="${worker.id}"]`).text())
-        .toEqual(`${worker.id}-(dev): 0%`);
+        .toEqual(`${worker.name()}: 0%`);
     });
 
     it('stat update', () => {
@@ -120,7 +120,7 @@ describe('animation', () => {
       PubSub.publish('worker.stats.updated', newStats);
       jest.runAllTimers();
       expect($(`#worker-stats [data-worker-id="${worker.id}"]`).text())
-        .toEqual(`${worker.name}: 95%`);
+        .toEqual(`${worker.name()}: 95%`);
     });
 
   })

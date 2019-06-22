@@ -16,12 +16,20 @@ const TimeAdjustments = require('./timeAdjustments');
     let worker = {
       canWorkOn,
       startWorkingOn,
-      name: renderName(),
+      name: renderName,
       id
     };
 
     function renderName() {
-      return `${id}-(${Object.keys(skills)})`;
+      function round(skill) {
+        return Math.round(skills[skill] * 10) / 10;
+      }
+
+      function renderSkills() {
+        return Object.keys(skills).map(skill => `${skill}: ${round(skill)}`)
+      }
+
+      return `${id}-(${renderSkills()})`;
     }
 
     function workSpeedFor(skill) {

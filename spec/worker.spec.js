@@ -10,6 +10,15 @@ describe('a specialist', () => {
     const developer = new Worker({dev: 1});
     expect(developer.canWorkOn('qa')).toBeFalsy();
   })
+  it('has a name', () => {
+    const developer = new Worker({dev: 1});
+    expect(developer.name()).toMatch('(dev: 1)')
+  })
+  it('has a name with rounded skills', () => {
+    const developer = new Worker({dev: 1.111111111});
+    expect(developer.name()).toMatch('(dev: 1.1)')
+  })
+
 });
 
 describe('a generalist', () => {
