@@ -8,25 +8,19 @@ require('./stats').initialize();
 const WorkerStats = require('./worker-stats');
 
 new WorkerStats();
-TimeAdjustments.speedUpBy(20);
+TimeAdjustments.speedUpBy(1);
 
 let board = new Board(
-  new WorkList('ux'),
   new WorkList('dev'),
-  new WorkList('qa'),
 );
 
 board.addWorkers(
-  new Worker({ux: randomBetween(0.5, 1.5)}),
-  new Worker({dev: randomBetween(0.5, 1.5)}),
-  new Worker({qa: randomBetween(0.5, 1.5)}),
+  new Worker({dev: 1}),
 );
 
 board.addWorkItems(...generateWorkItems(() => ({
-    ux: randomBetween(0, 2),
-    dev: randomBetween(0, 2),
-    qa: randomBetween(0, 2),
-  }), 1000
+    dev: 1,
+  }), 50
 ));
 
 new DynamicLimitBoardWip();
