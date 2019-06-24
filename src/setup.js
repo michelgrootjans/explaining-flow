@@ -22,5 +22,3 @@ board.addWorkItems(...generateWorkItems(() => ({
     dev: 1,
   }), 50
 ));
-
-new DynamicLimitBoardWip();
