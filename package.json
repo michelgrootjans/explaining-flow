@@ -15,7 +15,7 @@
   "devDependencies": {
     "browserify": "^16.2.3",
     "jest": "^24.8.0",
-    "opn-cli": "^5.0.0"
+    "open-cli": "^5.0.0"
   },
   "dependencies": {
     "chart.js": "^2.8.0",
