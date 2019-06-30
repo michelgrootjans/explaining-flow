@@ -9,7 +9,6 @@ The measurements you get for each simulation are:
 Stakeholders and customers typically worry about throughput and lead time. Throughput indicates how efficient a team is. Lead time indicates how long stakeholders have to wait for their ideas to be implemented.
 
 ## Using the simulator
-Note that you will need to have `node`, `npm`, `browserify` and a browser capable of running `Javascript` installed on your machine.
 ### Initialization
 `npm install`
 
