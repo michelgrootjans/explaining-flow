@@ -2,11 +2,11 @@
 With this project, you can simulate team structure and see the effect on your team's efficiency and effectiveness.
 
 The measurements you get for each simulation are:
-- Throughput: the numer of stories the team finishes per unit of time. Typically referred to as team velocity.
+- Throughput: the number of stories the team finishes per unit of time. Typically referred to as team velocity.
 - Lead time: the amount of time an item has to wait between the moment someone started working on it and the moment is finished.
 - WIP: the number of items started but not finished
 
-Stakeholders and customers typically worry about throughput and lead time. Througput inicates how efficient a team is. Lead time indicates how long stakeholders have to wait for their ideas to be implemented.
+Stakeholders and customers typically worry about throughput and lead time. Throughput indicates how efficient a team is. Lead time indicates how long stakeholders have to wait for their ideas to be implemented.
 
 ## Using the simulator
 ### Initialization
@@ -25,7 +25,7 @@ My lighting talk is structured around the following steps:
 
 The following chapters show the steps in my talk by showing the changes to do in `setup.js`
 
-#### a single developer working on a predictible backlog
+#### a single developer working on a predictable backlog
 ``` javascript
 let board = new Board(
   new WorkList('dev'),
@@ -52,7 +52,7 @@ board.addWorkItems(...generateWorkItems(() => ({
 ```
 
 #### adding QA to the process
-Depending on the randomness of the simulation, a queue will appear between dev an qa. Everytime the queue gets larger, leat time will increase, while throughput will be mostly unaffected (averaging to 1 story/day).
+Depending on the randomness of the simulation, a queue will appear between dev and qa. Every time the queue gets larger, lead time will increase, while throughput will be mostly unaffected (averaging to 1 story/day).
 
 ``` javascript
 let board = new Board(
@@ -224,7 +224,7 @@ This project is written in a RDD fashion: Readme Driven Development. This means 
 
 I welcome suggestions, especially if they come in the form of a pull request.
 
-- Intruduce quality, rework, bugs, collaboration, learning, ...
+- Introduce quality, rework, bugs, collaboration, learning, ...
 - Introduce [swarming](https://blog.crisp.se/2009/06/26/henrikkniberg).
 - Introduce pairing
 - Introduce #mobprogramming
@@ -233,10 +233,10 @@ I welcome suggestions, especially if they come in the form of a pull request.
 ### Done
 
 - Make a working board
-- Have a skillset per developer
+- Have a skill set per developer
 - Randomize workload per story
 - Randomize skill level for each developer
 - Add a graph for lead times, throughput and WIP
 - Introduce WIP limits
 - Add stats for workers
-- Allow multiple developers with the same skillset
+- Allow multiple developers with the same skill set
