@@ -10,11 +10,11 @@ const {WorkItem} = require('./worker');
     return min + (Math.random() * (max-min));
   }
 
-  function average(value) {
+  function averageOf(value) {
     let distance = value * 0.8;
     return randomBetween(value - distance, value + distance);
   }
 
-  module.exports = {generateWorkItems, randomBetween, average};
+  module.exports = {generateWorkItems, randomBetween, averageOf};
 
 })();
