@@ -46,7 +46,7 @@ This slight change illustrate that throughput and lead time move in opposite dir
 ``` javascript
 // ... the previous code remains the same
 board.addWorkItems(...generateWorkItems(() => ({
-    dev: randomBetween(0,2),
+    dev: averageOf(1),
   }), 50
 ));
 ```
@@ -66,8 +66,8 @@ board.addWorkers(
 );
 
 board.addWorkItems(...generateWorkItems(() => ({
-    dev: randomBetween(0,2),
-    qa: randomBetween(0,2), // <= new
+    dev: averageOf(1),
+    qa: averageOf(1), // <= new
   }), 50
 ));
 ```
@@ -91,9 +91,9 @@ board.addWorkers(
 );
 
 board.addWorkItems(...generateWorkItems(() => ({
-    ux: randomBetween(0,2), // <= new
-    dev: randomBetween(0,2),
-    qa: randomBetween(0,2),
+    ux: averageOf(1), // <= new
+    dev: averageOf(1),
+    qa: averageOf(1),
   }), 200 // <= increase the number of stories
 ));
 ```
@@ -103,9 +103,9 @@ board.addWorkItems(...generateWorkItems(() => ({
 ``` javascript
 // the previous code remains the same
 board.addWorkItems(...generateWorkItems(() => ({
-    ux: randomBetween(0,2),
-    dev: randomBetween(0,4), // <= slowest
-    qa: randomBetween(0,3),
+    ux: averageOf(1),
+    dev: averageOf(2), // <= slowest
+    qa: averageOf(1.5),
   }), 200
 ));
 ```
@@ -149,9 +149,9 @@ board.addWorkers(
 );
 
 board.addWorkItems(...generateWorkItems(() => ({
-    ux: randomBetween(0,2),
-    dev: randomBetween(0,4),
-    qa: randomBetween(0,3),
+    ux: averageOf(1),
+    dev: averageOf(2),
+    qa: averageOf(1.5),
   }), 200
 ));
 
@@ -200,9 +200,9 @@ board.addWorkers(
 );
 
 board.addWorkItems(...generateWorkItems(() => ({
-    ux: randomBetween(0,2),
-    dev: randomBetween(0,4),
-    qa: randomBetween(0,3),
+    ux: averageOf(1),
+    dev: averageOf(2),
+    qa: averageOf(1.5),
   }), 200
 ));
 ```
