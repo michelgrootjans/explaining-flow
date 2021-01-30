@@ -4,6 +4,7 @@ const PubSub = require('pubsub-js');
   function LimitBoardWip(originalLimit = 1) {
     let limit = originalLimit;
     let wip = 0;
+    document.title = `WIP ${limit}`
 
     PubSub.publish('board.allowNewWork', {wip, limit});
 
@@ -72,7 +73,7 @@ const PubSub = require('pubsub-js');
 
     PubSub.subscribe('workitem.finished', () => {
       counter++;
-      if (counter % step == 0) {
+      if (counter % step === 0) {
         wipLimit++;
         limiter.updateLimit(wipLimit);
       }
