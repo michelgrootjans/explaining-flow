@@ -56,7 +56,6 @@ const {WorkList} = require('./worker');
     PubSub.subscribe('board.allowNewWork', (topic, subject) => {
       allowNewWork = true;
       assignNewWorkIfPossible();
-
     });
 
     function assignNewWorkIfPossible() {
@@ -79,14 +78,12 @@ const {WorkList} = require('./worker');
           });
 
         if (availableWorker) {
-          // console.log({action: 'start working', reason: `${topic}`, item: columnWithWork.inbox.peek().id, worker: availableWorker.id, column: columnWithWork.name})
           availableWorker.startWorkingOn(columnWithWork.inbox, columnWithWork, columnWithWork.outbox);
         }
       }
     }
 
     PubSub.subscribe('board.denyNewWork', (topic, subject) => {
-      // console.log({topic, subject});
       allowNewWork = false;
     });
 
@@ -100,7 +97,6 @@ const {WorkList} = require('./worker');
         item.endTime = Date.now();
         item.duration = item.endTime - item.startTime;
         PubSub.publish('workitem.finished', item);
-        // console.log({item: item})
       }
     });
 

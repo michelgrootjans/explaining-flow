@@ -5,6 +5,7 @@ const Stats = require('./stats');
 (function () {
   const initialize = () => {
     PubSub.subscribe('board.ready', (topic, {columns}) => {
+      $('#board').empty();
       columns.forEach(column => {
         const $column = $('<li/>')
           .addClass(`column ${column.type}`)
