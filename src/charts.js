@@ -4,14 +4,14 @@ function timeFormat(date) {
   return date;
 }
 
-window.onload = function () {
-  var ctx = document.getElementById('myChart').getContext('2d');
+function createChart(ctx) {
   const leadTime = [];
   const throughput = [];
   const wip = [];
+  let labels = [];
 
   const data = {
-    labels: [],
+    labels: labels,
     datasets: [
       {
         label: 'throughput (a.k.a. velocity)',
@@ -48,7 +48,7 @@ window.onload = function () {
       },
     ]
   };
-  var myChart = new Chart(ctx, {
+  var chart = new Chart(ctx, {
     data: data,
     options: {
       animation: false,
@@ -66,36 +66,30 @@ window.onload = function () {
           ticks: {
             beginAtZero: true
           },
-          // scaleLabel: {
-          //   display: true,
-          //   labelString: 'lead time + WIP'
-          // }
-        // },{
-        //   id: 'right-y-axis',
-        //   type: 'linear',
-        //   position: 'right',
-        //   ticks: {
-        //     beginAtZero: true
-        //   },
-        //   scaleLabel: {
-        //     display: true,
-        //     labelString: 'throughput'
-        //   }
         }]
       }
     }
   });
+  return {leadTime, throughput, wip, data, chart, labels};
+}
 
-  let counter = 0;
+window.onload = function () {
+  var ctx = document.getElementById('myChart').getContext('2d');
+  let state = undefined;
+
+  PubSub.subscribe('board.ready', () => {
+    state = createChart(ctx)
+  });
+
   PubSub.subscribe('stats.calculated', (topic, stats) => {
-    data.labels.push(new Date());
-    leadTime.push(stats.sliding.leadTime(5));
-    throughput.push(stats.sliding.throughput(5));
-    wip.push(stats.workInProgress);
-    let numberOfDatapoints = data.labels.length;
+    state.labels.push(new Date());
+    state.leadTime.push(stats.sliding.leadTime(5));
+    state.throughput.push(stats.sliding.throughput(5));
+    state.wip.push(stats.workInProgress);
+    let numberOfDatapoints = state.labels.length;
     setTimeout(() => {
-      const dataHasNotChanged = numberOfDatapoints === data.labels.length;
-      if (dataHasNotChanged) myChart.update();
+      const dataHasNotChanged = numberOfDatapoints === state.labels.length;
+      if (dataHasNotChanged) state.chart.update();
     }, 500)
   });
 };

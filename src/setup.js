@@ -8,7 +8,7 @@ require('./stats').initialize();
 const WorkerStats = require('./worker-stats');
 
 new WorkerStats();
-TimeAdjustments.speedUpBy(1);
+TimeAdjustments.speedUpBy(20);
 
 function oneDeveloper() {
   debugger
