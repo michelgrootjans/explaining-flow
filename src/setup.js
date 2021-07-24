@@ -8,10 +8,9 @@ require('./stats').initialize();
 const WorkerStats = require('./worker-stats');
 
 new WorkerStats();
-TimeAdjustments.speedUpBy(20);
+TimeAdjustments.speedUpBy(1);
 
 function oneDeveloper() {
-  debugger
   let board = new Board(
     new WorkList('dev'),
   );
@@ -27,7 +26,6 @@ function oneDeveloper() {
 }
 
 function addQA() {
-  debugger
   let board = new Board(
     new WorkList('dev'),
     new WorkList('qa'),
@@ -49,7 +47,6 @@ document.addEventListener('DOMContentLoaded', event => {
   let currentScenario = 0;
   const scenarios = [oneDeveloper, addQA]
   document.querySelector("#numbers").addEventListener('click', () => {
-    debugger
     scenarios[currentScenario]();
     currentScenario++;
   });

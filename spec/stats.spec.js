@@ -118,6 +118,7 @@ describe('calculate basic stats', () => {
   }
 
   function given(publications) {
+    publish('board.ready', {}) // necessary to initialize stats
     let expectedEvents = publications();
     let callCounter = 0;
     return {
