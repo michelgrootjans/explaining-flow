@@ -10,15 +10,19 @@ const WorkerStats = require('./worker-stats');
 new WorkerStats();
 TimeAdjustments.speedUpBy(1);
 
-let board = new Board(
-  new WorkList('dev'),
-);
+function oneDeveloper() {
+  let board = new Board(
+    new WorkList('dev'),
+  );
 
-board.addWorkers(
-  new Worker({dev: 1}),
-);
+  board.addWorkers(
+    new Worker({dev: 1}),
+  );
 
-board.addWorkItems(...generateWorkItems(() => ({
-    dev: 1,
-  }), 50
-));
+  board.addWorkItems(...generateWorkItems(() => ({
+      dev: 1,
+    }), 50
+  ));
+}
+
+oneDeveloper();
