@@ -15,7 +15,7 @@ describe('limiting overall wip', () => {
     let item2 = undefined;
 
     beforeEach(() => {
-      board = new Board(new WorkList('dev'), new WorkList('qa'));
+      board = new Board(['dev', 'qa']);
       new LimitBoardWip(1);
       board.addWorkers(new Worker({dev: 1}), new Worker({qa: 1}));
 

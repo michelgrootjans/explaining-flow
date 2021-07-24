@@ -11,9 +11,7 @@ new WorkerStats();
 TimeAdjustments.speedUpBy(1);
 
 function oneDeveloper() {
-  let board = new Board(
-    new WorkList('dev'),
-  );
+  let board = new Board(['dev'])
 
   board.addWorkers(
     new Worker({'dev': 1}),
@@ -26,9 +24,7 @@ function oneDeveloper() {
 }
 
 function someRandomness() {
-  let board = new Board(
-    new WorkList('dev'),
-  );
+  let board = new Board(['dev'])
 
   board.addWorkers(
     new Worker({'dev': 1}),
@@ -41,10 +37,7 @@ function someRandomness() {
 }
 
 function addQA() {
-  let board = new Board(
-    new WorkList('dev'),
-    new WorkList('qa'),
-  );
+  let board = new Board(['dev', 'qa'])
 
   board.addWorkers(
     new Worker({'dev': 1}),

@@ -7,7 +7,7 @@ const {WorkList} = require('./worker');
     };
   };
 
-  let Board = function (...c) {
+  let Board = function (workColumnNames) {
     const columns = [];
     const workers = [];
     const backlogColumn = () => columns[0];
@@ -47,7 +47,7 @@ const {WorkList} = require('./worker');
       PubSub.publish('board.ready', {columns});
     }
 
-    initialize(c);
+    initialize(workColumnNames.map(name => new WorkList(name)));
 
     PubSub.subscribe('workitem.added', (topic, subject) => {
       assignNewWorkIfPossible();

@@ -16,7 +16,6 @@ const Stats = require('./stats');
           .append($('<ul/>').addClass('cards'));
 
         $('#board').append($column);
-
       });
     });
 

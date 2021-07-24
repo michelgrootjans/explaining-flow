@@ -10,9 +10,7 @@ describe('a worker', () => {
   beforeEach(() => {
     now = Date.now();
     jest.spyOn(Date, 'now').mockImplementation(() => now);
-    board = new Board(
-      new WorkList('dev')
-    );
+    board = new Board(['dev']);
   });
 
   describe('without tasks', () => {
@@ -124,9 +122,7 @@ describe('workers work at their own speed', () => {
   afterEach(jest.runAllTimers);
 
   beforeEach(() => {
-    board = new Board(
-      new WorkList('dev')
-    );
+    board = new Board(['dev']);
   });
 
   describe('nominal worker', function () {
@@ -179,10 +175,7 @@ describe('a typical workflow', () => {
   var workItem1 = undefined;
   var workItem2 = undefined;
   beforeEach(() => {
-    board = new Board(
-      new WorkList('dev'),
-      new WorkList('qa')
-    );
+    board = new Board(['dev', 'qa'])
     board.addWorkers(
       new Worker({dev: 1}),
       new Worker({qa: 1}),

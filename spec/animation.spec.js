@@ -18,12 +18,11 @@ describe('animation', () => {
     let dev = undefined;
     beforeEach(() => {
       document.body.innerHTML = '<ul id="board"></ul>';
-      dev = new WorkList('dev');
-      board = new Board(dev);
+      board = new Board(['dev']);
     });
 
     describe('with only dev', () => {
-      it('should have a backlog', () => {
+      it('should have a backlog column', () => {
         jest.runAllTimers();
 
         let $backlog = $('#board li:nth-child(1)');
@@ -32,17 +31,16 @@ describe('animation', () => {
         expect($backlog.find('ul').attr('class')).toBe('cards');
       });
 
-      it('should have a dev', () => {
+      it('should have a dev column', () => {
         jest.runAllTimers();
 
         let $dev = $('#board li:nth-child(2)');
         expect($dev.attr('class')).toBe('column work');
-        expect($dev.attr('data-column-id')).toBe(`${dev.id}`);
         expect($dev.text()).toBe('dev');
         expect($dev.find('ul').attr('class')).toBe('cards');
       });
 
-      it('should have a done', () => {
+      it('should have a done column', () => {
         jest.runAllTimers();
 
         let $done = $('#board li:nth-child(3)');
