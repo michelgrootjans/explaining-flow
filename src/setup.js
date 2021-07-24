@@ -11,6 +11,7 @@ new WorkerStats();
 TimeAdjustments.speedUpBy(1);
 
 function oneDeveloper() {
+  debugger
   let board = new Board(
     new WorkList('dev'),
   );
@@ -25,4 +26,31 @@ function oneDeveloper() {
   ));
 }
 
-oneDeveloper();
+function addQA() {
+  debugger
+  let board = new Board(
+    new WorkList('dev'),
+    new WorkList('qa'),
+  );
+
+  board.addWorkers(
+    new Worker({dev: 1}),
+    new Worker({qa: 1}),
+  );
+
+  board.addWorkItems(...generateWorkItems(() => ({
+      dev: 1,
+      qa: 1,
+    }), 50
+  ));
+}
+
+document.addEventListener('DOMContentLoaded', event => {
+  let currentScenario = 0;
+  const scenarios = [oneDeveloper, addQA]
+  document.querySelector("#numbers").addEventListener('click', () => {
+    debugger
+    scenarios[currentScenario]();
+    currentScenario++;
+  });
+});
