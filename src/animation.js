@@ -6,7 +6,7 @@ const Stats = require('./stats');
   const initialize = () => {
     PubSub.subscribe('board.ready', (topic, {columns}) => {
       $('#board').empty();
-      $('.workers').empty();
+      $('#workers').empty();
 
       columns.forEach(column => {
         const $column = $('<li/>')
@@ -48,7 +48,7 @@ const Stats = require('./stats');
         .append($('<span/>').addClass('name').text(`${worker.name()}: `))
         .append($('<span/>').addClass('stat').text('0%'));
 
-      $('#worker-stats ul.workers').append($worker)
+      $('#worker-stats ul#workers').append($worker)
     });
 
     PubSub.subscribe('worker.stats.updated', (topic, stats) => {

@@ -8,7 +8,7 @@ require('./stats').initialize();
 const WorkerStats = require('./worker-stats');
 
 new WorkerStats();
-TimeAdjustments.speedUpBy(20);
+TimeAdjustments.speedUpBy(1);
 
 function oneDeveloper() {
   let board = new Board(
@@ -16,11 +16,11 @@ function oneDeveloper() {
   );
 
   board.addWorkers(
-    new Worker({dev: 1}),
+    new Worker({'dev': 1}),
   );
 
   board.addWorkItems(...generateWorkItems(() => ({
-      dev: 1,
+      'dev': 1,
     }), 50
   ));
 }
@@ -31,11 +31,11 @@ function someRandomness() {
   );
 
   board.addWorkers(
-    new Worker({dev: 1}),
+    new Worker({'dev': 1}),
   );
 
   board.addWorkItems(...generateWorkItems(() => ({
-      dev: averageOf(1),
+      'dev': averageOf(1),
     }), 50
   ));
 }
@@ -47,13 +47,13 @@ function addQA() {
   );
 
   board.addWorkers(
-    new Worker({dev: 1}),
-    new Worker({qa: 1}),
+    new Worker({'dev': 1}),
+    new Worker({'qa': 1}),
   );
 
   board.addWorkItems(...generateWorkItems(() => ({
-      dev: averageOf(1),
-      qa: averageOf(1),
+      'dev': averageOf(1),
+      'qa': averageOf(1),
     }), 50
   ));
 }

@@ -104,7 +104,7 @@ describe('animation', () => {
   describe('worker-stats', () => {
     beforeEach(() => {
       document.body.innerHTML =
-        '<div id="worker-stats"><ul class="workers"></ul></div>';
+        '<div id="worker-stats"><ul id="workers"></ul></div>';
     });
 
     it('adds new workers', () => {
