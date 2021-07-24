@@ -4,7 +4,6 @@ const PubSub = require('pubsub-js');
   function LimitBoardWip(originalLimit = 1) {
     let limit = originalLimit;
     let wip = 0;
-    document.title = `WIP ${limit}`
 
     PubSub.publish('board.allowNewWork', {wip, limit});
 
