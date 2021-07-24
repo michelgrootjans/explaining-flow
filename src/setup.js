@@ -8,7 +8,7 @@ require('./stats').initialize();
 const WorkerStats = require('./worker-stats');
 
 new WorkerStats();
-TimeAdjustments.speedUpBy(1);
+TimeAdjustments.speedUpBy(20);
 
 function oneDeveloper() {
   let board = new Board(
@@ -25,6 +25,21 @@ function oneDeveloper() {
   ));
 }
 
+function someRandomness() {
+  let board = new Board(
+    new WorkList('dev'),
+  );
+
+  board.addWorkers(
+    new Worker({dev: 1}),
+  );
+
+  board.addWorkItems(...generateWorkItems(() => ({
+      dev: averageOf(1),
+    }), 50
+  ));
+}
+
 function addQA() {
   let board = new Board(
     new WorkList('dev'),
@@ -37,15 +52,15 @@ function addQA() {
   );
 
   board.addWorkItems(...generateWorkItems(() => ({
-      dev: 1,
-      qa: 1,
+      dev: averageOf(1),
+      qa: averageOf(1),
     }), 50
   ));
 }
 
 document.addEventListener('DOMContentLoaded', event => {
   let currentScenario = 0;
-  const scenarios = [oneDeveloper, addQA]
+  const scenarios = [oneDeveloper, someRandomness, addQA]
   document.querySelector("#numbers").addEventListener('click', () => {
     scenarios[currentScenario]();
     currentScenario++;
