@@ -140,7 +140,7 @@ This project is written in a RDD fashion: Readme Driven Development. This means 
 ### Todo
 
 I welcome suggestions, especially if they come in the form of a pull request.
-
+- Introduce a cumulative flow diagram
 - Introduce quality, rework, bugs, collaboration, learning, ...
 - Introduce [swarming](https://blog.crisp.se/2009/06/26/henrikkniberg).
 - Introduce pairing

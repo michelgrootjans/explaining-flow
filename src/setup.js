@@ -9,6 +9,7 @@ const TimeAdjustments = require('./timeAdjustments');
 require('./stats').initialize();
 const WorkerStats = require('./worker-stats');
 const Scenario = require("./scenario");
+const LineChart = require("./charts");
 new WorkerStats();
 
 function createScenarioContainer(scenario) {
@@ -34,6 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
     $scenario.on('click', () => run(scenario))
     $('#scenarios').append($scenario);
   })
+  LineChart(document.getElementById('myChart'));
 });
 
 const wipLimiter = LimitBoardWip(1000);

@@ -71,8 +71,8 @@ function createChart(ctx) {
   return {leadTime, throughput, wip, data, chart, labels};
 }
 
-window.onload = function () {
-  const ctx = document.getElementById('myChart').getContext('2d');
+function LineChart($chart) {
+  const ctx = $chart.getContext('2d');
   let state = undefined;
 
   PubSub.subscribe('board.ready', () => {
@@ -87,4 +87,10 @@ window.onload = function () {
     state.wip.push(stats.workInProgress);
     state.chart.update()
   });
-};
+}
+
+// window.onload = function () {
+//   LineChart(document.getElementById('myChart'));
+// };
+
+module.exports = LineChart
