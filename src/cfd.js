@@ -24,9 +24,16 @@ const CurrentStats = columns => {
     PubSub.subscribe('workitem.removed', itemRemoved)
   };
 
+  const done = () => {
+    const allStatsButDone = stats.slice(0, -1);
+    const notDoneCount = allStatsButDone.reduce((sum, stats) => sum + stats.value, 0);
+    return notDoneCount === 0
+  };
+
   return {
     init,
-    current: () => stats
+    current: () => stats,
+    done
   }
 };
 

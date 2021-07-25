@@ -33,6 +33,7 @@ describe("Cumulative Flow Diagram", () => {
         {name: 'dev', value: 0},
         {name: 'Done', value: 0},
       ])
+      expect(stats.done()).toBeFalsy()
     });
 
     it('backlog = 3', function () {
@@ -43,29 +44,32 @@ describe("Cumulative Flow Diagram", () => {
         {name: 'dev', value: 0},
         {name: 'Done', value: 0},
       ])
+      expect(stats.done()).toBeFalsy()
     });
 
     it('move 1 from backlog to dev', function () {
-      add(backlog(), [items[0], items[1], items[2]]);
+      add(backlog(), [items[0]]);
       backlog().move(dev(), items[0])
       jest.runAllTimers();
       expect(stats.current()).toEqual([
-        {name: 'Backlog', value: 2},
+        {name: 'Backlog', value: 0},
         {name: 'dev', value: 1},
         {name: 'Done', value: 0},
       ])
+      expect(stats.done()).toBeFalsy()
     });
 
     it('move 1 from dev to done', function () {
-      add(backlog(), [items[0], items[1], items[2]]);
+      add(backlog(), [items[0]]);
       backlog().move(dev(), items[0])
       dev().move(done(), items[0])
       jest.runAllTimers();
       expect(stats.current()).toEqual([
-        {name: 'Backlog', value: 2},
+        {name: 'Backlog', value: 0},
         {name: 'dev', value: 0},
         {name: 'Done', value: 1},
       ])
+      expect(stats.done()).toBeTruthy()
     });
   });
 
@@ -85,6 +89,7 @@ describe("Cumulative Flow Diagram", () => {
         {name: 'qa', value: 0},
         {name: 'Done', value: 0},
       ])
+      expect(stats.done()).toBeFalsy()
     });
     it('backlog to dev', function () {
       add(backlog(), [items[0]]);
@@ -96,6 +101,7 @@ describe("Cumulative Flow Diagram", () => {
         {name: 'qa', value: 0},
         {name: 'Done', value: 0},
       ])
+      expect(stats.done()).toBeFalsy()
     });
     it('dev to queue', function () {
       add(backlog(), [items[0]]);
@@ -108,6 +114,7 @@ describe("Cumulative Flow Diagram", () => {
         {name: 'qa', value: 0},
         {name: 'Done', value: 0},
       ])
+      expect(stats.done()).toBeFalsy()
     });
     it('queue to qa', function () {
       add(backlog(), [items[0]]);
@@ -121,6 +128,7 @@ describe("Cumulative Flow Diagram", () => {
         {name: 'qa', value: 1},
         {name: 'Done', value: 0},
       ])
+      expect(stats.done()).toBeFalsy()
     });
     it('qa to done', function () {
       add(backlog(), [items[0]]);
@@ -135,6 +143,7 @@ describe("Cumulative Flow Diagram", () => {
         {name: 'qa', value: 0},
         {name: 'Done', value: 1},
       ])
+      expect(stats.done()).toBeTruthy()
     });
   });
 });
