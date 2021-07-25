@@ -15,6 +15,6 @@ const {WorkItem} = require('./worker');
     return randomBetween(value - distance, value + distance);
   }
 
-  module.exports = {generateWorkItems, randomBetween, averageOf};
+  module.exports = {generateWorkItems, randomBetween, averageOf, average: averageOf};
 
 })();

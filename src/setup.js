@@ -1,16 +1,14 @@
 const $ = require('jquery');
 
 require('./animation').initialize(currentStatsContainerId);
-const {generateWorkItems, randomBetween, averageOf} = require('./generator');
-const {Worker} = require('./worker');
+const {average} = require('./generator');
 const {LimitBoardWip} = require('../src/strategies');
-const Board = require('./board');
+require('./board');
 const TimeAdjustments = require('./timeAdjustments');
 require('./stats').initialize();
 const WorkerStats = require('./worker-stats');
 const Scenario = require("./scenario");
 new WorkerStats();
-const average = averageOf
 
 const scenarios = [
   {
