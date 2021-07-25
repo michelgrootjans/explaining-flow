@@ -6,7 +6,6 @@ const Stats = require('./stats');
   const initialize = statsContainer => {
     PubSub.subscribe('board.ready', (topic, {columns}) => {
       $('#board').empty();
-      console.log(statsContainer())
       $(`${statsContainer()} #workers`).empty();
 
       columns.forEach(column => {
@@ -36,10 +35,17 @@ const Stats = require('./stats');
     });
 
     PubSub.subscribe('stats.calculated', (topic, stats) => {
-      console.log(statsContainer())
       $(`${statsContainer()} .throughput`).text(round(stats.throughput));
       $(`${statsContainer()} .leadtime`).text(round(stats.leadTime));
-      $(`${statsContainer()} .wip`).text(`${stats.workInProgress} (max ${stats.maxWorkInProgress})`);
+
+      function renderWip(wip, maxWip) {
+        if (wip === maxWip) {
+          return wip;
+        }
+        return `${wip} (max ${maxWip})`;
+      }
+
+      $(`${statsContainer()} .wip`).text(renderWip(stats.workInProgress, stats.maxWorkInProgress));
     });
 
     PubSub.subscribe('worker.created', (topic, worker) => {

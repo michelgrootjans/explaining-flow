@@ -10,7 +10,7 @@ describe('animation', () => {
     $.fx.off = true;
     jest.useFakeTimers();
     PubSub.clearAllSubscriptions();
-    animation.initialize();
+    animation.initialize(() => "#stats-container");
   });
 
   describe('a simple dashboard', () => {
@@ -82,33 +82,48 @@ describe('animation', () => {
   describe('stats', () => {
     beforeEach(() => {
       document.body.innerHTML =
-        '<span id="throughput"></span><span id="leadtime"></span><span id="wip"></span>';
+        '<div id="stats-container"><span class="throughput"></span><span class="leadtime"></span><span class="wip"></span></div>';
     });
 
     it('shows on workitem done', () => {
       PubSub.publish('stats.calculated', {
         throughput: 1,
         leadTime: 2,
-        workInProgress: 3
+        workInProgress: 3,
+        maxWorkInProgress: 4,
       });
       jest.runAllTimers();
 
-      expect($('#throughput').text()).toBe("1");
-      expect($('#leadtime').text()).toBe("2");
-      expect($('#wip').text()).toBe("3");
+      expect($('.throughput').text()).toBe("1");
+      expect($('.leadtime').text()).toBe("2");
+      expect($('.wip').text()).toBe("3 (max 4)");
+    });
+
+    it('excludes max WIP when equal to current WIP', () => {
+      PubSub.publish('stats.calculated', {
+        throughput: 1,
+        leadTime: 2,
+        workInProgress: 3,
+        maxWorkInProgress: 3,
+      });
+      jest.runAllTimers();
+
+      expect($('.throughput').text()).toBe("1");
+      expect($('.leadtime').text()).toBe("2");
+      expect($('.wip').text()).toBe("3");
     });
   });
 
   describe('worker-stats', () => {
     beforeEach(() => {
       document.body.innerHTML =
-        '<div id="worker-stats"><ul id="workers"></ul></div>';
+        '<div id="stats-container"><ul class="workers"></ul></div>';
     });
 
     it('adds new workers', () => {
       const worker = new Worker({dev: 0});
       jest.runAllTimers();
-      expect($(`#worker-stats [data-worker-id="${worker.id}"]`).text())
+      expect($(`.workers [data-worker-id="${worker.id}"]`).text())
         .toEqual(`${worker.name()}: 0%`);
     });
 
@@ -117,7 +132,7 @@ describe('animation', () => {
       const newStats = {workerId: worker.id, stats: {efficiency: 0.9500111}};
       PubSub.publish('worker.stats.updated', newStats);
       jest.runAllTimers();
-      expect($(`#worker-stats [data-worker-id="${worker.id}"]`).text())
+      expect($(`.workers [data-worker-id="${worker.id}"]`).text())
         .toEqual(`${worker.name()}: 95%`);
     });
 

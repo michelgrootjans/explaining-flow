@@ -12,13 +12,8 @@ describe('a specialist', () => {
   })
   it('has a name', () => {
     const developer = new Worker({dev: 1});
-    expect(developer.name()).toMatch('(dev: 1)')
+    expect(developer.name()).toMatch('dev')
   })
-  it('has a name with rounded skills', () => {
-    const developer = new Worker({dev: 1.111111111});
-    expect(developer.name()).toMatch('(dev: 1.1)')
-  })
-
 });
 
 describe('a generalist', () => {
