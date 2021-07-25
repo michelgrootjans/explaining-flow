@@ -15,207 +15,124 @@ Stakeholders and customers typically worry about throughput and lead time. Throu
 ### Running
 `npm run bundle`
 
-To modify the team structure, look at `src/setup.js` and adapt to your wishes. Then `npm run bundle` again to reopen `index.html`
+To modify the team structure, look at `src/scenarios.js` and adapt to your wishes. Then `npm run bundle` again to reopen `index.html`
 
 ## My lightning talk
-My lighting talk is structured around the following steps:
-- edit `setup.js`
-- `npm run bundle` to show the simulation
-- rinse and repeat
 
-The following chapters show the steps in my talk by showing the changes to do in `setup.js`
+The following chapters show the different scenarios I run to illustrate the need to understand flow compared to velocity. These scenarios are ready to be clicked on the page. Each time you click a scenario, it will run and show its stats.
+The stats we're interested in are:
+- **Throughput**: this is what is typically measured under the name _velocity_. It's the number of user stories finished per unit of time.
+- **Lead Time**: the time taken for each story from the moment it has been taken out of the _todo_ column until it reaches the _done_ column.
+- **WIP**: Work In Progress. The amount of user stories _in flight_. These stories have been started but are not done yet.
 
-#### a single developer working on a predictable backlog
-``` javascript
-let board = new Board(
-  new WorkList('dev'),
-);
+#### scenario 1: a single developer working on a predictable backlog
+A single developer finishing one user story per day.
 
-board.addWorkers(
-  new Worker({dev: 1}),
-);
+Results:
+  - Throughput: about 1 story/day
+  - Lead time: about 1 day per story
+  - WIP: 1 story
 
-board.addWorkItems(...generateWorkItems(() => ({
-    dev: 1,
-  }), 50
-));
-```
+#### scenario 2: a single developer working on a backlog with some randomness
+The developer now spends 1 day _on average_ for each story.
+This slight change shows that throughput and lead time move in opposite directions.
+This is a direct illustration of [Little's law](https://en.wikipedia.org/wiki/Little%27s_law) which states that in a stable system, `throughput * lead time = WIP`.
+Stated another way: `lead time = WIP/throughput`.
 
-#### a single developer working on a backlog with some randomness
-This slight change illustrate that throughput and lead time move in opposite directions. This is a direct illustration of [Little's law](https://en.wikipedia.org/wiki/Little%27s_law).
-``` javascript
-// ... the previous code remains the same
-board.addWorkItems(...generateWorkItems(() => ({
-    dev: averageOf(1),
-  }), 50
-));
-```
+Results:
+- Throughput: about 1 story/day with some variation
+- Lead time: about 1 day per story with some variation
+- WIP: 1 story
 
-#### adding QA to the process
-Depending on the randomness of the simulation, a queue will appear between dev and qa. Every time the queue gets larger, lead time will increase, while throughput will be mostly unaffected (averaging to 1 story/day).
+#### scenario 3: handover from development to QA
+Now both development and qa will spend 1 day _on average_ for each story.
 
-``` javascript
-let board = new Board(
-  new WorkList('dev'),
-  new WorkList('qa'), // <= new
-);
+We expect the Lead Time be 2 on average now: 1 day of development, 1 day of qa. We also expect a Throughput of 1 story per day.
 
-board.addWorkers(
-  new Worker({dev: 1}),
-  new Worker({qa: 1}), // <= new
-);
+However, if the simulation runs for long enough, a queue will start to appear between dev and qa, adding to the lead time of the stories waiting in the queue.
+The reason is simple: As long as qa works faster than dev, everything will run smoothly. Once development starts going faster than qa, its output will wait in the queue.
 
-board.addWorkItems(...generateWorkItems(() => ({
-    dev: averageOf(1),
-    qa: averageOf(1), // <= new
-  }), 50
-));
-```
+Results will vary depending on the randomness of the simulation:
+- Throughput: a bit lower than 1 story/day
+- Lead time: 3 to 4 days per story
+- WIP: peaks between 5 and 10
 
-#### adding UX to the process
-Let's also accelerate the simulation. This allows us to see patterns we wouldn't recognise in the slow daily movements of stories on a board
+#### scenario 4: adding UX to the process
+Let's also accelerate the simulation. This allows us to see patterns we wouldn't recognise in the slow daily movements of stories on a board.
 
-``` javascript
-TimeAdjustments.speedUpBy(20); // <= accelerate the simulation
+Now ux, development and qa will spend 1 day _on average_ for each story. This is where lead time will start to increase, but it wil barely be visible in the velocity.
 
-let board = new Board(
-  new WorkList('ux'), // <= new
-  new WorkList('dev'),
-  new WorkList('qa'),
-);
+Results will vary depending on the randomness of the simulation:
+- Throughput: between 0.6-0.8 stories/day
+- Lead time: probably more than 10 days per story
+- WIP: peaks between 10 and 20
 
-board.addWorkers(
-  new Worker({ux: 1}), // <= new
-  new Worker({dev: 1}),
-  new Worker({qa: 1}),
-);
+#### scenario 5: let's stack the deck to make development the slowest in the process
+From now on, each scenario will distribute the effort unevenly amongst the workers as follows:
+- **1** day of ux on average
+- **2** days of dev on average
+- **1.5** days of qa on average
 
-board.addWorkItems(...generateWorkItems(() => ({
-    ux: averageOf(1), // <= new
-    dev: averageOf(1),
-    qa: averageOf(1),
-  }), 200 // <= increase the number of stories
-));
-```
+The ideal lead time will be 4.5 days (1 + 2 + 1.5). You will never be able to go lower than 4.5 days per story. 
 
-#### let's stack the deck to make development the slowest in the process
-
-``` javascript
-// the previous code remains the same
-board.addWorkItems(...generateWorkItems(() => ({
-    ux: averageOf(1),
-    dev: averageOf(2), // <= slowest
-    qa: averageOf(1.5),
-  }), 200
-));
-```
-Predictably, a queue will appear in front of the dev column. The usual reflex at this point is to add developers ;-)
-But what would be the expected outcome? Twice the throughput? Let's try that out in the next simulation.
+Predictably, a big queue will appear in front of the dev column. This is where lead time will start to skyrocket, and it wil barely be visible in the velocity.
 
 Results:
 - Throughput: about 0.45 stories/day
-- Lead time: about 100 days.
+- Lead time: about 100 days. We are far away of the ideal 4.5
+- WIP will probably peak at around 100
 
-#### let's add an extra developer
+#### scenario 6: let's add an extra developer
+This is bad. We have 3 team members with a total velocity 2 times lower that when we had a single developer.
 
-``` javascript
-// ...the previous code remains the same
-board.addWorkers(
-  new Worker({ux: 1}),
-  new Worker({dev: 1}),
-  new Worker({dev: 1}), // <= second developer
-  new Worker({qa: 1}),
-);
-// ... the rest of the code code remains the same
-```
+The usual reflex at this point is to add developers to speed things up ;-)
+
+What would be the expected outcome? Twice the throughput? Let's try that out in the next simulation.
+
 Results:
-- Throughput: about 0.6 stories/day (slightly improved)
+- Throughput: about 0.6 stories/day (slightly improved).
 - Lead time: about 50 days (improved with a factor of 2)
+- WIP peaks at about 60
 - Cost: +1 team member
 
 
-#### Let's go to the previous step and introduce a WIP-limit instead of a new developer
-``` javascript
-let board = new Board(
-  new WorkList('ux'),
-  new WorkList('dev'),
-  new WorkList('qa'),
-);
+#### scenario 7: Let's reduce the team again and introduce a WIP-limit instead of a new developer
+We will simulate with the same team from scenario 5, but introduce a WIP-limit of 10. This means that noone is allowed to start on a new story for as long as there are 10 stories _in flight_.
 
-board.addWorkers(
-  new Worker({ux: 1}),
-  new Worker({dev: 1}),
-  new Worker({qa: 1}),
-);
-
-board.addWorkItems(...generateWorkItems(() => ({
-    ux: averageOf(1),
-    dev: averageOf(2),
-    qa: averageOf(1.5),
-  }), 200
-));
-
-new LimitBoardWip(10); // <= new code
-```
 Results:
-- Throughput: about 0.45 stories/day
-- Lead time: about 20 days (*massive* improvement)
+- Throughput: about 0.45 stories/day (no change)
+- Lead time: about 20 days, a ***massive*** improvement
+- WIP peaks at 10 (duh!)
 
 So without any extra cost, our throughput (velocity) was unaffected, while our lead time went from 100 days to 20 days.
 
-#### Improve even more
-``` javascript
-// ...the previous code remains the same
-new LimitBoardWip(4);
-```
+#### scenario 8: Improve even more
+Since limiting WIP works so well, why not limiting it to 4?
+
 Results:
-- Throughput: about 0.45 stories/day
-- Lead time: about 8.5 days
+- Throughput: about 0.45 stories/day (still no change)
+- Lead time: about 8.5 days. Even better than before.
+- WIP peaks at 4
 
-Again, velocity is unaffected, lead time improved a lot
+#### scenario 9: But you can go too far
+Let's try limiting WIP to 2 now.
 
-#### But you can go too far
-``` javascript
-// ...the previous code remains the same
-new LimitBoardWip(2);
-```
 Results:
-- Throughput: about 0.35 stories/day
-- Lead time: about 5.5 days
+- Throughput: about 0.35 stories/day.
+- Lead time: about 5.5 days. Even better.
+- WIP peaks at 2
 
-Now we start to see a drop in throughput. This means we went too far in limiting WIP.
+Now we start to see a drop in throughput. This means we went too far in limiting WIP. Our bottleneck, development, was not working at 100% anymore, which caused the whole drop in throughput.
 
-#### The best solution: full stack developers
-``` javascript
-let board = new Board(
-  new WorkList('ux'),
-  new WorkList('dev'),
-  new WorkList('qa'),
-);
-
-board.addWorkers(
-  new Worker({all: 1}), // <= look ma, a full-stack developer
-  new Worker({all: 1}), // <= look ma, a full-stack developer
-  new Worker({all: 1}), // <= look ma, a full-stack developer
-);
-
-board.addWorkItems(...generateWorkItems(() => ({
-    ux: averageOf(1),
-    dev: averageOf(2),
-    qa: averageOf(1.5),
-  }), 200
-));
-```
+#### scenario 10: The best solution: full stack developers
 Results:
-- Throughput: about 0.6 stories/day
-- Lead time: less than 5 days
+- Throughput: about 0.6 stories/day. The same as scenario 6, without the cost of the extra developer.
+- Lead time: less than 5 days. We're now very close to the ideal 4.5
 
 This is the *ideal* situation, and will probably never be reached. Notice how the WIP is limited naturally by the number of team members.
 
 ### Conclusion
-The ideal situation is having a team of only full-stack developers. You will probably never reach this state. However, you can still aim for this state by introducing WIP limits.
-
-When a WIP limit has been reached, try to encourage [swarming](https://blog.crisp.se/2009/06/26/henrikkniberg). Team members will then learn new skills and evolve to the ideal state.
+The ideal situation is having a team of only full-stack developers. You will probably never reach this state. However, you can still aim for this state by introducing WIP limits. When the WIP limit has been reached, try to encourage [swarming](https://blog.crisp.se/2009/06/26/henrikkniberg). Team members will then learn new skills and evolve towards becoming full-stack developer. This will in turn increase the total throughput.
 
 ## Roadmap
 This project is written in a RDD fashion: Readme Driven Development. This means that this readme is the only feature tracking tool I'm using.

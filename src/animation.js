@@ -5,7 +5,7 @@ const $ = require('jquery');
   const initialize = statsContainer => {
     PubSub.subscribe('board.ready', (topic, {columns}) => {
       $('#board').empty();
-      $(`${statsContainer()} #workers`).empty();
+      $(`${statsContainer()} .workers`).empty();
 
       columns.forEach(column => {
         const $column = $('<li/>')
