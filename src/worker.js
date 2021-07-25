@@ -29,7 +29,7 @@ const TimeAdjustments = require('./timeAdjustments');
         return Object.keys(skills).map(skill => `${skill}: ${round(skill)}`)
       }
 
-      return `${id}-(${renderSkills()})`;
+      return `${renderSkills()}`;
     }
 
     function workSpeedFor(skill) {

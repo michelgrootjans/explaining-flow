@@ -1,4 +1,6 @@
-require('./animation').initialize();
+const $ = require('jquery');
+
+require('./animation').initialize(currentStatsContainerId);
 const {generateWorkItems, randomBetween, averageOf} = require('./generator');
 const {Worker, WorkList} = require('./worker');
 const {LimitBoardWip, DynamicLimitBoardWip, WipUp} = require('../src/strategies');
@@ -11,7 +13,8 @@ const average = averageOf
 
 const scenarios = [
   {
-    title: 'single developer, predictible work',
+    id:1,
+    title: 'dev 1',
     workers: ['dev'],
     stories: {
       amount: 10,
@@ -19,7 +22,8 @@ const scenarios = [
     }
   },
   {
-    title: 'single developer, variable work',
+    id:2,
+    title: 'dev variable',
     workers: ['dev'],
     stories: {
       amount: 10,
@@ -28,67 +32,124 @@ const scenarios = [
     }
   },
   {
+    id:3,
     title: 'dev and qa',
     workers: ['dev', 'qa'],
     stories: {
       amount: 10,
-      work: {'dev': averageOf(1), 'qa': averageOf(1)},
+      work: {'dev': 1, 'qa': 1},
       distribution: average
     }
   },
   {
+    id:4,
     title: 'ux, dev and qa',
     workers: ['ux', 'dev', 'qa'],
     stories: {
       amount: 200,
-      work: {'ux': averageOf(1), 'dev': averageOf(1), 'qa': averageOf(1)},
+      work: {'ux': 1, 'dev': 1, 'qa': 1},
       distribution: average
     },
     speed: 20
   },
   {
-    title: 'dev is bottleneck',
+    id:5,
+    title: 'ux: 1, dev: 2, ux: 1.5',
     workers: ['ux', 'dev', 'qa'],
     stories: {
       amount: 200,
-      work: {'ux': averageOf(1), 'dev': averageOf(2), 'qa': averageOf(1.5)},
+      work: {'ux': 1, 'dev': 2, 'qa': 1.5},
       distribution: average
     },
     speed: 20
   },
   {
-    title: 'second developer',
+    id:6,
+    title: '2nd developer',
     workers: ['ux', 'dev', 'dev', 'qa'],
     stories: {
       amount: 200,
-      work: {'ux': averageOf(1), 'dev': averageOf(2), 'qa': averageOf(1.5)},
+      work: {'ux': 1, 'dev': 2, 'qa': 1.5},
       distribution: average
     },
     speed: 20
   },
   {
+    id:7,
     title: 'limit WIP to 10',
     workers: ['ux', 'dev', 'qa'],
     stories: {
       amount: 200,
-      work: {'ux': averageOf(1), 'dev': averageOf(2), 'qa': averageOf(1.5)},
+      work: {'ux': 1, 'dev': 2, 'qa': 1.5},
       distribution: average
     },
     speed: 20,
     wipLimit: 10
   },
+  {
+    id:8,
+    title: 'limit WIP to 4',
+    workers: ['ux', 'dev', 'qa'],
+    stories: {
+      amount: 200,
+      work: {'ux': 1, 'dev': 2, 'qa': 1.5},
+      distribution: average
+    },
+    speed: 20,
+    wipLimit: 4
+  },
+  {
+    id:9,
+    title: 'limit WIP to 2',
+    workers: ['ux', 'dev', 'qa'],
+    stories: {
+      amount: 200,
+      work: {'ux': 1, 'dev': 2, 'qa': 1.5},
+      distribution: average
+    },
+    speed: 20,
+    wipLimit: 2
+  },
+  {
+    id:10,
+    title: 'fullstack',
+    workers: ['all', 'all', 'all'],
+    stories: {
+      amount: 200,
+      work: {'ux': 1, 'dev': 2, 'qa': 1.5},
+      distribution: average
+    },
+    speed: 20
+  },
 ]
 
+function createScenarioContainer(scenario) {
+  return $('<div/>')
+    .attr('id', `scenario-${scenario.id}`)
+    .addClass('scenario')
+    .append($('<div/>').addClass('scenario-title').text(scenario.title))
+    .append($('<div/>').addClass('throughput'))
+    .append($('<div/>').addClass('leadtime'))
+    .append($('<div/>').addClass('wip'))
+    .append($('<div/>').addClass('workers'))
+}
+
+let currentScenario = undefined;
+function currentStatsContainerId() {
+  return `#scenario-${currentScenario.id}`
+}
+
+
 document.addEventListener('DOMContentLoaded', event => {
-  let currentScenario = 0;
-  document.querySelector("#numbers").addEventListener('click', () => {
-    run(scenarios[currentScenario]);
-    currentScenario++;
-  });
+  scenarios.forEach(scenario => {
+    let $scenario = createScenarioContainer(scenario);
+    $scenario.on('click', () => run(scenario))
+    $('#scenarios').append($scenario);
+  })
 });
 
-
 function run(scenario) {
+  currentScenario = scenario
   document.title = scenario.title || 'Flow simulation'
   TimeAdjustments.speedUpBy(scenario.speed || 1);
   LimitBoardWip(scenario.wipLimit || scenario.stories.amount)
@@ -106,15 +167,16 @@ function run(scenario) {
   );
 
   function generateStory() {
-    debugger
     const story = {}
     let calculation = scenario.stories.distribution || (identity => identity);
     Object.keys(scenario.stories.work).forEach(key => {
-      story[key] = calculation(scenario.stories.work[key]);
+      let givenValue = scenario.stories.work[key];
+      let randomizedValue = calculation(givenValue);
+      story[key] = randomizedValue;
     });
     return story;
   }
 
-  board.addWorkItems(...generateWorkItems(generateStory, scenario.stories.amount
-  ));
+  board.addWorkItems(...generateWorkItems(generateStory, scenario.stories.amount));
 }
+

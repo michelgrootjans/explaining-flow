@@ -3,10 +3,11 @@ const $ = require('jquery');
 const Stats = require('./stats');
 
 (function () {
-  const initialize = () => {
+  const initialize = statsContainer => {
     PubSub.subscribe('board.ready', (topic, {columns}) => {
       $('#board').empty();
-      $('#workers').empty();
+      console.log(statsContainer())
+      $(`${statsContainer()} #workers`).empty();
 
       columns.forEach(column => {
         const $column = $('<li/>')
@@ -35,9 +36,12 @@ const Stats = require('./stats');
     });
 
     PubSub.subscribe('stats.calculated', (topic, stats) => {
-      $('#throughput').text(round(stats.throughput));
-      $('#leadtime').text(round(stats.leadTime));
-      $('#wip').text(stats.workInProgress);
+      console.log(statsContainer())
+      $(`${statsContainer()} .throughput`).text(round(stats.throughput));
+      console.log($(`${statsContainer()} .throughput`))
+      console.log(`${statsContainer()} .throughput`)
+      $(`${statsContainer()} .leadtime`).text(round(stats.leadTime));
+      $(`${statsContainer()} .wip`).text(stats.workInProgress);
     });
 
     PubSub.subscribe('worker.created', (topic, worker) => {
@@ -47,12 +51,12 @@ const Stats = require('./stats');
         .append($('<span/>').addClass('name').text(`${worker.name()}: `))
         .append($('<span/>').addClass('stat').text('0%'));
 
-      $('#worker-stats ul#workers').append($worker)
+      $(`${statsContainer()} .workers`).append($worker)
     });
 
     PubSub.subscribe('worker.stats.updated', (topic, stats) => {
       var efficiency = round(stats.stats.efficiency * 100)
-      $(`#worker-stats [data-worker-id="${stats.workerId}"] .stat`)
+      $(`${statsContainer()} [data-worker-id="${stats.workerId}"] .stat`)
         .text(`${efficiency}%`);
     });
 

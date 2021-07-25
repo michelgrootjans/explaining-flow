@@ -6,6 +6,20 @@
     text-align: center;
 }
 
+#scenarios {
+}
+
+.scenario {
+    display: inline-block;
+    margin: 1em;
+    vertical-align: top;
+}
+
+.scenario-title {
+    overflow-x: visible;
+    overflow-y: visible;
+}
+
 li.column {
     float: left;
     width: 150px;
@@ -24,20 +38,23 @@ ul.cards li {
 }
 
 #numbers {
-    width: 300px;
+    /*width: 300px;*/
 }
 
 .throughput {
     background-color: rgba(54, 162, 235, 0.1);
     border: rgb(54, 162, 235) solid 1px;
+    height: 1em;
 }
 
 .leadtime {
     background-color: rgba(255, 99, 132, 0.1);
     border: rgb(255, 99, 132) solid 1px;
+    height: 1em;
 }
 
 .wip {
     background-color: rgba(255, 206, 86, 0.1);
     border: rgb(255, 206, 86) solid 1px;
+    height: 1em;
 }
