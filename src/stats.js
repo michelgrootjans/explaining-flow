@@ -5,6 +5,7 @@ const PubSub = require('pubsub-js');
   function initialState() {
     return {
       wip: 0,
+      maxWip: 0,
       maxEndtime: 0,
       minStarttime: Math.min(),
       doneItems: [],
@@ -57,6 +58,7 @@ const PubSub = require('pubsub-js');
         throughput: calculateAllThroughput(state.doneItems) * TimeAdjustments.multiplicator(),
         leadTime: calculateAllLeadTime(state.doneItems) / TimeAdjustments.multiplicator(),
         workInProgress: state.wip,
+        maxWorkInProgress: state.maxWip,
         sliding: {
           throughput: throughputForLast,
           leadTime: leadTimeForLast,
@@ -70,6 +72,7 @@ const PubSub = require('pubsub-js');
 
     PubSub.subscribe('workitem.started', (topic, item) => {
       state.wip++;
+      state.maxWip = Math.max(state.wip, state.maxWip)
       publishStats();
     });
 

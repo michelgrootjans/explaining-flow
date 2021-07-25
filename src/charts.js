@@ -78,7 +78,8 @@ window.onload = function () {
   let state = undefined;
 
   PubSub.subscribe('board.ready', () => {
-    state = createChart(ctx)
+    state = createChart(ctx);
+    state.chart.update();
   });
 
   PubSub.subscribe('stats.calculated', (topic, stats) => {

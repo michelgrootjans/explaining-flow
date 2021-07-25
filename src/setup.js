@@ -17,7 +17,7 @@ const scenarios = [
     title: 'dev 1',
     workers: ['dev'],
     stories: {
-      amount: 10,
+      amount: 50,
       work: {'dev': 1}
     }
   },
@@ -26,7 +26,7 @@ const scenarios = [
     title: 'dev variable',
     workers: ['dev'],
     stories: {
-      amount: 10,
+      amount: 50,
       work: {'dev': 1},
       distribution: average
     }
@@ -36,7 +36,7 @@ const scenarios = [
     title: 'dev and qa',
     workers: ['dev', 'qa'],
     stories: {
-      amount: 10,
+      amount: 50,
       work: {'dev': 1, 'qa': 1},
       distribution: average
     }

@@ -38,10 +38,8 @@ const Stats = require('./stats');
     PubSub.subscribe('stats.calculated', (topic, stats) => {
       console.log(statsContainer())
       $(`${statsContainer()} .throughput`).text(round(stats.throughput));
-      console.log($(`${statsContainer()} .throughput`))
-      console.log(`${statsContainer()} .throughput`)
       $(`${statsContainer()} .leadtime`).text(round(stats.leadTime));
-      $(`${statsContainer()} .wip`).text(stats.workInProgress);
+      $(`${statsContainer()} .wip`).text(`${stats.workInProgress} (max ${stats.maxWorkInProgress})`);
     });
 
     PubSub.subscribe('worker.created', (topic, worker) => {
@@ -55,7 +53,7 @@ const Stats = require('./stats');
     });
 
     PubSub.subscribe('worker.stats.updated', (topic, stats) => {
-      var efficiency = round(stats.stats.efficiency * 100)
+      var efficiency = Math.round(stats.stats.efficiency * 100)
       $(`${statsContainer()} [data-worker-id="${stats.workerId}"] .stat`)
         .text(`${efficiency}%`);
     });

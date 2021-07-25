@@ -26,7 +26,7 @@ const TimeAdjustments = require('./timeAdjustments');
       }
 
       function renderSkills() {
-        return Object.keys(skills).map(skill => `${skill}: ${round(skill)}`)
+        return Object.keys(skills).map(skill => `${skill}`)
       }
 
       return `${renderSkills()}`;
