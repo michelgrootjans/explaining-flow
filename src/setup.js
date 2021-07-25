@@ -1,7 +1,8 @@
+const scenarios = require('./scenarios')
+
 const $ = require('jquery');
 
 require('./animation').initialize(currentStatsContainerId);
-const {average} = require('./generator');
 const {LimitBoardWip} = require('../src/strategies');
 require('./board');
 const TimeAdjustments = require('./timeAdjustments');
@@ -9,118 +10,6 @@ require('./stats').initialize();
 const WorkerStats = require('./worker-stats');
 const Scenario = require("./scenario");
 new WorkerStats();
-
-const scenarios = [
-  {
-    id: 1,
-    title: 'dev 1',
-    workers: ['dev'],
-    stories: {
-      amount: 50,
-      work: {'dev': 1}
-    }
-  },
-  {
-    id: 2,
-    title: 'dev variable',
-    workers: ['dev'],
-    stories: {
-      amount: 50,
-      work: {'dev': 1},
-      distribution: average
-    }
-  },
-  {
-    id: 3,
-    title: 'dev and qa',
-    workers: ['dev', 'qa'],
-    stories: {
-      amount: 50,
-      work: {'dev': 1, 'qa': 1},
-      distribution: average
-    }
-  },
-  {
-    id: 4,
-    title: 'ux, dev and qa',
-    workers: ['ux', 'dev', 'qa'],
-    stories: {
-      amount: 200,
-      work: {'ux': 1, 'dev': 1, 'qa': 1},
-      distribution: average
-    },
-    speed: 20
-  },
-  {
-    id: 5,
-    title: 'ux: 1, dev: 2, ux: 1.5',
-    workers: ['ux', 'dev', 'qa'],
-    stories: {
-      amount: 200,
-      work: {'ux': 1, 'dev': 2, 'qa': 1.5},
-      distribution: average
-    },
-    speed: 20
-  },
-  {
-    id: 6,
-    title: '2nd developer',
-    workers: ['ux', 'dev', 'dev', 'qa'],
-    stories: {
-      amount: 200,
-      work: {'ux': 1, 'dev': 2, 'qa': 1.5},
-      distribution: average
-    },
-    speed: 20
-  },
-  {
-    id: 7,
-    title: 'limit WIP to 10',
-    workers: ['ux', 'dev', 'qa'],
-    stories: {
-      amount: 200,
-      work: {'ux': 1, 'dev': 2, 'qa': 1.5},
-      distribution: average
-    },
-    speed: 20,
-    wipLimit: 10
-  },
-  {
-    id: 8,
-    title: 'limit WIP to 4',
-    workers: ['ux', 'dev', 'qa'],
-    stories: {
-      amount: 200,
-      work: {'ux': 1, 'dev': 2, 'qa': 1.5},
-      distribution: average
-    },
-    speed: 20,
-    wipLimit: 4
-  },
-  {
-    id: 9,
-    title: 'limit WIP to 2',
-    workers: ['ux', 'dev', 'qa'],
-    stories: {
-      amount: 200,
-      work: {'ux': 1, 'dev': 2, 'qa': 1.5},
-      distribution: average
-    },
-    speed: 20,
-    wipLimit: 2
-  },
-  {
-    id: 10,
-    title: 'fullstack',
-    workers: ['all', 'all', 'all'],
-    stories: {
-      amount: 200,
-      work: {'ux': 1, 'dev': 2, 'qa': 1.5},
-      distribution: average
-    },
-    speed: 20
-  },
-]
 
 function createScenarioContainer(scenario) {
   return $('<div/>')
@@ -138,7 +27,6 @@ let currentScenario = undefined;
 function currentStatsContainerId() {
   return `#scenario-${currentScenario.id}`
 }
-
 
 document.addEventListener('DOMContentLoaded', () => {
   scenarios.forEach(scenario => {
