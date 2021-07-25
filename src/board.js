@@ -89,7 +89,8 @@ const {WorkList} = require('./worker');
 
     PubSub.subscribe('workitem.added', (topic, subject) => {
       const item = subject.item;
-      if (subject.column.id === firstWorkColumn().id) {
+      let column1 = firstWorkColumn();
+      if (column1 && subject.column.id === column1.id) {
         item.startTime = Date.now();
         PubSub.publish('workitem.started', item);
       }
