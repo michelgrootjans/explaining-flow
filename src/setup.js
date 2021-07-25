@@ -10,7 +10,8 @@ require('./stats').initialize();
 const WorkerStats = require('./worker-stats');
 const Scenario = require("./scenario");
 const LineChart = require("./charts");
-const CumulativeFlowDiagram = require("./cfd");
+const CurrentStats = require("./cfd");
+const CumulativeFlowDiagram = require("./CumulativeFlowDiagram");
 new WorkerStats();
 
 function createScenarioContainer(scenario) {
@@ -36,8 +37,6 @@ document.addEventListener('DOMContentLoaded', () => {
     $scenario.on('click', () => run(scenario))
     $('#scenarios').append($scenario);
   })
-  // LineChart(document.getElementById('myChart'))
-  CumulativeFlowDiagram(document.getElementById('myChart')).init();
 });
 
 const wipLimiter = LimitBoardWip(1000);
@@ -48,6 +47,11 @@ function run(scenario) {
   TimeAdjustments.speedUpBy(scenario.speed || 1);
   wipLimiter.updateLimit(scenario.wipLimit || scenario.stories.amount)
 
-  Scenario(scenario).run();
+  const board = Scenario(scenario).run();
+
+  // LineChart(document.getElementById('myChart'))
+  const stats = CurrentStats(board.columns());
+  stats.init();
+  CumulativeFlowDiagram(document.getElementById('myChart'), stats);
 }
 

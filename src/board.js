@@ -21,7 +21,7 @@ const BoardFactory = require("./boardFactory");
     const board = {
       addWorkers,
       addWorkItems,
-      columns,
+      columns: () => columns,
       items: () => columns.map(column => column.items())
     };
 
