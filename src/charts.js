@@ -85,10 +85,11 @@ window.onload = function () {
     state.leadTime.push(stats.sliding.leadTime(5));
     state.throughput.push(stats.sliding.throughput(5));
     state.wip.push(stats.workInProgress);
-    let numberOfDatapoints = state.labels.length;
-    setTimeout(() => {
-      const dataHasNotChanged = numberOfDatapoints === state.labels.length;
-      if (dataHasNotChanged) state.chart.update();
-    }, 500)
+    // let numberOfDatapoints = state.labels.length;
+    state.chart.update()
+    // setTimeout(() => {
+    //   const dataHasNotChanged = numberOfDatapoints === state.labels.length;
+    //   if (dataHasNotChanged) state.chart.update();
+    // }, 500)
   });
 };

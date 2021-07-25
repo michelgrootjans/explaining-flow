@@ -158,11 +158,11 @@ function run(scenario) {
 
   let board = new Board([...new Set(scenario.workers)])
 
-  function createWorker(skillName, speed = 1) {
+  const createWorker = (skillName, speed = 1) => {
     let skills = {};
     skills[skillName] = speed
     return new Worker(skills);
-  }
+  };
 
   board.addWorkers(
     ...(scenario.workers.map(name => createWorker(name)))
