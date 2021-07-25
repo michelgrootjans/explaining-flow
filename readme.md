@@ -145,10 +145,8 @@ I welcome suggestions, especially if they come in the form of a pull request.
 - Introduce [swarming](https://blog.crisp.se/2009/06/26/henrikkniberg).
 - Introduce pairing
 - Introduce #mobprogramming
-- Compare 2 simulations
 
 ### Done
-
 - Make a working board
 - Have a skill set per developer
 - Randomize workload per story
@@ -157,3 +155,4 @@ I welcome suggestions, especially if they come in the form of a pull request.
 - Introduce WIP limits
 - Add stats for workers
 - Allow multiple developers with the same skill set
+- Compare 2 simulations
