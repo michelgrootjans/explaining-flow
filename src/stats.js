@@ -66,11 +66,11 @@ const PubSub = require('pubsub-js');
       });
     }
 
-    PubSub.subscribe('board.ready', (topic, item) => {
+    PubSub.subscribe('board.ready', () => {
       state = initialState()
     });
 
-    PubSub.subscribe('workitem.started', (topic, item) => {
+    PubSub.subscribe('workitem.started', () => {
       state.wip++;
       state.maxWip = Math.max(state.wip, state.maxWip)
       publishStats();

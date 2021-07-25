@@ -1,17 +1,14 @@
-var Chart = require('chart.js');
-
-function timeFormat(date) {
-  return date;
-}
+const Chart = require('chart.js');
+const PubSub = require("pubsub-js");
 
 function createChart(ctx) {
   const leadTime = [];
   const throughput = [];
   const wip = [];
-  let labels = [];
+  const labels = [];
 
   const data = {
-    labels: labels,
+    labels,
     datasets: [
       {
         label: 'throughput (a.k.a. velocity)',
@@ -48,7 +45,8 @@ function createChart(ctx) {
       },
     ]
   };
-  var chart = new Chart(ctx, {
+
+  const chart = new Chart(ctx, {
     data: data,
     options: {
       animation: false,
@@ -74,12 +72,12 @@ function createChart(ctx) {
 }
 
 window.onload = function () {
-  var ctx = document.getElementById('myChart').getContext('2d');
+  const ctx = document.getElementById('myChart').getContext('2d');
   let state = undefined;
 
   PubSub.subscribe('board.ready', () => {
+    state && state.chart && state.chart.destroy()
     state = createChart(ctx);
-    state.chart.update();
   });
 
   PubSub.subscribe('stats.calculated', (topic, stats) => {

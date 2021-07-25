@@ -2,8 +2,8 @@ const $ = require('jquery');
 
 require('./animation').initialize(currentStatsContainerId);
 const {generateWorkItems, randomBetween, averageOf} = require('./generator');
-const {Worker, WorkList} = require('./worker');
-const {LimitBoardWip, DynamicLimitBoardWip, WipUp} = require('../src/strategies');
+const {Worker} = require('./worker');
+const {LimitBoardWip} = require('../src/strategies');
 const Board = require('./board');
 const TimeAdjustments = require('./timeAdjustments');
 require('./stats').initialize();
@@ -140,7 +140,7 @@ function currentStatsContainerId() {
 }
 
 
-document.addEventListener('DOMContentLoaded', event => {
+document.addEventListener('DOMContentLoaded', () => {
   scenarios.forEach(scenario => {
     let $scenario = createScenarioContainer(scenario);
     $scenario.on('click', () => run(scenario))
@@ -168,11 +168,10 @@ function run(scenario) {
 
   function generateStory() {
     const story = {}
-    let calculation = scenario.stories.distribution || (identity => identity);
+    let distribute = scenario.stories.distribution || (identity => identity);
     Object.keys(scenario.stories.work).forEach(key => {
       let givenValue = scenario.stories.work[key];
-      let randomizedValue = calculation(givenValue);
-      story[key] = randomizedValue;
+      story[key] = distribute(givenValue);
     });
     return story;
   }

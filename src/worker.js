@@ -21,10 +21,6 @@ const TimeAdjustments = require('./timeAdjustments');
     };
 
     function renderName() {
-      function round(skill) {
-        return Math.round(skills[skill] * 10) / 10;
-      }
-
       function renderSkills() {
         return Object.keys(skills).map(skill => `${skill}`)
       }
@@ -91,11 +87,6 @@ const TimeAdjustments = require('./timeAdjustments');
       work.push(item);
       PubSub.publish('workitem.added', {item, column});
     }
-
-    const pull = () => {
-      return work.shift();
-    };
-
     function _remove(item) {
       for (let i = 0; i < work.length; i++) {
         if (work[i] === item) {

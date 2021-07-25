@@ -1,6 +1,5 @@
 const PubSub = require('pubsub-js');
 const $ = require('jquery');
-const Stats = require('./stats');
 
 (function () {
   const initialize = statsContainer => {

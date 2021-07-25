@@ -2,7 +2,7 @@ const PubSub = require('pubsub-js');
 const $ = require('jquery');
 const animation = require('../src/animation');
 
-const {Worker, WorkItem, WorkList} = require('../src/worker');
+const {Worker, WorkItem} = require('../src/worker');
 const Board = require('../src/board');
 
 describe('animation', () => {
@@ -15,7 +15,6 @@ describe('animation', () => {
 
   describe('a simple dashboard', () => {
     let board = undefined;
-    let dev = undefined;
     beforeEach(() => {
       document.body.innerHTML = '<ul id="board"></ul>';
       board = new Board(['dev']);
