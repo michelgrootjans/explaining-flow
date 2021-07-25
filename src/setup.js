@@ -8,12 +8,13 @@ const Board = require('./board');
 const TimeAdjustments = require('./timeAdjustments');
 require('./stats').initialize();
 const WorkerStats = require('./worker-stats');
+const Scenario = require("./scenario");
 new WorkerStats();
 const average = averageOf
 
 const scenarios = [
   {
-    id:1,
+    id: 1,
     title: 'dev 1',
     workers: ['dev'],
     stories: {
@@ -22,7 +23,7 @@ const scenarios = [
     }
   },
   {
-    id:2,
+    id: 2,
     title: 'dev variable',
     workers: ['dev'],
     stories: {
@@ -32,7 +33,7 @@ const scenarios = [
     }
   },
   {
-    id:3,
+    id: 3,
     title: 'dev and qa',
     workers: ['dev', 'qa'],
     stories: {
@@ -42,7 +43,7 @@ const scenarios = [
     }
   },
   {
-    id:4,
+    id: 4,
     title: 'ux, dev and qa',
     workers: ['ux', 'dev', 'qa'],
     stories: {
@@ -53,7 +54,7 @@ const scenarios = [
     speed: 20
   },
   {
-    id:5,
+    id: 5,
     title: 'ux: 1, dev: 2, ux: 1.5',
     workers: ['ux', 'dev', 'qa'],
     stories: {
@@ -64,7 +65,7 @@ const scenarios = [
     speed: 20
   },
   {
-    id:6,
+    id: 6,
     title: '2nd developer',
     workers: ['ux', 'dev', 'dev', 'qa'],
     stories: {
@@ -75,7 +76,7 @@ const scenarios = [
     speed: 20
   },
   {
-    id:7,
+    id: 7,
     title: 'limit WIP to 10',
     workers: ['ux', 'dev', 'qa'],
     stories: {
@@ -87,7 +88,7 @@ const scenarios = [
     wipLimit: 10
   },
   {
-    id:8,
+    id: 8,
     title: 'limit WIP to 4',
     workers: ['ux', 'dev', 'qa'],
     stories: {
@@ -99,7 +100,7 @@ const scenarios = [
     wipLimit: 4
   },
   {
-    id:9,
+    id: 9,
     title: 'limit WIP to 2',
     workers: ['ux', 'dev', 'qa'],
     stories: {
@@ -111,7 +112,7 @@ const scenarios = [
     wipLimit: 2
   },
   {
-    id:10,
+    id: 10,
     title: 'fullstack',
     workers: ['all', 'all', 'all'],
     stories: {
@@ -135,6 +136,7 @@ function createScenarioContainer(scenario) {
 }
 
 let currentScenario = undefined;
+
 function currentStatsContainerId() {
   return `#scenario-${currentScenario.id}`
 }
@@ -156,28 +158,6 @@ function run(scenario) {
   TimeAdjustments.speedUpBy(scenario.speed || 1);
   wipLimiter.updateLimit(scenario.wipLimit || scenario.stories.amount)
 
-  let board = new Board([...new Set(scenario.workers)])
-
-  const createWorker = (skillName, speed = 1) => {
-    let skills = {};
-    skills[skillName] = speed
-    return new Worker(skills);
-  };
-
-  board.addWorkers(
-    ...(scenario.workers.map(name => createWorker(name)))
-  );
-
-  function generateStory() {
-    const story = {}
-    let distribute = scenario.stories.distribution || (identity => identity);
-    Object.keys(scenario.stories.work).forEach(key => {
-      let givenValue = scenario.stories.work[key];
-      story[key] = distribute(givenValue);
-    });
-    return story;
-  }
-
-  board.addWorkItems(...generateWorkItems(generateStory, scenario.stories.amount));
+  Scenario(scenario).run();
 }
 

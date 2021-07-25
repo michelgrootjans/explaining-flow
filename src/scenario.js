@@ -3,15 +3,6 @@ const {generateWorkItems} = require("./generator");
 const {Worker} = require('./worker')
 
 
-// e.g. {
-//   id: 1,
-//     workers: ['dev'],
-//   stories: {
-//   amount: 10,
-//     work: {'dev': 1}
-//   }
-// }
-
 const Scenario = scenario => {
   const createWorker = (skillName, speed = 1) => {
     let skills = {};
