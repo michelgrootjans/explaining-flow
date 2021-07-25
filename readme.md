@@ -58,7 +58,7 @@ Results will vary depending on the randomness of the simulation:
 - WIP: peaks between 5 and 10
 
 #### scenario 4: adding UX to the process
-Let's also accelerate the simulation. This allows us to see patterns we wouldn't recognise in the slow daily movements of stories on a board.
+Let's also accelerate the simulation. This allows us to see patterns we wouldn't recognise in the slow daily movements of stories on a board. From now on, we'll simulate with 200 user stories.
 
 Now ux, development and qa will spend 1 day _on average_ for each story. This is where lead time will start to increase, but it wil barely be visible in the velocity.
 
