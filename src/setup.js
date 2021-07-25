@@ -10,6 +10,7 @@ require('./stats').initialize();
 const WorkerStats = require('./worker-stats');
 const Scenario = require("./scenario");
 const LineChart = require("./charts");
+const CumulativeFlowDiagram = require("./cfd");
 new WorkerStats();
 
 function createScenarioContainer(scenario) {
@@ -35,7 +36,8 @@ document.addEventListener('DOMContentLoaded', () => {
     $scenario.on('click', () => run(scenario))
     $('#scenarios').append($scenario);
   })
-  LineChart(document.getElementById('myChart'));
+  // LineChart(document.getElementById('myChart'))
+  CumulativeFlowDiagram(document.getElementById('myChart')).init();
 });
 
 const wipLimiter = LimitBoardWip(1000);

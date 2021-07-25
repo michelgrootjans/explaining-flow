@@ -89,8 +89,4 @@ function LineChart($chart) {
   });
 }
 
-// window.onload = function () {
-//   LineChart(document.getElementById('myChart'));
-// };
-
 module.exports = LineChart

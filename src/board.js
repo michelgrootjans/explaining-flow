@@ -1,4 +1,4 @@
-const {WorkList} = require('./worker');
+const BoardFactory = require("./boardFactory");
 
 (function () {
   const NoLimits = function () {
@@ -8,7 +8,7 @@ const {WorkList} = require('./worker');
   };
 
   let Board = function (workColumnNames) {
-    const columns = [];
+    let columns = [];
     const workers = [];
     const backlogColumn = () => columns[0];
     const firstWorkColumn = () => columns[1];
@@ -21,33 +21,17 @@ const {WorkList} = require('./worker');
     const board = {
       addWorkers,
       addWorkItems,
+      columns,
       items: () => columns.map(column => column.items())
     };
 
-    function initialize(workColumns) {
-      columns.push(new WorkList('Backlog'));
-      for (let i = 0; i < workColumns.length; i++) {
-        columns.push(workColumns[i]);
-        columns.push(new WorkList('-'));
-      }
-      doneColumn().name = 'Done';
-
-      for (let i = 0; i < columns.length; i++) {
-        if (i % 2 === 0) {
-          let queueColumn = columns[i];
-          queueColumn.type = 'queue';
-          queueColumn.workColumn = columns[i + 1];
-        } else {
-          let workColumn = columns[i];
-          workColumn.type = 'work';
-          workColumn.inbox = columns[i - 1];
-          workColumn.outbox = columns[i + 1];
-        }
-      }
+    function initialize(workColumnNames) {
+      const factory = new BoardFactory();
+      columns = factory.createColumns(workColumnNames);
       PubSub.publish('board.ready', {columns});
     }
 
-    initialize(workColumnNames.map(name => new WorkList(name)));
+    initialize(workColumnNames);
 
     PubSub.subscribe('workitem.added', (topic, subject) => {
       assignNewWorkIfPossible();
