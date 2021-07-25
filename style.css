@@ -7,6 +7,8 @@
 }
 
 #scenarios {
+    overflow: auto;
+    white-space: nowrap;
 }
 
 .scenario {
