@@ -18,8 +18,6 @@ const CurrentStats = columns => {
   const itemRemoved = (topic, {column, item}) => statFor(column).value--;
 
   const init = () => {
-    // PubSub.subscribe('workitem.added', console.log)
-    // PubSub.subscribe('workitem.removed', console.log)
     PubSub.subscribe('workitem.added', itemAdded)
     PubSub.subscribe('workitem.removed', itemRemoved)
   };

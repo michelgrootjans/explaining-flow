@@ -42,12 +42,10 @@ const TimeAdjustments = require('./timeAdjustments');
         idle = false;
         PubSub.publish('worker.working', worker);
         let skill = inProgress.necessarySkill;
-        // console.log({action: `starting ${skill}`, worker: id, item: item.id})
         inbox.move(inProgress, item);
         let timeout = calculateTimeoutFor(item, skill);
         setTimeout(() => {
           idle = true;
-          // console.log({action: `finished ${skill}`, worker: id, item: item.id, after: timeout})
           inProgress.move(outbox, item);
           PubSub.publish('worker.idle', worker);
         }, timeout)
