@@ -148,11 +148,13 @@ document.addEventListener('DOMContentLoaded', () => {
   })
 });
 
+const wipLimiter = LimitBoardWip(1000);
+
 function run(scenario) {
   currentScenario = scenario
   document.title = scenario.title || 'Flow simulation'
   TimeAdjustments.speedUpBy(scenario.speed || 1);
-  LimitBoardWip(scenario.wipLimit || scenario.stories.amount)
+  wipLimiter.updateLimit(scenario.wipLimit || scenario.stories.amount)
 
   let board = new Board([...new Set(scenario.workers)])
 
