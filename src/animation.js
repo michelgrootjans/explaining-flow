@@ -1,7 +1,6 @@
 const PubSub = require('pubsub-js');
 const $ = require('jquery');
 
-(function () {
   const initialize = statsContainer => {
     PubSub.subscribe('board.ready', (topic, {columns}) => {
       $('#board').empty();
@@ -70,4 +69,3 @@ const $ = require('jquery');
   };
 
   module.exports = {initialize};
-})();
