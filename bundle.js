@@ -5,7 +5,7 @@ const open = require('open');
 const promisify = require('util').promisify;
 
 async function bundle() {
-  await fs.rmdir('dist', { recursive: true });
+  await fs.rm('dist', { recursive: true, force:true });
   await fs.mkdir('dist');
   const sourceFiles = await getSourceFiles();
   const bundle = await createBundle(sourceFiles);
