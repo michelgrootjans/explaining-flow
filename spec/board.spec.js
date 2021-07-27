@@ -55,6 +55,12 @@ describe('a worker', () => {
       expect(workItem.startTime).toBe(now);
       expect(workItem.endTime).toBe(now);
     });
+
+    it('publishes a board.done event when finished', done => {
+      PubSub.subscribe('board.done', () => done())
+      jest.runAllTimers();
+      expect(board.items()).toEqual([[], [], [workItem]]);
+    });
   });
 
 

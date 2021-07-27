@@ -1,4 +1,5 @@
 const BoardFactory = require("./boardFactory");
+const PubSub = require("pubsub-js");
 
 const NoLimits = function () {
   return {
@@ -12,6 +13,9 @@ let Board = function (workColumnNames) {
   const backlogColumn = () => columns[0];
   const firstWorkColumn = () => columns[1];
   const doneColumn = () => columns[columns.length - 1];
+  const size = () => columns.map(column => column.size())
+    .reduce((totalSize, size) => totalSize + size);
+  const done = () => doneColumn().size() === size();
   const workColumns = () => columns.filter(column => column.type === 'work');
   const addWorkers = (...newWorkers) => newWorkers.forEach(worker => workers.push(worker));
   const addWorkItems = (...items) => items.forEach(item => backlogColumn().add(item));
@@ -21,7 +25,9 @@ let Board = function (workColumnNames) {
     addWorkers,
     addWorkItems,
     columns: () => columns,
-    items: () => columns.map(column => column.items())
+    items: () => columns.map(column => column.items()),
+    size,
+    done
   };
 
   function initialize(workColumnNames) {
@@ -66,21 +72,19 @@ let Board = function (workColumnNames) {
     }
   }
 
-  PubSub.subscribe('board.denyNewWork', (topic, subject) => {
-    allowNewWork = false;
-  });
+  PubSub.subscribe('board.denyNewWork', () => allowNewWork = false);
 
-  PubSub.subscribe('workitem.added', (topic, subject) => {
-    const item = subject.item;
-    let column1 = firstWorkColumn();
-    if (column1 && subject.column.id === column1.id) {
+  PubSub.subscribe('workitem.added', (topic, {item, column}) => {
+    if (column.id === firstWorkColumn().id) {
       item.startTime = Date.now();
       PubSub.publish('workitem.started', item);
     }
-    if (subject.column.id === doneColumn().id) {
+    if (column.id === doneColumn().id) {
       item.endTime = Date.now();
       item.duration = item.endTime - item.startTime;
       PubSub.publish('workitem.finished', item);
+      if (done())
+        PubSub.publish('board.done', {board});
     }
   });
 

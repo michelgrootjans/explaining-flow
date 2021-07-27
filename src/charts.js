@@ -78,6 +78,11 @@ function LineChart($chart) {
   PubSub.subscribe('board.ready', () => {
     state && state.chart && state.chart.destroy()
     state = createChart(ctx);
+    let timerId = setInterval(() => state.chart.update(), 2000);
+    PubSub.subscribe('board.done', () => {
+      clearInterval(timerId);
+      state.chart.update()
+    });
   });
 
   PubSub.subscribe('stats.calculated', (topic, stats) => {
@@ -85,7 +90,6 @@ function LineChart($chart) {
     state.leadTime.push(stats.sliding.leadTime(5));
     state.throughput.push(stats.sliding.throughput(5));
     state.wip.push(stats.workInProgress);
-    state.chart.update()
   });
 }
 

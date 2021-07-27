@@ -69,10 +69,12 @@ let workListCounter = 1;
 function WorkList(skill = "dev") {
   let work = [];
   let id = workListCounter++;
+
+  const size = () => work.length;
+
   let column = {
-    hasWork: () => {
-      return work.length > 0
-    },
+    size,
+    hasWork: () => size() > 0,
     items: () => work.map(w => w),
     peek: () => work[0],
     add,
@@ -88,7 +90,7 @@ function WorkList(skill = "dev") {
   }
 
   function _remove(item) {
-    for (let i = 0; i < work.length; i++) {
+    for (let i = 0; i < size(); i++) {
       if (work[i] === item) {
         work.splice(i, 1);
       }
