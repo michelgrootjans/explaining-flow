@@ -36,14 +36,14 @@ module.exports = [
     workers: ['ux', 'dev', 'qa'],
     stories: {
       amount: 200,
-      work: {'ux': 1, 'dev': 1, 'qa': 1},
+      work: {'ux': 1.5, 'dev': 1.5, 'qa': 1.5},
       distribution: average
     },
     speed: 20
   },
   {
     id: 5,
-    title: 'ux: 1, dev: 2, ux: 1.5',
+    title: 'ux: 1, dev: 2, qa: 1.5',
     workers: ['ux', 'dev', 'qa'],
     stories: {
       amount: 200,
