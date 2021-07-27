@@ -71,7 +71,10 @@ function CumulativeFlowDiagram($chart, stats) {
     stats.current()
       .forEach(stat => dataSetFor(stat.name).data.push(stat.value))
     chart.update()
-    if (stats.done()) clearInterval(timerId);
+    if (stats.done()) {
+      clearInterval(timerId);
+      chart.update();
+    }
   };
 
   let timerId = setInterval(pollStats, 1000);
