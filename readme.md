@@ -53,14 +53,16 @@ However, if the simulation runs for long enough, a queue will start to appear be
 The reason is simple: As long as qa works faster than dev, everything will run smoothly. Once development starts going faster than qa, its output will wait in the queue.
 
 Results will vary depending on the randomness of the simulation:
-- Throughput: a bit lower than 1 story/day
+- Throughput: typically about 0.8 story/day
 - Lead time: 3 to 4 days per story
-- WIP: peaks between 5 and 10
+- WIP: about 3 on average with peaks up to 10
 
 #### scenario 4: adding UX to the process
-Let's also accelerate the simulation. This allows us to see patterns we wouldn't recognise in the slow daily movements of stories on a board. From now on, we'll simulate with 200 user stories.
+Let's accelerate the simulation. This allows us to see patterns we wouldn't recognise in the slow daily movements of stories on a board. From now on, we'll simulate with 200 user stories.
 
-Now ux, development and qa will spend 1 day _on average_ for each story. This is where lead time will start to increase, but it wil barely be visible in the velocity.
+Now ux, development and qa will spend 1.5 day _on average_ for each story. This is where lead time will start to increase.
+
+The ideal lead time will be 4.5 days (1.5 + 1.5 + 1.5). You will never be able to go lower than 4.5 days per story.
 
 Results will vary depending on the randomness of the simulation:
 - Throughput: between 0.6-0.8 stories/day
@@ -68,23 +70,24 @@ Results will vary depending on the randomness of the simulation:
 - WIP: peaks between 10 and 20
 
 #### scenario 5: let's stack the deck to make development the slowest in the process
-From now on, each scenario will distribute the effort unevenly amongst the workers as follows:
+We're now going to shift the effort a little.The total amount of work for each story is still 4.5, but the distribution is now:
 - **1** day of ux on average
 - **2** days of dev on average
 - **1.5** days of qa on average
 
-The ideal lead time will be 4.5 days (1 + 2 + 1.5). You will never be able to go lower than 4.5 days per story. 
+The ideal lead time is still 4.5 days (1 + 2 + 1.5). 
 
-Predictably, a big queue will appear in front of the dev column. This is where lead time will start to skyrocket, and it wil barely be visible in the velocity.
+Predictably, a big queue will appear in front of the dev column as dev has twice as much work as ux. This is where lead time will start to skyrocket, and it wil barely be visible in the velocity.
 
 Results:
 - Throughput: about 0.45 stories/day
 - Lead time: about 100 days. We are far away of the ideal 4.5
-- WIP will probably peak at around 100
+- WIP will average about 50, with a peak of about 100
 
-#### scenario 6: let's add an extra developer
 This is bad. We have 3 team members with a total velocity 2 times lower that when we had a single developer.
 
+
+#### scenario 6: let's add an extra developer
 The usual reflex at this point is to add developers to speed things up ;-)
 
 What would be the expected outcome? Twice the throughput? Let's try that out in the next simulation.
@@ -92,7 +95,7 @@ What would be the expected outcome? Twice the throughput? Let's try that out in 
 Results:
 - Throughput: about 0.6 stories/day (slightly improved).
 - Lead time: about 50 days (improved with a factor of 2)
-- WIP peaks at about 60
+- WIP on average around 30, with a peak at about 60
 - Cost: +1 team member
 
 ##### scenario 6-bis: let's add a 3rd developer
@@ -141,7 +144,12 @@ Results:
 This is the *ideal* situation, and will probably never be reached. Notice how the WIP is limited naturally by the number of team members.
 
 ### Conclusion
-The ideal situation is having a team of only full-stack developers. You will probably never reach this state. However, you can still aim for this state by introducing WIP limits. When the WIP limit has been reached, try to encourage [swarming](https://blog.crisp.se/2009/06/26/henrikkniberg). Team members will then learn new skills and evolve towards becoming full-stack developer. This will in turn increase the total throughput.
+First: notice that [Little's law](https://en.wikipedia.org/wiki/Little%27s_law) applies to every scenario we saw:
+`throughput * lead time = WIP` on average values.
+
+The ideal situation is having a team of only full-stack developers. You will probably never reach this state. However, you can still aim for this state.
+
+Start by introducing WIP limits. When the WIP limit has been reached, some team members will have nothing to do. Try to encourage [swarming](https://blog.crisp.se/2009/06/26/henrikkniberg). Team members will then learn new skills and evolve towards becoming full-stack developer. This will in turn improve the total throughput and lead time.
 
 ## Roadmap
 This project is written in a RDD fashion: Readme Driven Development. This means that this readme is the only feature tracking tool I'm using.
