@@ -95,6 +95,15 @@ Results:
 - WIP peaks at about 60
 - Cost: +1 team member
 
+##### scenario 6-bis: let's add a 3rd developer
+Since adding a second developer improved the throughput and the lead time, let's add a third.
+
+What would be the expected outcome?
+
+Surprisingly (for some), the outcome is exaclty the same as in with 2 developers. This extra developer will just fill the queue to QA more rapidly.
+QA still works at the same speed, so throughput and lead time will not change.
+
+Of course, this setup will _cost_ more.
 
 #### scenario 7: Let's reduce the team again and introduce a WIP-limit instead of a new developer
 We will simulate with the same team from scenario 5, but introduce a WIP-limit of 10. This means that noone is allowed to start on a new story for as long as there are 10 stories _in flight_.
