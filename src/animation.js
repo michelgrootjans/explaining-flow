@@ -1,7 +1,9 @@
 const PubSub = require('pubsub-js');
 const $ = require('jquery');
 
-  const initialize = statsContainer => {
+const round = (number, positions = 2) => Math.round(number * Math.pow(10, positions)) / Math.pow(10, positions);
+
+const initialize = statsContainer => {
     PubSub.subscribe('board.ready', (topic, {columns}) => {
       $('#board').empty();
       $(`${statsContainer()} .workers`).empty();
@@ -17,17 +19,17 @@ const $ = require('jquery');
       });
     });
 
-    PubSub.subscribe('workitem.added', (topic, subject) => {
+    PubSub.subscribe('workitem.added', (topic, {column, item}) => {
       let $card = $('<li/>')
         .addClass('card')
-        .attr('data-card-id', subject.item.id)
-        .text(subject.item.id);
+        .attr('data-card-id', item.id)
+        .text(item.id);
 
-      $(`[data-column-id="${subject.column.id}"] .cards`).append($card);
+      $(`[data-column-id="${column.id}"] .cards`).append($card);
     });
 
-    PubSub.subscribe('workitem.removed', (topic, subject) => {
-      let selector = `[data-column-id="${subject.column.id}"] [data-card-id="${subject.item.id}"]`;
+    PubSub.subscribe('workitem.removed', (topic, {column, item}) => {
+      let selector = `[data-column-id="${column.id}"] [data-card-id="${item.id}"]`;
       let $card = $(`${selector}`);
       $card.remove();
     });
@@ -36,14 +38,14 @@ const $ = require('jquery');
       $(`${statsContainer()} .throughput`).text(round(stats.throughput));
       $(`${statsContainer()} .leadtime`).text(round(stats.leadTime));
 
-      function renderWip(wip, maxWip) {
-        if (wip === maxWip) {
-          return wip;
+      function renderWip({workInProgress, maxWorkInProgress}) {
+        if (workInProgress === maxWorkInProgress) {
+          return workInProgress;
         }
-        return `${wip} (max ${maxWip})`;
+        return `${workInProgress} (max ${maxWorkInProgress})`;
       }
 
-      $(`${statsContainer()} .wip`).text(renderWip(stats.workInProgress, stats.maxWorkInProgress));
+      $(`${statsContainer()} .wip`).text(renderWip(stats));
     });
 
     PubSub.subscribe('worker.created', (topic, worker) => {
@@ -61,10 +63,6 @@ const $ = require('jquery');
       $(`${statsContainer()} [data-worker-id="${stats.workerId}"] .stat`)
         .text(`${efficiency}%`);
     });
-
-    function round(number, positions = 2) {
-      return Math.round(number * Math.pow(10, positions)) / Math.pow(10, positions);
-    }
 
   };
 
