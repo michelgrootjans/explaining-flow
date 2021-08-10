@@ -26,10 +26,9 @@ jobs:
           ls -hal
           ls -hal dist
           git status
-
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@4.1.4
         with:
           branch: gh-pages
-          folder: .
+          folder: dist
           ssh-key: ${{ secrets.DEPLOY_KEY }}
