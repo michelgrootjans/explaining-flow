@@ -20,12 +20,14 @@ jobs:
       - name: Bundle
         run: |
           npm run-script bundle
+          cat index.html | sed 's#dist/index.js#index.js#' > dist/index.html
       - name: debug
         run: |
           pwd
           ls -hal
           ls -hal dist
           git status
+          cat dist/index.html
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@4.1.4
         with:
