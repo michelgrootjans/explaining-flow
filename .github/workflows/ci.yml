@@ -21,6 +21,7 @@ jobs:
         run: |
           npm run-script bundle
           cat index.html | sed 's#dist/index.js#index.js#' > dist/index.html
+          cp style.css dist/style.css
       - name: debug
         run: |
           pwd
