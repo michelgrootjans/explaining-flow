@@ -10,7 +10,7 @@ async function bundle() {
   const sourceFiles = await getSourceFiles();
   const bundle = await createBundle(sourceFiles);
   await fs.writeFile(path.join('dist', 'index.js'), bundle, 'utf8');
-  await open('index.html', { wait: true });
+  // await open('index.html', { wait: true });
 }
 
 async function createBundle(files) {
