@@ -1,8 +1,9 @@
+const PubSub = require('pubsub-js');
 const scenarios = require('./scenarios')
 
 const $ = require('jquery');
 
-require('./animation').initialize(currentStatsContainerId);
+let Animation = require('./animation');
 const {LimitBoardWip} = require('../src/strategies');
 require('./board');
 const TimeAdjustments = require('./timeAdjustments');
@@ -10,8 +11,6 @@ require('./stats').initialize();
 const WorkerStats = require('./worker-stats');
 const Scenario = require("./scenario");
 const LineChart = require("./charts");
-const CurrentStats = require("./cfd");
-const CumulativeFlowDiagram = require("./CumulativeFlowDiagram");
 new WorkerStats();
 
 function createScenarioContainer(scenario) {
@@ -39,13 +38,20 @@ document.addEventListener('DOMContentLoaded', () => {
   })
 });
 
-const wipLimiter = LimitBoardWip(1000);
+const wipLimiter = LimitBoardWip();
+
+
+const CurrentStats = require("./cfd");
+const CumulativeFlowDiagram = require("./CumulativeFlowDiagram");
 
 function run(scenario) {
+  PubSub.clearAllSubscriptions();
+  Animation.initialize(currentStatsContainerId);
+
   currentScenario = scenario
   document.title = scenario.title || 'Flow simulation'
   TimeAdjustments.speedUpBy(scenario.speed || 1);
-  wipLimiter.updateLimit(scenario.wipLimit || scenario.stories.amount)
+  wipLimiter.initialize(scenario.wipLimit || scenario.stories.amount)
 
   const board = Scenario(scenario).run();
 
