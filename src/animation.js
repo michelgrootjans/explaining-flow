@@ -5,7 +5,6 @@ const round = (number, positions = 2) => Math.round(number * Math.pow(10, positi
 
 const initialize = (currentSenarioId) => {
     PubSub.subscribe('board.ready', (topic, {columns}) => {
-        debugger
       $('#board').empty();
       $(`${currentSenarioId} .workers`).empty();
 
@@ -43,14 +42,12 @@ const initialize = (currentSenarioId) => {
     };
 
     PubSub.subscribe('stats.calculated', (topic, stats) => {
-        debugger
         $(`${currentSenarioId} .throughput`).text(round(stats.throughput));
         $(`${currentSenarioId} .leadtime`).text(round(stats.leadTime));
         $(`${currentSenarioId} .wip`).text(renderWip(stats));
     });
 
     PubSub.subscribe('worker.created', (topic, worker) => {
-        debugger
       const $worker = $('<li/>')
         .addClass('worker')
         .attr('data-worker-id', worker.id)
@@ -61,7 +58,6 @@ const initialize = (currentSenarioId) => {
     });
 
     PubSub.subscribe('worker.stats.updated', (topic, stats) => {
-        debugger
       var efficiency = Math.round(stats.stats.efficiency * 100)
       $(`${currentSenarioId} [data-worker-id="${stats.workerId}"] .stat`)
         .text(`${efficiency}%`);
