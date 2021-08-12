@@ -3,15 +3,13 @@ const scenarios = require('./scenarios')
 
 const $ = require('jquery');
 
-let Animation = require('./animation');
+const Animation = require('./animation');
 const {LimitBoardWip} = require('../src/strategies');
-require('./board');
 const TimeAdjustments = require('./timeAdjustments');
-require('./stats').initialize();
+const Stats = require('./stats');
 const WorkerStats = require('./worker-stats');
 const Scenario = require("./scenario");
 const LineChart = require("./charts");
-new WorkerStats();
 
 function createScenarioContainer(scenario) {
   return $('<div/>')
@@ -22,12 +20,6 @@ function createScenarioContainer(scenario) {
     .append($('<div/>').addClass('leadtime'))
     .append($('<div/>').addClass('wip'))
     .append($('<div/>').addClass('workers'))
-}
-
-let currentScenario = undefined;
-
-function currentStatsContainerId() {
-  return `#scenario-${currentScenario.id}`
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -46,9 +38,10 @@ const CumulativeFlowDiagram = require("./CumulativeFlowDiagram");
 
 function run(scenario) {
   PubSub.clearAllSubscriptions();
-  Animation.initialize(currentStatsContainerId);
+  Animation.initialize(`#scenario-${scenario.id}`);
+  Stats.initialize();
+  new WorkerStats();
 
-  currentScenario = scenario
   document.title = scenario.title || 'Flow simulation'
   TimeAdjustments.speedUpBy(scenario.speed || 1);
   wipLimiter.initialize(scenario.wipLimit || scenario.stories.amount)

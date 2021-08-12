@@ -20,7 +20,7 @@ describe('scenario', () => {
         </div>
         <ul id="board"></ul>
     `;
-    animation.initialize(() => "#stats-container");
+    animation.initialize("#stats-container");
   });
 
   const numberOfCardsInColumn = (columnNumber) => $(`#board ${(`.column:nth-child(${columnNumber})`)} .card`).length;

@@ -10,7 +10,7 @@ describe('animation', () => {
     $.fx.off = true;
     jest.useFakeTimers();
     PubSub.clearAllSubscriptions();
-    animation.initialize(() => "#stats-container");
+    animation.initialize("#stats-container");
   });
 
   describe('a simple dashboard', () => {

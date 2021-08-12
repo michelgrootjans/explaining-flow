@@ -3,10 +3,11 @@ const $ = require('jquery');
 
 const round = (number, positions = 2) => Math.round(number * Math.pow(10, positions)) / Math.pow(10, positions);
 
-const initialize = statsContainer => {
+const initialize = (currentSenarioId) => {
     PubSub.subscribe('board.ready', (topic, {columns}) => {
+        debugger
       $('#board').empty();
-      $(`${statsContainer()} .workers`).empty();
+      $(`${currentSenarioId} .workers`).empty();
 
       columns.forEach(column => {
         const $column = $('<li/>')
@@ -34,33 +35,35 @@ const initialize = statsContainer => {
       $card.remove();
     });
 
-    PubSub.subscribe('stats.calculated', (topic, stats) => {
-      $(`${statsContainer()} .throughput`).text(round(stats.throughput));
-      $(`${statsContainer()} .leadtime`).text(round(stats.leadTime));
-
-      function renderWip({workInProgress, maxWorkInProgress}) {
+    const renderWip = ({workInProgress, maxWorkInProgress}) => {
         if (workInProgress === maxWorkInProgress) {
-          return workInProgress;
+            return workInProgress;
         }
         return `${workInProgress} (max ${maxWorkInProgress})`;
-      }
+    };
 
-      $(`${statsContainer()} .wip`).text(renderWip(stats));
+    PubSub.subscribe('stats.calculated', (topic, stats) => {
+        debugger
+        $(`${currentSenarioId} .throughput`).text(round(stats.throughput));
+        $(`${currentSenarioId} .leadtime`).text(round(stats.leadTime));
+        $(`${currentSenarioId} .wip`).text(renderWip(stats));
     });
 
     PubSub.subscribe('worker.created', (topic, worker) => {
+        debugger
       const $worker = $('<li/>')
         .addClass('worker')
         .attr('data-worker-id', worker.id)
         .append($('<span/>').addClass('name').text(`${worker.name()}: `))
         .append($('<span/>').addClass('stat').text('0%'));
 
-      $(`${statsContainer()} .workers`).append($worker)
+      $(`${currentSenarioId} .workers`).append($worker)
     });
 
     PubSub.subscribe('worker.stats.updated', (topic, stats) => {
+        debugger
       var efficiency = Math.round(stats.stats.efficiency * 100)
-      $(`${statsContainer()} [data-worker-id="${stats.workerId}"] .stat`)
+      $(`${currentSenarioId} [data-worker-id="${stats.workerId}"] .stat`)
         .text(`${efficiency}%`);
     });
 
