@@ -48,7 +48,7 @@ function run(scenario) {
 
   const board = Scenario(scenario).run();
 
-  LineChart(document.getElementById('myChart'))
+  LineChart(document.getElementById('myChart'), 2000)
   // const stats = CurrentStats(board.columns());
   // stats.init();
   // CumulativeFlowDiagram(document.getElementById('myChart'), stats);

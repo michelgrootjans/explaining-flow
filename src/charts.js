@@ -71,14 +71,14 @@ function createChart(ctx) {
   return {leadTime, throughput, wip, data, chart, labels};
 }
 
-function LineChart($chart) {
+function LineChart($chart, updateInterval) {
   const ctx = $chart.getContext('2d');
-  let state = undefined;
 
+  let state = undefined;
   PubSub.subscribe('board.ready', () => {
     state && state.chart && state.chart.destroy()
     state = createChart(ctx);
-    let timerId = setInterval(() => state.chart.update(), 2000);
+    let timerId = setInterval(() => state.chart.update(), updateInterval);
     PubSub.subscribe('board.done', () => {
       clearInterval(timerId);
       state.chart.update()
