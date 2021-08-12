@@ -33109,10 +33109,11 @@ const $ = require('jquery');
 
 const round = (number, positions = 2) => Math.round(number * Math.pow(10, positions)) / Math.pow(10, positions);
 
-const initialize = statsContainer => {
+const initialize = (currentSenarioId) => {
     PubSub.subscribe('board.ready', (topic, {columns}) => {
+        debugger
       $('#board').empty();
-      $(`${statsContainer()} .workers`).empty();
+      $(`${currentSenarioId} .workers`).empty();
 
       columns.forEach(column => {
         const $column = $('<li/>')
@@ -33140,33 +33141,35 @@ const initialize = statsContainer => {
       $card.remove();
     });
 
-    PubSub.subscribe('stats.calculated', (topic, stats) => {
-      $(`${statsContainer()} .throughput`).text(round(stats.throughput));
-      $(`${statsContainer()} .leadtime`).text(round(stats.leadTime));
-
-      function renderWip({workInProgress, maxWorkInProgress}) {
+    const renderWip = ({workInProgress, maxWorkInProgress}) => {
         if (workInProgress === maxWorkInProgress) {
-          return workInProgress;
+            return workInProgress;
         }
         return `${workInProgress} (max ${maxWorkInProgress})`;
-      }
+    };
 
-      $(`${statsContainer()} .wip`).text(renderWip(stats));
+    PubSub.subscribe('stats.calculated', (topic, stats) => {
+        debugger
+        $(`${currentSenarioId} .throughput`).text(round(stats.throughput));
+        $(`${currentSenarioId} .leadtime`).text(round(stats.leadTime));
+        $(`${currentSenarioId} .wip`).text(renderWip(stats));
     });
 
     PubSub.subscribe('worker.created', (topic, worker) => {
+        debugger
       const $worker = $('<li/>')
         .addClass('worker')
         .attr('data-worker-id', worker.id)
         .append($('<span/>').addClass('name').text(`${worker.name()}: `))
         .append($('<span/>').addClass('stat').text('0%'));
 
-      $(`${statsContainer()} .workers`).append($worker)
+      $(`${currentSenarioId} .workers`).append($worker)
     });
 
     PubSub.subscribe('worker.stats.updated', (topic, stats) => {
+        debugger
       var efficiency = Math.round(stats.stats.efficiency * 100)
-      $(`${statsContainer()} [data-worker-id="${stats.workerId}"] .stat`)
+      $(`${currentSenarioId} [data-worker-id="${stats.workerId}"] .stat`)
         .text(`${efficiency}%`);
     });
 
@@ -33634,21 +33637,18 @@ module.exports = [
   },
 ];
 },{"./generator":11}],15:[function(require,module,exports){
+const PubSub = require('pubsub-js');
 const scenarios = require('./scenarios')
 
 const $ = require('jquery');
 
-require('./animation').initialize(currentStatsContainerId);
+const Animation = require('./animation');
 const {LimitBoardWip} = require('../src/strategies');
-require('./board');
 const TimeAdjustments = require('./timeAdjustments');
-require('./stats').initialize();
+const Stats = require('./stats');
 const WorkerStats = require('./worker-stats');
 const Scenario = require("./scenario");
 const LineChart = require("./charts");
-const CurrentStats = require("./cfd");
-const CumulativeFlowDiagram = require("./CumulativeFlowDiagram");
-new WorkerStats();
 
 function createScenarioContainer(scenario) {
   return $('<div/>')
@@ -33661,12 +33661,6 @@ function createScenarioContainer(scenario) {
     .append($('<div/>').addClass('workers'))
 }
 
-let currentScenario = undefined;
-
-function currentStatsContainerId() {
-  return `#scenario-${currentScenario.id}`
-}
-
 document.addEventListener('DOMContentLoaded', () => {
   scenarios.forEach(scenario => {
     let $scenario = createScenarioContainer(scenario);
@@ -33675,13 +33669,21 @@ document.addEventListener('DOMContentLoaded', () => {
   })
 });
 
-const wipLimiter = LimitBoardWip(1000);
+const wipLimiter = LimitBoardWip();
+
+
+const CurrentStats = require("./cfd");
+const CumulativeFlowDiagram = require("./CumulativeFlowDiagram");
 
 function run(scenario) {
-  currentScenario = scenario
+  PubSub.clearAllSubscriptions();
+  Animation.initialize(`#scenario-${scenario.id}`);
+  Stats.initialize();
+  new WorkerStats();
+
   document.title = scenario.title || 'Flow simulation'
   TimeAdjustments.speedUpBy(scenario.speed || 1);
-  wipLimiter.updateLimit(scenario.wipLimit || scenario.stories.amount)
+  wipLimiter.initialize(scenario.wipLimit || scenario.stories.amount)
 
   const board = Scenario(scenario).run();
 
@@ -33692,7 +33694,7 @@ function run(scenario) {
 }
 
 
-},{"../src/strategies":17,"./CumulativeFlowDiagram":5,"./animation":6,"./board":7,"./cfd":9,"./charts":10,"./scenario":13,"./scenarios":14,"./stats":16,"./timeAdjustments":18,"./worker-stats":19,"jquery":2}],16:[function(require,module,exports){
+},{"../src/strategies":17,"./CumulativeFlowDiagram":5,"./animation":6,"./cfd":9,"./charts":10,"./scenario":13,"./scenarios":14,"./stats":16,"./timeAdjustments":18,"./worker-stats":19,"jquery":2,"pubsub-js":4}],16:[function(require,module,exports){
 const TimeAdjustments = require('./timeAdjustments');
 const PubSub = require('pubsub-js');
 
@@ -33789,24 +33791,23 @@ module.exports = {
 },{"./timeAdjustments":18,"pubsub-js":4}],17:[function(require,module,exports){
 const PubSub = require('pubsub-js');
 
-function LimitBoardWip(originalLimit = 1) {
-  let limit = originalLimit;
-  let wip = 0;
+function LimitBoardWip() {
+  const initialize = (limit = 1) => {
+    let wip = 0;
+    PubSub.publish('board.allowNewWork', {wip, limit});
 
-  PubSub.publish('board.allowNewWork', {wip, limit});
-
-  PubSub.subscribe('workitem.started', () => {
-    wip++;
-    if (wip >= limit) PubSub.publish('board.denyNewWork', {wip, limit});
-  });
-  PubSub.subscribe('workitem.finished', () => {
-    wip--;
-    if (wip < limit) PubSub.publish('board.allowNewWork', {wip, limit});
-  });
+    PubSub.subscribe('workitem.started', () => {
+      wip++;
+      if (wip >= limit) PubSub.publish('board.denyNewWork', {wip, limit});
+    });
+    PubSub.subscribe('workitem.finished', () => {
+      wip--;
+      if (wip < limit) PubSub.publish('board.allowNewWork', {wip, limit});
+    });
+  }
 
   return {
-    updateLimit: newLimit => limit = newLimit,
-    limit: () => limit
+    initialize
   };
 }
 
