@@ -1,8 +1,5 @@
 const PubSub = require('pubsub-js');
 const scenarios = require('./scenarios')
-
-const $ = require('jquery');
-
 const Animation = require('./animation');
 const {LimitBoardWip} = require('../src/strategies');
 const TimeAdjustments = require('./timeAdjustments');
@@ -11,16 +8,23 @@ const WorkerStats = require('./worker-stats');
 const Scenario = require("./scenario");
 const LineChart = require("./charts");
 
+function createElement({id, className, text}) {
+    const $element = document.createElement('div');
+    if (id) $element.setAttribute('id', id)
+    if (className) $element.className = className
+    if (text) $element.innerHTML = text
+    return $element;
+}
+
 function createScenarioContainer(scenario) {
-    return $('<div/>')
-        .attr('id', `scenario-${scenario.id}`)
-        .addClass('scenario')
-        .append($('<div/>').addClass('scenario-title').text(scenario.title))
-        .append($('<div/>').addClass('throughput'))
-        .append($('<div/>').addClass('leadtime'))
-        .append($('<div/>').addClass('wip'))
-        .append($('<div/>').addClass('workers'))
-        .get(0)
+    let element = createElement({id: `scenario-${scenario.id}`, className: 'scenario'});
+    element.append(createElement({className: 'scenario-title', text: scenario.title}))
+    element.append(createElement({className: 'throughput'}))
+    element.append(createElement({className: 'leadtime'}))
+    element.append(createElement({className: 'wip'}))
+    element.append(createElement({className: 'workers'}))
+
+    return element
 }
 
 document.addEventListener('DOMContentLoaded', () => {
