@@ -1,13 +1,13 @@
 const PubSub = require('pubsub-js');
-const $ = require('jquery');
 const animation = require('../src/animation');
 
 const {Worker, WorkItem} = require('../src/worker');
 const Board = require('../src/board');
 
+const find = selector => document.querySelector(selector);
+
 describe('animation', () => {
   beforeAll(() => {
-    $.fx.off = true;
     jest.useFakeTimers();
     PubSub.clearAllSubscriptions();
     animation.initialize("#stats-container");
@@ -24,28 +24,28 @@ describe('animation', () => {
       it('should have a backlog column', () => {
         jest.runAllTimers();
 
-        let $backlog = $('#board li:nth-child(1)');
-        expect($backlog.attr('class')).toBe('column queue');
-        expect($backlog.text()).toBe('Backlog');
-        expect($backlog.find('ul').attr('class')).toBe('cards');
+        let $backlog = find('#board li:nth-child(1)');
+        expect($backlog.getAttribute('class')).toBe('column queue');
+        expect($backlog.querySelector('h2').innerHTML).toBe('Backlog');
+        expect($backlog.querySelector('ul').getAttribute('class')).toBe('cards');
       });
 
       it('should have a dev column', () => {
         jest.runAllTimers();
 
-        let $dev = $('#board li:nth-child(2)');
-        expect($dev.attr('class')).toBe('column work');
-        expect($dev.text()).toBe('dev');
-        expect($dev.find('ul').attr('class')).toBe('cards');
+        let $dev = find('#board li:nth-child(2)');
+        expect($dev.getAttribute('class')).toBe('column work');
+        expect($dev.querySelector('h2').innerHTML).toBe('dev');
+        expect($dev.querySelector('ul').getAttribute('class')).toBe('cards');
       });
 
       it('should have a done column', () => {
         jest.runAllTimers();
 
-        let $done = $('#board li:nth-child(3)');
-        expect($done.attr('class')).toBe('column queue');
-        expect($done.text()).toBe('Done');
-        expect($done.find('ul').attr('class')).toBe('cards');
+        let $done = find('#board li:nth-child(3)');
+        expect($done.getAttribute('class')).toBe('column queue');
+        expect($done.querySelector('h2').innerHTML).toBe('Done');
+        expect($done.querySelector('ul').getAttribute('class')).toBe('cards');
       });
     });
 
@@ -54,12 +54,12 @@ describe('animation', () => {
       board.addWorkItems(workItem);
       jest.advanceTimersByTime(0);
 
-      const $card = $('#board li:nth-child(1) .cards li');
-      expect($card.attr('data-card-id')).toBe(`${workItem.id}`);
-      expect($card.attr('class')).toBe('card');
+      const $card = find('#board li:nth-child(1) .cards li');
+      expect($card.getAttribute('data-card-id')).toBe(`${workItem.id}`);
+      expect($card.getAttribute('class')).toBe('card');
 
-      expect($('#board li:nth-child(2) .cards li').length).toBe(0);
-      expect($('#board li:nth-child(3) .cards li').length).toBe(0);
+      expect(find('#board li:nth-child(2) .cards').innerHTML).toBe('');
+      expect(find('#board li:nth-child(3) .cards').innerHTML).toBe('');
     });
 
     it('a worker picks up an item', () => {
@@ -68,13 +68,13 @@ describe('animation', () => {
       board.addWorkItems(workItem);
       jest.advanceTimersByTime(0);
 
-      expect($('#board li:nth-child(1) .cards li').length).toBe(0);
+      expect(find('#board li:nth-child(1) .cards').innerHTML).toBe('');
 
-      const $card = $('#board li:nth-child(2) .cards li');
-      expect($card.attr('data-card-id')).toBe(`${workItem.id}`);
-      expect($card.attr('class')).toBe('card');
+      const $card = find('#board li:nth-child(2) .cards li');
+      expect($card.getAttribute('data-card-id')).toBe(`${workItem.id}`);
+      expect($card.getAttribute('class')).toBe('card');
 
-      expect($('#board li:nth-child(3) .cards li').length).toBe(0);
+      expect(find('#board li:nth-child(3) .cards').innerHTML).toBe('');
     })
   });
 
@@ -93,9 +93,9 @@ describe('animation', () => {
       });
       jest.runAllTimers();
 
-      expect($('.throughput').text()).toBe("1");
-      expect($('.leadtime').text()).toBe("2");
-      expect($('.wip').text()).toBe("3 (max 4)");
+      expect(find('.throughput').innerHTML).toBe("1");
+      expect(find('.leadtime').innerHTML).toBe("2");
+      expect(find('.wip').innerHTML).toBe("3 (max 4)");
     });
 
     it('excludes max WIP when equal to current WIP', () => {
@@ -107,9 +107,9 @@ describe('animation', () => {
       });
       jest.runAllTimers();
 
-      expect($('.throughput').text()).toBe("1");
-      expect($('.leadtime').text()).toBe("2");
-      expect($('.wip').text()).toBe("3");
+      expect(find('.throughput').innerHTML).toBe("1");
+      expect(find('.leadtime').innerHTML).toBe("2");
+      expect(find('.wip').innerHTML).toBe("3");
     });
   });
 
@@ -122,8 +122,9 @@ describe('animation', () => {
     it('adds new workers', () => {
       const worker = new Worker({dev: 0});
       jest.runAllTimers();
-      expect($(`.workers [data-worker-id="${worker.id}"]`).text())
-        .toEqual(`${worker.name()}: 0%`);
+      let $worker = find(`.workers [data-worker-id="${worker.id}"]`);
+      expect($worker.querySelector('.name').innerHTML).toEqual(`${worker.name()}: `);
+      expect($worker.querySelector('.stat').innerHTML).toEqual('0%');
     });
 
     it('stat update', () => {
@@ -131,10 +132,10 @@ describe('animation', () => {
       const newStats = {workerId: worker.id, stats: {efficiency: 0.9500111}};
       PubSub.publish('worker.stats.updated', newStats);
       jest.runAllTimers();
-      expect($(`.workers [data-worker-id="${worker.id}"]`).text())
-        .toEqual(`${worker.name()}: 95%`);
+      let $worker = find(`.workers [data-worker-id="${worker.id}"]`);
+      expect($worker.querySelector('.name').innerHTML).toEqual(`${worker.name()}: `);
+      expect($worker.querySelector('.stat').innerHTML).toEqual('95%');
     });
-
   })
 });
 
