@@ -6,8 +6,9 @@ const round = (number, positions = 2) => Math.round(number * Math.pow(10, positi
 
 const initialize = (currentSenarioId) => {
   PubSub.subscribe('board.ready', (topic, {columns}) => {
-    $('#board').empty();
-    $(`${currentSenarioId} .workers`).empty();
+    document.getElementById('board').innerHTML = ''
+    let $scenario = document.querySelector(`${currentSenarioId} .workers`);
+    if($scenario) $scenario.innerHTML = ''
 
     columns.forEach(column => {
       const $column = createElement({
