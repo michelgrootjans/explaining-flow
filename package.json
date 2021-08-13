@@ -19,7 +19,6 @@
   },
   "dependencies": {
     "chart.js": "^2.8.0",
-    "jquery": "^3.4.1",
     "pubsub-js": "^1.7.0"
   }
 }

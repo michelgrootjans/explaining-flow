@@ -1,4 +1,3 @@
-const $ = require('jquery');
 const animation = require('../src/animation');
 const PubSub = require("pubsub-js");
 const Range = require('../src/range')
@@ -7,7 +6,6 @@ const Scenario = require('../src/scenario')
 
 describe('scenario', () => {
   beforeAll(() => {
-    $.fx.off = true;
     jest.useFakeTimers();
   });
 
@@ -23,8 +21,8 @@ describe('scenario', () => {
     animation.initialize("#stats-container");
   });
 
-  const numberOfCardsInColumn = (columnNumber) => $(`#board ${(`.column:nth-child(${columnNumber})`)} .card`).length;
-  const numberOfColumns = () => $('.column').length;
+  const numberOfCardsInColumn = (columnNumber) => document.querySelectorAll(`#board ${(`.column:nth-child(${columnNumber})`)} .card`).length;
+  const numberOfColumns = () => document.querySelectorAll('.column').length;
   const cardsInColumns = () => Range(1, numberOfColumns()).map(numberOfCardsInColumn);
   const run = scenario => Scenario(scenario).run();
 
