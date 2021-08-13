@@ -54,13 +54,12 @@ const initialize = (currentSenarioId) => {
   });
 
   PubSub.subscribe('worker.created', (topic, worker) => {
-    const $worker = $('<li/>')
-      .addClass('worker')
-      .attr('data-worker-id', worker.id)
-      .append($('<span/>').addClass('name').text(`${worker.name()}: `))
-      .append($('<span/>').addClass('stat').text('0%'));
+    const $worker = createElement({type: 'li', className: 'worker', attributes: {'data-worker-id': worker.id}})
+    $worker.append(createElement({type: 'span', className: 'name', text: `${worker.name()}: `}))
+    $worker.append(createElement({type: 'span', className: 'stat', text: '0%'}))
 
-    $(`${currentSenarioId} .workers`).append($worker)
+    let $workers = document.querySelector(`${currentSenarioId} .workers`);
+    if ($workers) $workers.append($worker)
   });
 
   PubSub.subscribe('worker.stats.updated', (topic, stats) => {
