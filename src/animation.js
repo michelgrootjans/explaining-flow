@@ -23,20 +23,20 @@ const initialize = (currentSenarioId) => {
   });
 
   PubSub.subscribe('workitem.added', (topic, {column, item}) => {
-    let $card = $('<li/>')
-      .addClass('card')
-      .attr('data-card-id', item.id)
-      .text(item.id);
+    let $card = createElement({
+      type: 'li',
+      className: 'card',
+      text: item.id,
+      attributes:{'data-card-id': item.id}})
 
-    // $(`[data-column-id="${column.id}"] .cards`).append($card);
     let $column = document.querySelector(`[data-column-id="${column.id}"] .cards`);
-    if ($column) $column.append($card.get(0)); // FIXME: this check should not happen
+    if ($column) $column.append($card); // FIXME: this check should not happen
   });
 
   PubSub.subscribe('workitem.removed', (topic, {column, item}) => {
     let selector = `[data-column-id="${column.id}"] [data-card-id="${item.id}"]`;
-    let $card = $(`${selector}`);
-    $card.remove();
+    let $card = document.querySelector(selector);
+    if ($card) $card.remove(); // FIXME: this check should not happen
   });
 
   const renderWip = ({workInProgress, maxWorkInProgress}) => {
