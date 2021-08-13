@@ -1,5 +1,4 @@
 const PubSub = require('pubsub-js');
-const $ = require('jquery');
 const {createElement} = require('./dom-manipulation')
 
 const round = (number, positions = 2) => Math.round(number * Math.pow(10, positions)) / Math.pow(10, positions);
@@ -64,8 +63,9 @@ const initialize = (currentSenarioId) => {
 
   PubSub.subscribe('worker.stats.updated', (topic, stats) => {
     var efficiency = Math.round(stats.stats.efficiency * 100)
-    $(`${currentSenarioId} [data-worker-id="${stats.workerId}"] .stat`)
-      .text(`${efficiency}%`);
+
+    let $workerEfficiency = document.querySelector(`${currentSenarioId} [data-worker-id="${stats.workerId}"] .stat`);
+    if ($workerEfficiency) $workerEfficiency.innerHTML = `${efficiency}%`
   });
 
 };
