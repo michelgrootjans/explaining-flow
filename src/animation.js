@@ -48,9 +48,9 @@ const initialize = (currentSenarioId) => {
   };
 
   PubSub.subscribe('stats.calculated', (topic, stats) => {
-    $(`${currentSenarioId} .throughput`).text(round(stats.throughput));
-    $(`${currentSenarioId} .leadtime`).text(round(stats.leadTime));
-    $(`${currentSenarioId} .wip`).text(renderWip(stats));
+    document.querySelector(`${currentSenarioId} .throughput`).innerHTML = round(stats.throughput);
+    document.querySelector(`${currentSenarioId} .leadtime`).innerHTML = round(stats.leadTime)
+    document.querySelector(`${currentSenarioId} .wip`).innerHTML = renderWip(stats)
   });
 
   PubSub.subscribe('worker.created', (topic, worker) => {
