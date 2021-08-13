@@ -7,14 +7,7 @@ const Stats = require('./stats');
 const WorkerStats = require('./worker-stats');
 const Scenario = require("./scenario");
 const LineChart = require("./charts");
-
-function createElement({id, className, text}) {
-    const $element = document.createElement('div');
-    if (id) $element.setAttribute('id', id)
-    if (className) $element.className = className
-    if (text) $element.innerHTML = text
-    return $element;
-}
+const {createElement} = require('./dom-manipulation')
 
 function createScenarioContainer(scenario) {
     let element = createElement({id: `scenario-${scenario.id}`, className: 'scenario'});
