@@ -2,8 +2,12 @@ const Board = require("./board");
 const {generateWorkItems} = require("./generator");
 const {Worker} = require('./worker')
 
+let counter = 1;
 
 const Scenario = scenario => {
+  const id = counter++;
+  const wipLimit = scenario.wipLimit || scenario.stories.amount
+
   const createWorker = (skillName, speed = 1) => {
     let skills = {};
     skills[skillName] = speed
@@ -14,7 +18,7 @@ const Scenario = scenario => {
 
   const generateStory = () => {
     const story = {}
-    let distribute = scenario.stories.distribution || (identity => identity);
+    let distribute = scenario.distribution || (identity => identity);
     columnNames().forEach(key => {
       let givenValue = scenario.stories.work[key];
       story[key] = distribute(givenValue);
@@ -29,7 +33,7 @@ const Scenario = scenario => {
     return board;
   }
 
-  return {run}
+  return {...scenario, run, id, wipLimit}
 };
 
 module.exports = Scenario

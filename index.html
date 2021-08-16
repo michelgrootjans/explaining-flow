@@ -8,7 +8,31 @@
 </head>
 <body>
     <div id="stats">
-        <div id="scenarios"></div>
+        <div id="scenarios">
+            <form id="new-scenario">
+                <label>
+                    Title
+                    <input type="text" name="title" value="One developer">
+                </label>
+                <label>
+                    Workload
+                    <input type="text" name="workload" value="dev: 1" placeholder="dev: 2, qa: 1">
+                </label>
+                <label>
+                    Workers
+                    <input type="text" name="workers" value="dev" placeholder="dev, qa">
+                </label>
+                <label>
+                    WIP-limit
+                    <input type="text" name="wip-limit" placeholder="none">
+                </label>
+                <label>
+                    Average work distribution
+                    <input type="checkbox" name="random">
+                </label>
+                <button id="create-scenario">run</button>
+            </form>
+        </div>
         <canvas id="myChart" class="chart" width="500px" height="100px"></canvas>
     </div>
     <ul id="board"></ul>
