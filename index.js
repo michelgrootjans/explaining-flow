@@ -22784,15 +22784,18 @@ const Stats = require('./stats');
 const WorkerStats = require('./worker-stats');
 const Scenario = require("./scenario");
 const LineChart = require("./charts");
+const {createElement} = require('./dom-manipulation')
 
-const template = document.querySelector('#scenario-template');
-const createScenarioContainer = scenario => {
-    const $scenarioContatiner = template.content.cloneNode(true).querySelector('div');
-    $scenarioContatiner.setAttribute('id', `scenario-${scenario.id}`);
-    $scenarioContatiner.querySelector('.scenario-title').textContent = scenario.title;
+function createScenarioContainer(scenario) {
+    let element = createElement({id: `scenario-${scenario.id}`, className: 'scenario'});
+    element.append(createElement({className: 'scenario-title', text: scenario.title}))
+    element.append(createElement({className: 'throughput'}))
+    element.append(createElement({className: 'leadtime'}))
+    element.append(createElement({className: 'wip'}))
+    element.append(createElement({className: 'workers'}))
 
-    return $scenarioContatiner
-};
+    return element
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     scenarios.forEach(scenario => {
@@ -22827,7 +22830,7 @@ function run(scenario) {
 }
 
 
-},{"../src/strategies":17,"./CumulativeFlowDiagram":4,"./animation":5,"./cfd":8,"./charts":9,"./scenario":13,"./scenarios":14,"./stats":16,"./timeAdjustments":18,"./worker-stats":19,"pubsub-js":3}],16:[function(require,module,exports){
+},{"../src/strategies":17,"./CumulativeFlowDiagram":4,"./animation":5,"./cfd":8,"./charts":9,"./dom-manipulation":10,"./scenario":13,"./scenarios":14,"./stats":16,"./timeAdjustments":18,"./worker-stats":19,"pubsub-js":3}],16:[function(require,module,exports){
 const TimeAdjustments = require('./timeAdjustments');
 const PubSub = require('pubsub-js');
 
