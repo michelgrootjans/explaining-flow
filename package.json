@@ -15,7 +15,8 @@
   "devDependencies": {
     "browserify": "^16.2.3",
     "jest": "^24.8.0",
-    "open": "^7.4.2"
+    "open": "^7.4.2",
+    "node-notifier": ">=8.0.1"
   },
   "dependencies": {
     "chart.js": "^2.8.0",
