@@ -7,18 +7,15 @@ const Stats = require('./stats');
 const WorkerStats = require('./worker-stats');
 const Scenario = require("./scenario");
 const LineChart = require("./charts");
-const {createElement} = require('./dom-manipulation')
 
-function createScenarioContainer(scenario) {
-    let element = createElement({id: `scenario-${scenario.id}`, className: 'scenario'});
-    element.append(createElement({className: 'scenario-title', text: scenario.title}))
-    element.append(createElement({className: 'throughput'}))
-    element.append(createElement({className: 'leadtime'}))
-    element.append(createElement({className: 'wip'}))
-    element.append(createElement({className: 'workers'}))
+const template = document.querySelector('#scenario-template');
+const createScenarioContainer = scenario => {
+    const $scenarioContatiner = template.content.cloneNode(true).querySelector('div');
+    $scenarioContatiner.setAttribute('id', `scenario-${scenario.id}`);
+    $scenarioContatiner.querySelector('.scenario-title').textContent = scenario.title;
 
-    return element
-}
+    return $scenarioContatiner
+};
 
 document.addEventListener('DOMContentLoaded', () => {
     scenarios.forEach(scenario => {
