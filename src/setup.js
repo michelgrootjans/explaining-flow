@@ -7,15 +7,11 @@ const Stats = require('./stats');
 const WorkerStats = require('./worker-stats');
 const Scenario = require("./scenario");
 const LineChart = require("./charts");
-const {createElement} = require('./dom-manipulation')
 
 function createScenarioContainer(scenario) {
     const template = document.querySelector('#scenario-template');
 
     const clone = template.content.cloneNode(true).querySelector('div');
-
-    console.log({template, clone, html: clone.innerHtml})
-
     clone.setAttribute('id', `scenario-${scenario.id}`);
     clone.querySelector('.scenario-title').textContent = scenario.title;
     return clone
