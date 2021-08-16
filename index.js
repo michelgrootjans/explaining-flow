@@ -22784,15 +22784,11 @@ const Stats = require('./stats');
 const WorkerStats = require('./worker-stats');
 const Scenario = require("./scenario");
 const LineChart = require("./charts");
-const {createElement} = require('./dom-manipulation')
 
 function createScenarioContainer(scenario) {
     const template = document.querySelector('#scenario-template');
 
     const clone = template.content.cloneNode(true).querySelector('div');
-
-    console.log({template, clone, html: clone.innerHtml})
-
     clone.setAttribute('id', `scenario-${scenario.id}`);
     clone.querySelector('.scenario-title').textContent = scenario.title;
     return clone
@@ -22831,7 +22827,7 @@ function run(scenario) {
 }
 
 
-},{"../src/strategies":17,"./CumulativeFlowDiagram":4,"./animation":5,"./cfd":8,"./charts":9,"./dom-manipulation":10,"./scenario":13,"./scenarios":14,"./stats":16,"./timeAdjustments":18,"./worker-stats":19,"pubsub-js":3}],16:[function(require,module,exports){
+},{"../src/strategies":17,"./CumulativeFlowDiagram":4,"./animation":5,"./cfd":8,"./charts":9,"./scenario":13,"./scenarios":14,"./stats":16,"./timeAdjustments":18,"./worker-stats":19,"pubsub-js":3}],16:[function(require,module,exports){
 const TimeAdjustments = require('./timeAdjustments');
 const PubSub = require('pubsub-js');
 
