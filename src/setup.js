@@ -10,14 +10,15 @@ const LineChart = require("./charts");
 const {createElement} = require('./dom-manipulation')
 
 function createScenarioContainer(scenario) {
-    let element = createElement({id: `scenario-${scenario.id}`, className: 'scenario'});
-    element.append(createElement({className: 'scenario-title', text: scenario.title}))
-    element.append(createElement({className: 'throughput'}))
-    element.append(createElement({className: 'leadtime'}))
-    element.append(createElement({className: 'wip'}))
-    element.append(createElement({className: 'workers'}))
+    const template = document.querySelector('#scenario-template');
 
-    return element
+    const clone = template.content.cloneNode(true).querySelector('div');
+
+    console.log({template, clone, html: clone.innerHtml})
+
+    clone.setAttribute('id', `scenario-${scenario.id}`);
+    clone.querySelector('.scenario-title').textContent = scenario.title;
+    return clone
 }
 
 document.addEventListener('DOMContentLoaded', () => {
