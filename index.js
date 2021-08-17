@@ -13840,7 +13840,7 @@ module.exports = CurrentStats
 const Chart = require('chart.js');
 const PubSub = require("pubsub-js");
 
-function createChart(ctx) {
+function createChart(ctx,speed) {
   const cycleTime = [];
   const throughput = [];
   const wip = [];
@@ -13896,7 +13896,7 @@ function createChart(ctx) {
       scales: {
         x: {
           type: 'linear',
-          ticks: {stepSize: 10}
+          ticks: {stepSize: 5 * speed}
         },
         y: {
           type: 'linear',
@@ -13917,7 +13917,7 @@ function xValue(startTime, speed) {
 function LineChart($chart, updateInterval, speed) {
   const ctx = $chart.getContext('2d');
 
-  let state = createChart(ctx);
+  let state = createChart(ctx, speed);
   PubSub.subscribe('board.ready', () => {
     const timerId = setInterval(() => state.chart.update(), updateInterval);
     PubSub.subscribe('board.done', () => {
@@ -14168,7 +14168,7 @@ const split = value => value.trim().split(",").map(item => item.trim());
 function parse(form) {
   const field = fieldName => form.querySelector(`[name="${fieldName}"]`).value;
 
-  const title = field('title');
+  const title = field('workload');
   const workers = split(field('workers'));
   const work = parseWorkload(field('workload'));
   const wipLimit = field('wip-limit');
@@ -14230,7 +14230,7 @@ function run(scenario) {
 
     wipLimiter.initialize(scenario.wipLimit)
     if(currentChart) currentChart.destroy()
-    currentChart = LineChart(document.getElementById('myChart'), 2000, scenario.speed)
+    currentChart = LineChart(document.getElementById('myChart'), 1000, scenario.speed)
 
     const board = scenario.run();
 
@@ -14511,7 +14511,7 @@ function Worker(skills = {dev: 1}) {
   }
 
   function workSpeedFor(skill) {
-    return skills[skill] || skills['all'] || skills['rest'];
+    return skills[skill] || skills['all'] || skills['rest'] || skills['fs'] || skills['fullstack'];
   }
 
   function calculateTimeoutFor(workItem, skill) {
