@@ -8,7 +8,31 @@
 </head>
 <body>
     <div id="stats">
-        <div id="scenarios"></div>
+        <div id="scenarios">
+            <form id="new-scenario">
+                <label>
+                    Title
+                    <input type="text" name="title" value="One developer" placeholder="ux+dev+qa imbalance">
+                </label>
+                <label>
+                    Workload
+                    <input type="text" name="workload" value="dev: 1" placeholder="ux: 1, dev: 3, qa: 2">
+                </label>
+                <label>
+                    Workers
+                    <input type="text" name="workers" value="dev" placeholder="ux, dev, qa">
+                </label>
+                <label>
+                    WIP-limit
+                    <input type="text" name="wip-limit" placeholder="none">
+                </label>
+                <label>
+                    Average work distribution
+                    <input type="checkbox" name="random">
+                </label>
+                <button id="create-scenario">run</button>
+            </form>
+        </div>
         <canvas id="myChart" class="chart" width="500px" height="100px"></canvas>
     </div>
     <ul id="board"></ul>
@@ -17,7 +41,7 @@
         <div class="scenario">
             <div class="scenario-title"></div>
             <div class="throughput"></div>
-            <div class="leadtime"></div>
+            <div class="cycletime"></div>
             <div class="wip"></div>
             <div class="workers"></div>
         </div>
