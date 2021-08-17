@@ -48,7 +48,7 @@ const initialize = (currentSenarioId) => {
 
   PubSub.subscribe('stats.calculated', (topic, stats) => {
     document.querySelector(`${currentSenarioId} .throughput`).innerHTML = round(stats.throughput);
-    document.querySelector(`${currentSenarioId} .leadtime`).innerHTML = round(stats.leadTime)
+    document.querySelector(`${currentSenarioId} .cycletime`).innerHTML = round(stats.cycleTime)
     document.querySelector(`${currentSenarioId} .wip`).innerHTML = renderWip(stats)
   });
 

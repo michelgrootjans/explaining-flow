@@ -14,7 +14,7 @@ describe('calculate basic stats', () => {
       .then('stats.calculated', (topic, stats) => {
         expect(stats).toMatchObject({
           throughput: 0,
-          leadTime: 0,
+          cycleTime: 0,
           workInProgress: 1
         });
         done();
@@ -30,7 +30,7 @@ describe('calculate basic stats', () => {
       .then('stats.calculated', (topic, stats) => {
         expect(stats).toMatchObject({
           throughput: 0,
-          leadTime: 0,
+          cycleTime: 0,
           workInProgress: 2
         });
         done();
@@ -46,7 +46,7 @@ describe('calculate basic stats', () => {
       .then('stats.calculated', (topic, stats) => {
         expect(stats).toMatchObject({
           throughput: 1,
-          leadTime: 1,
+          cycleTime: 1,
           workInProgress: 0
         });
         done();
@@ -63,7 +63,7 @@ describe('calculate basic stats', () => {
       .then('stats.calculated', (topic, stats) => {
         expect(stats).toMatchObject({
           throughput: 1,
-          leadTime: 1,
+          cycleTime: 1,
           workInProgress: 1
         });
         done();
@@ -78,7 +78,7 @@ describe('calculate basic stats', () => {
       .then('stats.calculated', (topic, stats) => {
         expect(stats).toMatchObject({
           throughput: 0.5,
-          leadTime: 2,
+          cycleTime: 2,
           workInProgress: 0
         });
         done();
@@ -101,7 +101,7 @@ describe('calculate basic stats', () => {
       .then('stats.calculated', (topic, stats) => {
         expect(stats).toMatchObject({
           throughput: numberOfFinishedItems * 1000 / (maxTime - minTime),
-          leadTime: (individualDurations) / numberOfFinishedItems,
+          cycleTime: (individualDurations) / numberOfFinishedItems,
           workInProgress: 2
         });
         done();

@@ -35,7 +35,7 @@ ul.cards li {
     background-color: yellow;
 }
 
-#throughput, #leadtime, #wip {
+#throughput, #cycletime, #wip {
     font-weight: bold;
 }
 
@@ -49,7 +49,7 @@ ul.cards li {
     height: 1em;
 }
 
-.leadtime {
+.cycletime {
     background-color: rgba(255, 99, 132, 0.1);
     border: rgb(255, 99, 132) solid 1px;
     height: 1em;

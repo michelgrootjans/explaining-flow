@@ -2,7 +2,7 @@ const Chart = require('chart.js');
 const PubSub = require("pubsub-js");
 
 function createChart(ctx) {
-  const leadTime = [];
+  const cycleTime = [];
   const throughput = [];
   const wip = [];
   const labels = [];
@@ -22,10 +22,10 @@ function createChart(ctx) {
         yAxisID: 'left-y-axis',
       },
       {
-        label: 'leadtime',
+        label: 'cycletime',
         type: 'line',
         lineTension: 0,
-        data: leadTime,
+        data: cycleTime,
         backgroundColor: 'rgba(255, 99, 132, 0.1)',
         borderColor: 'rgba(255, 99, 132, 1)',
         borderWidth: 1,
@@ -68,7 +68,7 @@ function createChart(ctx) {
       }
     }
   });
-  return {leadTime, throughput, wip, data, chart, labels};
+  return {cycleTime, throughput, wip, data, chart, labels};
 }
 
 function LineChart($chart, updateInterval) {
@@ -87,7 +87,7 @@ function LineChart($chart, updateInterval) {
 
   PubSub.subscribe('stats.calculated', (topic, stats) => {
     state.labels.push(new Date());
-    state.leadTime.push(stats.sliding.leadTime(5));
+    state.cycleTime.push(stats.sliding.cycleTime(5));
     state.throughput.push(stats.sliding.throughput(5));
     state.wip.push(stats.workInProgress);
   });

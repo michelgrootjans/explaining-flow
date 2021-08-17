@@ -29,14 +29,14 @@ function initialize() {
     return state.doneItems.length / ((state.maxEndtime - state.minStarttime) / 1000);
   }
 
-  function calculateLeadTime(items) {
+  function calculateCycleTime(items) {
     if (items.length === 0) return 0;
     let averageDuration = items.map(item => (item.endTime - item.startTime) / 1000)
       .reduce((sum, duration) => sum + duration, 0);
     return averageDuration / items.length;
   }
 
-  function calculateAllLeadTime() {
+  function calculateAllCycleTime() {
     if (state.doneItems.length === 0) return 0;
     return state.sumOfDurations / (state.doneItems.length * 1000);
   }
@@ -49,19 +49,19 @@ function initialize() {
     return calculateThroughput(lastNumberOfItems(numberOfItems)) * TimeAdjustments.multiplicator();
   }
 
-  function leadTimeForLast(numberOfItems) {
-    return calculateLeadTime(lastNumberOfItems(numberOfItems)) / TimeAdjustments.multiplicator();
+  function cycleTimeForLast(numberOfItems) {
+    return calculateCycleTime(lastNumberOfItems(numberOfItems)) / TimeAdjustments.multiplicator();
   }
 
   function publishStats() {
     PubSub.publish('stats.calculated', {
       throughput: calculateAllThroughput(state.doneItems) * TimeAdjustments.multiplicator(),
-      leadTime: calculateAllLeadTime(state.doneItems) / TimeAdjustments.multiplicator(),
+      cycleTime: calculateAllCycleTime(state.doneItems) / TimeAdjustments.multiplicator(),
       workInProgress: state.wip,
       maxWorkInProgress: state.maxWip,
       sliding: {
         throughput: throughputForLast,
-        leadTime: leadTimeForLast,
+        cycleTime: cycleTimeForLast,
       }
     });
   }

@@ -5,5 +5,5 @@
 - validation of input: do not run if invalid + message
 - click on past scenario shows the graph again
 - automatic title based on scenario
-- labels to scenario
-- rename to cycle time
+- add labels to scenario
+- ~~rename to cycle time~~
