@@ -40,21 +40,25 @@ function parse(form) {
   const workers = split(field('workers'));
   const work = parseWorkload(field('workload'));
   const wipLimit = field('wip-limit');
-
-  console.log({workers, work})
+  const speed = (workers.length > 2) ? 20 : 1;
+  const numberOfStories = (workers.length > 2) ? 200 : 50;
   let input = {
     title,
     workers,
     stories: {
-      amount: (workers.length > 2) ? 200 : 50,
+      amount: numberOfStories,
       work
     },
     wipLimit,
-    speed: (workers.length > 2) ? 20 : 1
+    speed
   };
   if (form.querySelector('[name="random"]').checked) input.distribution = average
   input.wipLimit = form.querySelector('[name="wip-limit"]').value
   return input;
+}
+
+function parseScenario(event) {
+  return Scenario(parse(event.target));
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -68,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('new-scenario')
       .addEventListener('submit', event => {
         event.preventDefault()
-        const scenario = Scenario(parse(event.target));
+        const scenario = parseScenario(event);
         document.getElementById('scenarios').append(createScenarioContainer(scenario))
         run(scenario);
       })
@@ -80,6 +84,7 @@ const wipLimiter = LimitBoardWip();
 const CurrentStats = require("./cfd");
 const CumulativeFlowDiagram = require("./CumulativeFlowDiagram");
 const {average} = require("./generator");
+let currentChart = undefined;
 
 function run(scenario) {
     PubSub.clearAllSubscriptions();
@@ -92,9 +97,11 @@ function run(scenario) {
     TimeAdjustments.speedUpBy(scenario.speed || 1);
 
     wipLimiter.initialize(scenario.wipLimit)
+    if(currentChart) currentChart.destroy()
+    currentChart = LineChart(document.getElementById('myChart'), 2000, scenario.speed)
+
     const board = scenario.run();
 
-    LineChart(document.getElementById('myChart'), 2000)
     // const stats = CurrentStats(board.columns());
     // stats.init();
     // CumulativeFlowDiagram(document.getElementById('myChart'), stats);

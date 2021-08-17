@@ -11,6 +11,11 @@
     white-space: nowrap;
 }
 
+.legend {
+    display: inline-block;
+    vertical-align: top;
+}
+
 .scenario {
     display: inline-block;
     margin: 1em;

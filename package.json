@@ -19,7 +19,7 @@
     "node-notifier": ">=8.0.1"
   },
   "dependencies": {
-    "chart.js": "^2.8.0",
+    "chart.js": "^3.5.0",
     "pubsub-js": "^1.7.0"
   }
 }

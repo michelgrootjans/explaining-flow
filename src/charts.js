@@ -18,8 +18,9 @@ function createChart(ctx) {
         data: throughput,
         backgroundColor: 'rgba(54, 162, 235, 0.1)',
         borderColor: 'rgba(54, 162, 235, 1)',
+        fill: true,
         borderWidth: 1,
-        pointRadius: 0.5,
+        pointRadius: 0,
       },
       {
         label: 'cycletime',
@@ -28,9 +29,11 @@ function createChart(ctx) {
         data: cycleTime,
         backgroundColor: 'rgba(255, 99, 132, 0.1)',
         borderColor: 'rgba(255, 99, 132, 1)',
+        fill: true,
         borderWidth: 1,
-        pointRadius: 0.5,
-      }, {
+        pointRadius: 0,
+      },
+      {
         label: 'wip',
         type: 'line',
         steppedLine: true,
@@ -38,51 +41,45 @@ function createChart(ctx) {
         data: wip,
         backgroundColor: 'rgba(255, 206, 86, 0.1)',
         borderColor: 'rgba(255, 206, 86, 1)',
+        fill: true,
+        stepped: true,
         borderWidth: 1,
-        pointRadius: 0.5,
+        pointRadius: 0,
       },
     ]
   };
 
   const chart = new Chart(ctx, {
+    type: 'line',
     data: data,
     options: {
       animation: false,
-      title: {
-        text: 'team flow'
-      },
       scales: {
-        xAxes: [{
-          type: 'time',
-        }],
-        yAxes: [{
+        x: {
+          type: 'linear',
+          ticks: {stepSize: 10}
+        },
+        y: {
           type: 'linear',
           position: 'left',
-          ticks: {
-            beginAtZero: true
-          },
-        }]
+          ticks: {stepSize: 1}
+        },
       }
     }
   });
   return {cycleTime, throughput, wip, data, chart, labels, startTime};
 }
 
-function xValue(startTime) {
+function xValue(startTime, speed) {
   const currentTime = new Date();
-  const delta = (currentTime - startTime) / 1000;
-  console.log({startTime, currentTime, delta})
-  return new Date();
+  return (currentTime - startTime) * speed / 1000;
 }
 
-function LineChart($chart, updateInterval) {
+function LineChart($chart, updateInterval, speed) {
   const ctx = $chart.getContext('2d');
 
-  let state = undefined;
+  let state = createChart(ctx);
   PubSub.subscribe('board.ready', () => {
-    state && state.chart && state.chart.destroy()
-    state = createChart(ctx);
-
     const timerId = setInterval(() => state.chart.update(), updateInterval);
     PubSub.subscribe('board.done', () => {
       clearInterval(timerId);
@@ -90,12 +87,14 @@ function LineChart($chart, updateInterval) {
     });
 
     PubSub.subscribe('stats.calculated', (topic, stats) => {
-      state.labels.push(xValue(state.startTime));
+      state.labels.push(xValue(state.startTime, speed));
       state.cycleTime.push(stats.sliding.cycleTime(5));
       state.throughput.push(stats.sliding.throughput(5));
       state.wip.push(stats.workInProgress);
     });
   });
+
+  return state.chart;
 }
 
 module.exports = LineChart
