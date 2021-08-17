@@ -6,6 +6,7 @@ function createChart(ctx) {
   const throughput = [];
   const wip = [];
   const labels = [];
+  const startTime = new Date();
 
   const data = {
     labels,
@@ -19,7 +20,6 @@ function createChart(ctx) {
         borderColor: 'rgba(54, 162, 235, 1)',
         borderWidth: 1,
         pointRadius: 0.5,
-        yAxisID: 'left-y-axis',
       },
       {
         label: 'cycletime',
@@ -30,7 +30,6 @@ function createChart(ctx) {
         borderColor: 'rgba(255, 99, 132, 1)',
         borderWidth: 1,
         pointRadius: 0.5,
-        yAxisID: 'left-y-axis',
       }, {
         label: 'wip',
         type: 'line',
@@ -41,7 +40,6 @@ function createChart(ctx) {
         borderColor: 'rgba(255, 206, 86, 1)',
         borderWidth: 1,
         pointRadius: 0.5,
-        yAxisID: 'left-y-axis',
       },
     ]
   };
@@ -58,7 +56,6 @@ function createChart(ctx) {
           type: 'time',
         }],
         yAxes: [{
-          id: 'left-y-axis',
           type: 'linear',
           position: 'left',
           ticks: {
@@ -68,7 +65,14 @@ function createChart(ctx) {
       }
     }
   });
-  return {cycleTime, throughput, wip, data, chart, labels};
+  return {cycleTime, throughput, wip, data, chart, labels, startTime};
+}
+
+function xValue(startTime) {
+  const currentTime = new Date();
+  const delta = (currentTime - startTime) / 1000;
+  console.log({startTime, currentTime, delta})
+  return new Date();
 }
 
 function LineChart($chart, updateInterval) {
@@ -78,18 +82,19 @@ function LineChart($chart, updateInterval) {
   PubSub.subscribe('board.ready', () => {
     state && state.chart && state.chart.destroy()
     state = createChart(ctx);
-    let timerId = setInterval(() => state.chart.update(), updateInterval);
+
+    const timerId = setInterval(() => state.chart.update(), updateInterval);
     PubSub.subscribe('board.done', () => {
       clearInterval(timerId);
       state.chart.update()
     });
-  });
 
-  PubSub.subscribe('stats.calculated', (topic, stats) => {
-    state.labels.push(new Date());
-    state.cycleTime.push(stats.sliding.cycleTime(5));
-    state.throughput.push(stats.sliding.throughput(5));
-    state.wip.push(stats.workInProgress);
+    PubSub.subscribe('stats.calculated', (topic, stats) => {
+      state.labels.push(xValue(state.startTime));
+      state.cycleTime.push(stats.sliding.cycleTime(5));
+      state.throughput.push(stats.sliding.throughput(5));
+      state.wip.push(stats.workInProgress);
+    });
   });
 }
 
