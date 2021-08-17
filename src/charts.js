@@ -1,7 +1,7 @@
 const Chart = require('chart.js');
 const PubSub = require("pubsub-js");
 
-function createChart(ctx) {
+function createChart(ctx,speed) {
   const cycleTime = [];
   const throughput = [];
   const wip = [];
@@ -57,7 +57,7 @@ function createChart(ctx) {
       scales: {
         x: {
           type: 'linear',
-          ticks: {stepSize: 10}
+          ticks: {stepSize: 5 * speed}
         },
         y: {
           type: 'linear',
@@ -78,7 +78,7 @@ function xValue(startTime, speed) {
 function LineChart($chart, updateInterval, speed) {
   const ctx = $chart.getContext('2d');
 
-  let state = createChart(ctx);
+  let state = createChart(ctx, speed);
   PubSub.subscribe('board.ready', () => {
     const timerId = setInterval(() => state.chart.update(), updateInterval);
     PubSub.subscribe('board.done', () => {

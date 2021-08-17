@@ -36,7 +36,7 @@ const split = value => value.trim().split(",").map(item => item.trim());
 function parse(form) {
   const field = fieldName => form.querySelector(`[name="${fieldName}"]`).value;
 
-  const title = field('title');
+  const title = field('workload');
   const workers = split(field('workers'));
   const work = parseWorkload(field('workload'));
   const wipLimit = field('wip-limit');
@@ -98,7 +98,7 @@ function run(scenario) {
 
     wipLimiter.initialize(scenario.wipLimit)
     if(currentChart) currentChart.destroy()
-    currentChart = LineChart(document.getElementById('myChart'), 2000, scenario.speed)
+    currentChart = LineChart(document.getElementById('myChart'), 1000, scenario.speed)
 
     const board = scenario.run();
 

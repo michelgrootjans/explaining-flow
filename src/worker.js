@@ -28,7 +28,7 @@ function Worker(skills = {dev: 1}) {
   }
 
   function workSpeedFor(skill) {
-    return skills[skill] || skills['all'] || skills['rest'];
+    return skills[skill] || skills['all'] || skills['rest'] || skills['fs'] || skills['fullstack'];
   }
 
   function calculateTimeoutFor(workItem, skill) {
