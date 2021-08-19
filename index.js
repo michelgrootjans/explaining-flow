@@ -14213,8 +14213,6 @@ document.addEventListener('DOMContentLoaded', () => {
 const wipLimiter = LimitBoardWip();
 
 
-const CurrentStats = require("./cfd");
-const CumulativeFlowDiagram = require("./CumulativeFlowDiagram");
 const {average} = require("./generator");
 let currentChart = undefined;
 
@@ -14233,14 +14231,10 @@ function run(scenario) {
     currentChart = LineChart(document.getElementById('myChart'), 1000, scenario.speed)
 
     const board = scenario.run();
-
-    // const stats = CurrentStats(board.columns());
-    // stats.init();
-    // CumulativeFlowDiagram(document.getElementById('myChart'), stats);
 }
 
 
-},{"../src/strategies":16,"./CumulativeFlowDiagram":3,"./animation":4,"./cfd":7,"./charts":8,"./generator":10,"./scenario":12,"./scenarios":13,"./stats":15,"./timeAdjustments":17,"./worker-stats":18,"pubsub-js":2}],15:[function(require,module,exports){
+},{"../src/strategies":16,"./animation":4,"./charts":8,"./generator":10,"./scenario":12,"./scenarios":13,"./stats":15,"./timeAdjustments":17,"./worker-stats":18,"pubsub-js":2}],15:[function(require,module,exports){
 const TimeAdjustments = require('./timeAdjustments');
 const PubSub = require('pubsub-js');
 
