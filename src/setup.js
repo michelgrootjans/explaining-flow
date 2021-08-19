@@ -81,8 +81,6 @@ document.addEventListener('DOMContentLoaded', () => {
 const wipLimiter = LimitBoardWip();
 
 
-const CurrentStats = require("./cfd");
-const CumulativeFlowDiagram = require("./CumulativeFlowDiagram");
 const {average} = require("./generator");
 let currentChart = undefined;
 
@@ -101,9 +99,5 @@ function run(scenario) {
     currentChart = LineChart(document.getElementById('myChart'), 1000, scenario.speed)
 
     const board = scenario.run();
-
-    // const stats = CurrentStats(board.columns());
-    // stats.init();
-    // CumulativeFlowDiagram(document.getElementById('myChart'), stats);
 }
 

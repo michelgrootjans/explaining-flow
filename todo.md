@@ -6,5 +6,6 @@
 - click on past scenario shows the graph again
 - automatic title based on scenario
 - add labels to scenario
+- fix cumulative flow diagram
 - ~~x-axis in days (1, 2, 3, ...)~~
 - ~~rename to cycle time~~
