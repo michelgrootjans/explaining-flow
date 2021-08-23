@@ -22,6 +22,10 @@
     vertical-align: top;
 }
 
+.scenario div {
+    padding: 3px;
+}
+
 .scenario-title {
     overflow-x: visible;
     overflow-y: visible;
