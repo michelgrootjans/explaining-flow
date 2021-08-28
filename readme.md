@@ -21,15 +21,14 @@ open index.html
 ```
 
 ## My lightning talk
-
-The following chapters show the different scenarios I run to illustrate the need to understand flow.
+I'd like to share a few simulations showing the effects of team flow.
+These simulations show the different scenarios I run to illustrate the need to understand team flow.
 
 The stats we're interested in are:
 - **Throughput**: this is what is typically measured under the name _velocity_. It's the number of user stories finished per unit of time.
 - **Cycle time**: the time taken for each story from the moment it has been taken out of the _todo_ column until it reaches the _done_ column.
 - **WIP**: Work In Progress. The amount of user stories _in flight_. These stories have been started but are not done yet.
-
-### scenario 1: a single developer working on a predictable backlog
+ ### A single developer working on a predictable backlog
 In this predictable scenario, a single developer works on 50 stories. Each story takes exactly 1 day to complete. So we expect a throughput of `1` story per day. We expect a cycle time of `1` since each story will be in progress for exactly 1 day. This means that we'll have an average of `1` story in progress at any given time.
 
 **Input**
@@ -41,7 +40,7 @@ In this predictable scenario, a single developer works on 50 stories. Each story
   - Cycle time: **1 day per story**
   - WIP: **1 story**
 
-#### scenario 2: a single developer working on a backlog with some randomness
+### A single developer working on a backlog with some randomness
 The developer now spends 1 day _on average_ for each story.
 This slight change shows that throughput and cycle time move in opposite directions.
 This is a direct illustration of [Little's law](https://en.wikipedia.org/wiki/Little%27s_law) which states that in a stable system, `throughput * cycle time = WIP`. This formula will be applicable to all the simulations.
@@ -56,7 +55,7 @@ This is a direct illustration of [Little's law](https://en.wikipedia.org/wiki/Li
 - Cycle time: **1 day per story**
 - WIP: **1 story**
 
-#### scenario 3: handover from development to QA
+### Handover from development to QA
 Now both development and qa will spend 1 day _on average_ for each story.
 
 We expect the cycle time be 2 on average now: 1 day of development, 1 day of qa. We also expect a Throughput of 1 story per day.
@@ -74,7 +73,7 @@ The reason is simple: As long as qa works faster than dev, everything will run s
 - Cycle time: **3 days per story**
 - WIP: **about 2-3with peaks up to 5**
 
-#### scenario 4: adding UX to the process
+### Adding UX to the process
 Let's accelerate the simulation. This allows us to see patterns we wouldn't recognise in the slow daily movements of stories on a board. From now on, we'll simulate with 200 user stories.
 
 Ux, development and qa will each spend 2 days _on average_ for each story. So each story will have 6 days of work on average (2 ux + 2 dev + 2 qa).
@@ -89,7 +88,7 @@ Ux, development and qa will each spend 2 days _on average_ for each story. So ea
 - Cycle time: **20 days per story**
 - WIP: **9 stories with peaks of 16**
 
-#### scenario 5: let's stack the deck to make development the slowest in the process
+### Let's stack the deck to make development the slowest in the process
 We're now going to shift the effort a little.The total amount of work for each story is still 6, but the distribution is now:
 - **1** day of ux on average
 - **3** days of dev on average
@@ -112,7 +111,7 @@ Predictably, a big queue will appear in front of the dev column as dev has three
 This is bad. The low velocity and high cycle time will make customers very unhappy. How can we change team structure to improve this?
 
 
-#### scenario 6: let's add an extra developer
+### Let's add an extra developer
 The usual reflex at this point is to add developers to speed things up. This will obviously raise the daily cost of the team. What would be the expected benefit? Twice the throughput? Let's try that out in the next simulation.
 
 **Input**
@@ -127,7 +126,7 @@ The usual reflex at this point is to add developers to speed things up. This wil
 
 We have an improvement in throughput, but it's not what we expected. We solved the development bottleneck. A new bottleneck appeared before QA, which caused the slowdown.
 
-#### scenario 7: Let's go back to the original team and introduce a WIP-limit instead of a new developer
+### Let's go back to the original team and introduce a WIP-limit instead of a new developer
 We will simulate with the same team from scenario 5, but introduce a WIP-limit of 10. This means that no-one is allowed to start on a new story for as long as there are 10 stories _in flight_.
 
 **Input**
@@ -143,7 +142,7 @@ We will simulate with the same team from scenario 5, but introduce a WIP-limit o
 
 With no extra cost, our throughput was unaffected, while our cycle time went from 200 days to 30 days.
 
-#### scenario 8: Improve even more
+### Improve even more
 Since limiting WIP works so well, why not limiting it to 5?
 
 **Input**
@@ -159,7 +158,7 @@ Since limiting WIP works so well, why not limiting it to 5?
 
 Again, with no extra cost, our throughput was unaffected, while our cycle time halved yet again.
 
-#### scenario 9: But you can go too far
+### But you can go too far
 Let's try limiting WIP to 2 now.
 
 **Input**
@@ -175,7 +174,7 @@ Let's try limiting WIP to 2 now.
 
 Now we start to see a drop in throughput. This means we went too far in limiting WIP. Our bottleneck, development, was not working at 100% anymore, which caused the whole drop in throughput.
 
-#### scenario 10: The best solution: full stack developers
+### The best solution: full stack developers
 **Input**
 - Work per story: **`ux: 1, dev: 3, qa: 2`**
 - Workers: `fullstack, fullstack, fullstack`
