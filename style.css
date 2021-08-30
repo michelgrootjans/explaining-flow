@@ -69,3 +69,14 @@ ul.cards li {
     border: rgb(255, 206, 86) solid 1px;
     height: 1em;
 }
+
+.amount {
+    color: darkgray;
+    padding-left: 3px;
+}
+.amount:before {
+    content: '('
+}
+.amount:after {
+    content: ')'
+}
