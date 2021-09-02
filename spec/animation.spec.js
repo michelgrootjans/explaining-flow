@@ -26,7 +26,7 @@ describe('animation', () => {
 
         let $backlog = find('#board li:nth-child(1)');
         expect($backlog.getAttribute('class')).toBe('column queue');
-        expect($backlog.querySelector('h2').innerHTML).toBe('Backlog');
+        expect($backlog.querySelector('h2').firstChild.textContent).toBe('Backlog');
         expect($backlog.querySelector('ul').getAttribute('class')).toBe('cards');
       });
 
@@ -35,7 +35,7 @@ describe('animation', () => {
 
         let $dev = find('#board li:nth-child(2)');
         expect($dev.getAttribute('class')).toBe('column work');
-        expect($dev.querySelector('h2').innerHTML).toBe('dev');
+        expect($dev.querySelector('h2').firstChild.textContent).toBe('dev');
         expect($dev.querySelector('ul').getAttribute('class')).toBe('cards');
       });
 
@@ -44,7 +44,7 @@ describe('animation', () => {
 
         let $done = find('#board li:nth-child(3)');
         expect($done.getAttribute('class')).toBe('column queue');
-        expect($done.querySelector('h2').innerHTML).toBe('Done');
+        expect($done.querySelector('h2').firstChild.textContent).toBe('Done');
         expect($done.querySelector('ul').getAttribute('class')).toBe('cards');
       });
     });
@@ -76,6 +76,17 @@ describe('animation', () => {
 
       expect(find('#board li:nth-child(3) .cards').innerHTML).toBe('');
     })
+
+    it('shows card amount', () => {
+      board.addWorkers(new Worker({dev: 1}));
+      board.addWorkItems(new WorkItem({dev: 1}));
+      jest.advanceTimersByTime(0);
+
+      expect(find('#board li:nth-child(1) h2 .amount').innerHTML).toBe('0');
+      expect(find('#board li:nth-child(2) h2 .amount').innerHTML).toBe('1');
+      expect(find('#board li:nth-child(3) h2 .amount').innerHTML).toBe('0');
+    })
+
   });
 
   describe('stats', () => {
