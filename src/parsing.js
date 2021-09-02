@@ -24,7 +24,13 @@ function parseInput(rawInput) {
 function parseWorkers(input) {
     return input
         .split(',')
-        .map(skill => ({skills: [skill.trim()]}));
+        .map(skillsInput => ({skills: parseSkills(skillsInput)}));
+}
+
+function parseSkills(input) {
+    return input
+        .split('+')
+        .map(skill => skill.trim());
 }
 
 function parseWorkload(input) {

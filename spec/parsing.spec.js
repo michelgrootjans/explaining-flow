@@ -17,13 +17,17 @@ describe('parseWorkload', () => {
 });
 
 describe('parseWorkers', () => {
-  it('parses a single worker', () => {
+  it('parses a single worker with a single skill', () => {
     expect(parseWorkers('dev')).toEqual([{skills: ['dev']}]);
     expect(parseWorkers('qa')).toEqual([{skills: ['qa']}]);
   });
 
-  it('parses multiple workers', () => {
+  it('parses multiple workers with single skills', () => {
     expect(parseWorkers('dev, qa')).toEqual([{skills: ['dev']}, {skills: ['qa']}]);
+  });
+
+  it('parses a single worker with multiple skills', () => {
+    expect(parseWorkers('dev+qa')).toEqual([{skills: ['dev', 'qa']}]);
   });
 })
 
