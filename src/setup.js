@@ -53,7 +53,6 @@ function parse(form) {
     speed
   };
   if (form.querySelector('[name="random"]').checked) input.distribution = average
-  input.wipLimit = form.querySelector('[name="wip-limit"]').value
   return input;
 }
 
