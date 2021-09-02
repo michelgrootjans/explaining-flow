@@ -13605,7 +13605,11 @@ const initialize = (currentSenarioId) => {
         className: `column ${column.type}`,
         attributes: {'data-column-id': column.id}
       })
-      $column.append(createElement({type: 'h2', text: column.name}))
+
+      const $header = createElement({type: 'h2', text: column.name });
+      $header.append(createElement({type : 'span', className: 'amount', text: '0' }));
+
+      $column.append($header);
       $column.append(createElement({type: 'ul', className: 'cards'}))
 
       document.getElementById('board').append($column)
@@ -13628,6 +13632,16 @@ const initialize = (currentSenarioId) => {
     let $card = document.querySelector(selector);
     if ($card) $card.remove(); // FIXME: this check should not happen
   });
+
+  const updateAmount = (topic, {column}) => {
+    let $cards = document.querySelector(`[data-column-id="${column.id}"] .cards`);
+    let $span = document.querySelector(`[data-column-id="${column.id}"] .amount`);
+    if ($span) {// FIXME: this check should not happen
+      $span.innerHTML = `${$cards ? $cards.childElementCount : 0}`;
+    }
+  }
+  PubSub.subscribe('workitem.added', updateAmount);
+  PubSub.subscribe('workitem.removed', updateAmount);
 
   const renderWip = ({workInProgress, maxWorkInProgress}) => {
     if (workInProgress === maxWorkInProgress) {
