@@ -8,9 +8,9 @@ const Scenario = scenario => {
   const id = counter++;
   const wipLimit = scenario.wipLimit || scenario.stories.amount
 
-  const createWorker = (skillName, speed = 1) => {
+  const createWorker = ({ skills: skillNames }, speed = 1) => {
     let skills = {};
-    skills[skillName] = speed
+    skillNames.forEach(skillName => skills[skillName] = speed);
     return new Worker(skills);
   };
 
@@ -28,7 +28,7 @@ const Scenario = scenario => {
 
   const run = () => {
     const board = new Board(columnNames());
-    board.addWorkers(...(scenario.workers.map(skill => createWorker(skill))));
+    board.addWorkers(...(scenario.workers.map(workerDetails => createWorker(workerDetails))));
     board.addWorkItems(...generateWorkItems(generateStory, scenario.stories.amount));
     return board;
   }

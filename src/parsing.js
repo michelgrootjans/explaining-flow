@@ -1,10 +1,8 @@
 const {average} = require("./generator");
 
-const split = value => value.trim().split(",").map(item => item.trim());
-
 function parseInput(rawInput) {
     const title = rawInput.title;
-    const workers = split(rawInput.workers);
+    const workers = parseWorkers(rawInput.workers);
     const work = parseWorkload(rawInput.workload);
     const wipLimit = rawInput.wipLimit;
     const speed = (workers.length > 2) ? 20 : 1;
@@ -23,6 +21,12 @@ function parseInput(rawInput) {
     return input;
 }
 
+function parseWorkers(input) {
+    return input
+        .split(',')
+        .map(skill => ({skills: [skill.trim()]}));
+}
+
 function parseWorkload(input) {
     return input
         .trim()
@@ -39,5 +43,6 @@ function parseWorkload(input) {
 
 module.exports = {
     parseInput,
-    parseWorkload
+    parseWorkload,
+    parseWorkers
 };

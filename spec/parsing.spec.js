@@ -1,4 +1,4 @@
-const {parseWorkload, parseInput} = require('../src/parsing')
+const {parseWorkload, parseWorkers, parseInput} = require('../src/parsing')
 const {average} = require("../src/generator");
 
 describe('parseWorkload', () => {
@@ -16,6 +16,17 @@ describe('parseWorkload', () => {
   });
 });
 
+describe('parseWorkers', () => {
+  it('parses a single worker', () => {
+    expect(parseWorkers('dev')).toEqual([{skills: ['dev']}]);
+    expect(parseWorkers('qa')).toEqual([{skills: ['qa']}]);
+  });
+
+  it('parses multiple workers', () => {
+    expect(parseWorkers('dev, qa')).toEqual([{skills: ['dev']}, {skills: ['qa']}]);
+  });
+})
+
 describe('parseInput', () => {
   const exampleRawInput = {
     title: 'dev: 3, qa: 1',
@@ -27,7 +38,7 @@ describe('parseInput', () => {
 
   const exampleParsedInput = {
     title: 'dev: 3, qa: 1',
-    workers: ['dev', 'qa', 'qa'],
+    workers: [{skills: ['dev']}, {skills: ['qa']}, {skills: ['qa']}],
     wipLimit: "3",
     distribution: average,
     speed: 20,
