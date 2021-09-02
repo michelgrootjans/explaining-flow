@@ -36,24 +36,34 @@ const split = value => value.trim().split(",").map(item => item.trim());
 function parse(form) {
   const field = fieldName => form.querySelector(`[name="${fieldName}"]`).value;
 
-  const title = field('workload');
-  const workers = split(field('workers'));
-  const work = parseWorkload(field('workload'));
-  const wipLimit = field('wip-limit');
-  const speed = (workers.length > 2) ? 20 : 1;
-  const numberOfStories = (workers.length > 2) ? 200 : 50;
-  let input = {
-    title,
-    workers,
-    stories: {
-      amount: numberOfStories,
-      work
-    },
-    wipLimit,
-    speed
-  };
-  if (form.querySelector('[name="random"]').checked) input.distribution = average
-  return input;
+  return parseInput({
+      title: field('workload'),
+      workers: field('workers'),
+      workload: field('workload'),
+      wipLimit: field('wip-limit'),
+      random: form.querySelector('[name="random"]').checked
+  });
+}
+
+function parseInput(rawInput) {
+    const title = rawInput.title;
+    const workers = split(rawInput.workers);
+    const work = parseWorkload(rawInput.workload);
+    const wipLimit = rawInput.wipLimit;
+    const speed = (workers.length > 2) ? 20 : 1;
+    const numberOfStories = (workers.length > 2) ? 200 : 50;
+    let input = {
+        title,
+        workers,
+        stories: {
+            amount: numberOfStories,
+            work
+        },
+        wipLimit,
+        speed
+    };
+    if (rawInput.random) input.distribution = average
+    return input;
 }
 
 function parseScenario(event) {
