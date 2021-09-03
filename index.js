@@ -13811,7 +13811,7 @@ function BoardFactory() {
 }
 
 module.exports = BoardFactory
-},{"./worker":19}],7:[function(require,module,exports){
+},{"./worker":20}],7:[function(require,module,exports){
 const CurrentStats = columns => {
 
   const needsAStatistic = column => column.name !== '-';
@@ -13982,14 +13982,70 @@ function averageOf(value) {
 
 module.exports = {generateWorkItems, randomBetween, averageOf, average: averageOf};
 
-},{"./worker":19}],11:[function(require,module,exports){
+},{"./worker":20}],11:[function(require,module,exports){
+const {average} = require("./generator");
+
+function parseInput(rawInput) {
+    const title = rawInput.title;
+    const workers = parseWorkers(rawInput.workers);
+    const work = parseWorkload(rawInput.workload);
+    const wipLimit = rawInput.wipLimit;
+    const speed = (workers.length > 2) ? 20 : 1;
+    const numberOfStories = (workers.length > 2) ? 200 : 50;
+    let input = {
+        title,
+        workers,
+        stories: {
+            amount: numberOfStories,
+            work
+        },
+        wipLimit,
+        speed
+    };
+    if (rawInput.random) input.distribution = average
+    return input;
+}
+
+function parseWorkers(input) {
+    return input
+        .split(',')
+        .map(skillsInput => ({skills: parseSkills(skillsInput)}));
+}
+
+function parseSkills(input) {
+    return input
+        .split('+')
+        .map(skill => skill.trim());
+}
+
+function parseWorkload(input) {
+    return input
+        .trim()
+        .split(',')
+        .map(pair => pair
+            .trim()
+            .split(":")
+        )
+        .reduce((work, pair) => {
+            work[pair[0].trim()] = parseInt(pair[1].trim());
+            return work;
+        }, {})
+}
+
+module.exports = {
+    parseInput,
+    parseWorkload,
+    parseWorkers
+};
+
+},{"./generator":10}],12:[function(require,module,exports){
 function Range(from, to) {
   let length = to - from + 1;
   return Array.from(Array(length).keys()).map(value => value + from);
 }
 
 module.exports = Range
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 const Board = require("./board");
 const {generateWorkItems} = require("./generator");
 const {Worker} = require('./worker')
@@ -14000,9 +14056,9 @@ const Scenario = scenario => {
   const id = counter++;
   const wipLimit = scenario.wipLimit || scenario.stories.amount
 
-  const createWorker = (skillName, speed = 1) => {
+  const createWorker = ({ skills: skillNames }, speed = 1) => {
     let skills = {};
-    skills[skillName] = speed
+    skillNames.forEach(skillName => skills[skillName] = speed);
     return new Worker(skills);
   };
 
@@ -14020,7 +14076,7 @@ const Scenario = scenario => {
 
   const run = () => {
     const board = new Board(columnNames());
-    board.addWorkers(...(scenario.workers.map(skill => createWorker(skill))));
+    board.addWorkers(...(scenario.workers.map(workerDetails => createWorker(workerDetails))));
     board.addWorkItems(...generateWorkItems(generateStory, scenario.stories.amount));
     return board;
   }
@@ -14029,7 +14085,7 @@ const Scenario = scenario => {
 };
 
 module.exports = Scenario
-},{"./board":5,"./generator":10,"./worker":19}],13:[function(require,module,exports){
+},{"./board":5,"./generator":10,"./worker":20}],14:[function(require,module,exports){
 const {average} = require('./generator');
 
 module.exports = [
@@ -14143,7 +14199,7 @@ module.exports = [
     speed: 20
   },
 ];
-},{"./generator":10}],14:[function(require,module,exports){
+},{"./generator":10}],15:[function(require,module,exports){
 const PubSub = require('pubsub-js');
 const scenarios = require('./scenarios')
 const Animation = require('./animation');
@@ -14153,6 +14209,7 @@ const Stats = require('./stats');
 const WorkerStats = require('./worker-stats');
 const Scenario = require("./scenario");
 const LineChart = require("./charts");
+const {parseInput} = require("./parsing");
 
 function createScenarioContainer(scenario) {
     const template = document.querySelector('#scenario-template');
@@ -14163,44 +14220,16 @@ function createScenarioContainer(scenario) {
     return clone
 }
 
-function parseWorkload(input) {
-  return input
-    .trim()
-    .split(',')
-    .map(pair => pair
-      .trim()
-      .split(":")
-    )
-    .reduce((work, pair) => {
-      work[pair[0].trim()] = parseInt(pair[1].trim());
-      return work;
-    }, {})
-}
-
-const split = value => value.trim().split(",").map(item => item.trim());
-
 function parse(form) {
   const field = fieldName => form.querySelector(`[name="${fieldName}"]`).value;
 
-  const title = field('workload');
-  const workers = split(field('workers'));
-  const work = parseWorkload(field('workload'));
-  const wipLimit = field('wip-limit');
-  const speed = (workers.length > 2) ? 20 : 1;
-  const numberOfStories = (workers.length > 2) ? 200 : 50;
-  let input = {
-    title,
-    workers,
-    stories: {
-      amount: numberOfStories,
-      work
-    },
-    wipLimit,
-    speed
-  };
-  if (form.querySelector('[name="random"]').checked) input.distribution = average
-  input.wipLimit = form.querySelector('[name="wip-limit"]').value
-  return input;
+  return parseInput({
+      title: field('workload'),
+      workers: field('workers'),
+      workload: field('workload'),
+      wipLimit: field('wip-limit'),
+      random: form.querySelector('[name="random"]').checked
+  });
 }
 
 function parseScenario(event) {
@@ -14227,7 +14256,6 @@ document.addEventListener('DOMContentLoaded', () => {
 const wipLimiter = LimitBoardWip();
 
 
-const {average} = require("./generator");
 let currentChart = undefined;
 
 function run(scenario) {
@@ -14248,7 +14276,7 @@ function run(scenario) {
 }
 
 
-},{"../src/strategies":16,"./animation":4,"./charts":8,"./generator":10,"./scenario":12,"./scenarios":13,"./stats":15,"./timeAdjustments":17,"./worker-stats":18,"pubsub-js":2}],15:[function(require,module,exports){
+},{"../src/strategies":17,"./animation":4,"./charts":8,"./parsing":11,"./scenario":13,"./scenarios":14,"./stats":16,"./timeAdjustments":18,"./worker-stats":19,"pubsub-js":2}],16:[function(require,module,exports){
 const TimeAdjustments = require('./timeAdjustments');
 const PubSub = require('pubsub-js');
 
@@ -14342,7 +14370,7 @@ module.exports = {
   initialize
 };
 
-},{"./timeAdjustments":17,"pubsub-js":2}],16:[function(require,module,exports){
+},{"./timeAdjustments":18,"pubsub-js":2}],17:[function(require,module,exports){
 const PubSub = require('pubsub-js');
 
 function LimitBoardWip() {
@@ -14427,7 +14455,7 @@ function WipUp(step = 10) {
 
 module.exports = {LimitBoardWip, DynamicLimitBoardWip, WipUp}
 
-},{"pubsub-js":2}],17:[function(require,module,exports){
+},{"pubsub-js":2}],18:[function(require,module,exports){
 (function(){
   factor = 1;
 
@@ -14436,7 +14464,7 @@ module.exports = {LimitBoardWip, DynamicLimitBoardWip, WipUp}
     speedUpBy: (f) => { factor = 1.0/f; }
   }
 })();
-},{}],18:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 const PubSub = require('pubsub-js');
 
 function WorkerStats() {
@@ -14488,7 +14516,7 @@ function WorkerStats() {
 
 module.exports = WorkerStats;
 
-},{"pubsub-js":2}],19:[function(require,module,exports){
+},{"pubsub-js":2}],20:[function(require,module,exports){
 const PubSub = require('pubsub-js');
 const TimeAdjustments = require('./timeAdjustments');
 
@@ -14600,4 +14628,4 @@ function WorkList(skill = "dev") {
 
 module.exports = {Worker, WorkItem, WorkList};
 
-},{"./timeAdjustments":17,"pubsub-js":2}]},{},[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19]);
+},{"./timeAdjustments":18,"pubsub-js":2}]},{},[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]);
