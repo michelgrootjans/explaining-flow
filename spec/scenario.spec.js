@@ -51,7 +51,7 @@ describe('scenario', () => {
     beforeEach(() => {
       run({
         id: 1,
-        workers: ['dev'],
+        workers: [{ skills: ['dev'] }],
         stories: {
           amount: 10,
           work: {'dev': 1}
@@ -72,7 +72,7 @@ describe('scenario', () => {
     beforeEach(() => {
       run({
         id: 1,
-        workers: ['dev', 'qa'],
+        workers: [{ skills: ['dev'] }, { skills: ['qa'] }],
         stories: {
           amount: 10,
           work: {'dev': 1, 'qa': 1}
@@ -93,7 +93,7 @@ describe('scenario', () => {
     beforeEach(() => {
       run({
         id: 1,
-        workers: ['all'],
+        workers: [{ skills: ['all'] }],
         stories: {
           amount: 10,
           work: {'dev': 1, 'qa': 1}

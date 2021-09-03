@@ -7,6 +7,7 @@ const Stats = require('./stats');
 const WorkerStats = require('./worker-stats');
 const Scenario = require("./scenario");
 const LineChart = require("./charts");
+const {parseInput} = require("./parsing");
 
 function createScenarioContainer(scenario) {
     const template = document.querySelector('#scenario-template');
@@ -17,44 +18,16 @@ function createScenarioContainer(scenario) {
     return clone
 }
 
-function parseWorkload(input) {
-  return input
-    .trim()
-    .split(',')
-    .map(pair => pair
-      .trim()
-      .split(":")
-    )
-    .reduce((work, pair) => {
-      work[pair[0].trim()] = parseInt(pair[1].trim());
-      return work;
-    }, {})
-}
-
-const split = value => value.trim().split(",").map(item => item.trim());
-
 function parse(form) {
   const field = fieldName => form.querySelector(`[name="${fieldName}"]`).value;
 
-  const title = field('workload');
-  const workers = split(field('workers'));
-  const work = parseWorkload(field('workload'));
-  const wipLimit = field('wip-limit');
-  const speed = (workers.length > 2) ? 20 : 1;
-  const numberOfStories = (workers.length > 2) ? 200 : 50;
-  let input = {
-    title,
-    workers,
-    stories: {
-      amount: numberOfStories,
-      work
-    },
-    wipLimit,
-    speed
-  };
-  if (form.querySelector('[name="random"]').checked) input.distribution = average
-  input.wipLimit = form.querySelector('[name="wip-limit"]').value
-  return input;
+  return parseInput({
+      title: field('workload'),
+      workers: field('workers'),
+      workload: field('workload'),
+      wipLimit: field('wip-limit'),
+      random: form.querySelector('[name="random"]').checked
+  });
 }
 
 function parseScenario(event) {
@@ -81,7 +54,6 @@ document.addEventListener('DOMContentLoaded', () => {
 const wipLimiter = LimitBoardWip();
 
 
-const {average} = require("./generator");
 let currentChart = undefined;
 
 function run(scenario) {
