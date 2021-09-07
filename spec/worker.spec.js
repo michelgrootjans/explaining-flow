@@ -1,14 +1,16 @@
-const {Worker} = require('../src/worker');
+const {Worker, WorkItem} = require('../src/worker');
 
 describe('a specialist', () => {
+  const item = new WorkItem({'dev': 1});
+
   it('can work on its skill', () => {
     const developer = new Worker({'dev': 1});
-    expect(developer.canWorkOn('dev')).toBeTruthy();
-    expect(developer.canWorkOn('dev')).toBe(1);
+    expect(developer.canWorkOn({ skill: 'dev', item })).toBeTruthy();
+    expect(developer.canWorkOn({ skill: 'dev', item })).toBe(1);
   });
   it('can not work on another skill', () => {
     const developer = new Worker({'dev': 1});
-    expect(developer.canWorkOn('qa')).toBeFalsy();
+    expect(developer.canWorkOn({ skill: 'qa', item })).toBeFalsy();
   })
   it('has a name', () => {
     const developer = new Worker({'dev': 1});
@@ -17,17 +19,19 @@ describe('a specialist', () => {
 });
 
 describe('a generalist', () => {
+  const item = new WorkItem({'ux': 1, 'dev': 1, 'qa': 1});
+
   it('can work on any skill', () => {
     const developer = new Worker({'all': 1});
-    expect(developer.canWorkOn('ux')).toBe(1);
+    expect(developer.canWorkOn({ skill: 'ux', item })).toBe(1);
   });
   it('can work on any skill', () => {
     const developer = new Worker({'rest': 1});
-    expect(developer.canWorkOn('ux')).toBe(1);
+    expect(developer.canWorkOn({ skill: 'ux', item })).toBe(1);
   });
   it('can can have a specialisation', () => {
     const developer = new Worker({'qa': 1, 'rest': 0.5});
-    expect(developer.canWorkOn('qa')).toBe(1);
-    expect(developer.canWorkOn('ux')).toBe(0.5);
+    expect(developer.canWorkOn({ skill: 'qa', item })).toBe(1);
+    expect(developer.canWorkOn({ skill: 'ux', item })).toBe(0.5);
   });
 });

@@ -7,7 +7,7 @@ function Worker(skills = {dev: 1}) {
   let idle = true;
   const id = workerCounter++;
 
-  function canWorkOn(skill) {
+  function canWorkOn({ skill, item }) {
     if (!idle) return 0;
     return workSpeedFor(skill);
   }

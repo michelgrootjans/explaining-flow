@@ -48,21 +48,23 @@ let Board = function (workColumnNames) {
   });
 
   function assignNewWorkIfPossible() {
-    const columnWithWork = workColumns()
-      .reverse()
-      .filter(column => column.inbox.hasWork())
-      .filter(column => workers.some(worker => worker.canWorkOn(column.necessarySkill)))[0];
+    const nextWork = findNextWork();
+
+    const columnWithWork = nextWork && nextWork.column;
+    const itemToWorkOn = nextWork && nextWork.item;
 
     if (columnWithWork) {
       if (columnWithWork.inbox === backlogColumn() && !allowNewWork)
         return;
 
+      const workCriteria = { skill: columnWithWork.necessarySkill, item: itemToWorkOn };
+
       const availableWorker = workers
-        .filter(worker => worker.canWorkOn(columnWithWork.necessarySkill))
+        .filter(worker => worker.canWorkOn(workCriteria))
         .reduce((bestCandidate, worker) => {
           if (!bestCandidate) return worker;
-          const bestScore = bestCandidate.canWorkOn(columnWithWork.necessarySkill);
-          const currentScore = worker.canWorkOn(columnWithWork.necessarySkill);
+          const bestScore = bestCandidate.canWorkOn(workCriteria);
+          const currentScore = worker.canWorkOn(workCriteria);
           return bestScore > currentScore ? bestCandidate : worker;
         });
 
@@ -70,6 +72,18 @@ let Board = function (workColumnNames) {
         availableWorker.startWorkingOn(columnWithWork.inbox, columnWithWork, columnWithWork.outbox);
       }
     }
+  }
+
+  function findNextWork() {
+    return workColumns()
+        .reverse()
+        .filter(column => column.inbox.hasWork())
+        .map(column => ({ column, item: findFirstWorkableItemIn(column) }))
+        .filter(result => !!result.item)[0];
+  }
+
+  function findFirstWorkableItemIn(column) {
+    return column.inbox.items().filter(item => workers.some(worker => worker.canWorkOn({ skill: column.necessarySkill, item })))[0]
   }
 
   PubSub.subscribe('board.denyNewWork', () => allowNewWork = false);
