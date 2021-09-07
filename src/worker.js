@@ -3,21 +3,10 @@ const TimeAdjustments = require('./timeAdjustments');
 
 let workerCounter = 1;
 
-function Worker(skills = {dev: 1}) {
-  let idle = true;
-  const id = workerCounter++;
-
-  function canWorkOn({ skill, item }) {
-    if (!idle) return 0;
-    return workSpeedFor(skill);
+function SimpleSkillStrategy(skills) {
+  function workSpeedFor({ skill }) {
+    return skills[skill] || skills['all'] || skills['rest'] || skills['fs'] || skills['fullstack'];
   }
-
-  let worker = {
-    canWorkOn,
-    startWorkingOn,
-    name: renderName,
-    id
-  };
 
   function renderName() {
     function renderSkills() {
@@ -27,12 +16,32 @@ function Worker(skills = {dev: 1}) {
     return `${renderSkills()}`;
   }
 
-  function workSpeedFor(skill) {
-    return skills[skill] || skills['all'] || skills['rest'] || skills['fs'] || skills['fullstack'];
+  return {
+    workSpeedFor,
+    renderName
+  };
+}
+
+function Worker(skills = {dev: 1}) {
+  let idle = true;
+  const id = workerCounter++;
+  const strategy = new SimpleSkillStrategy(skills);
+
+  function canWorkOn(workCriteria) {
+    if (!idle) return 0;
+    return strategy.workSpeedFor(workCriteria);
   }
 
-  function calculateTimeoutFor(workItem, skill) {
-    return 1000 * TimeAdjustments.multiplicator() * workItem.work[skill] / workSpeedFor(skill);
+  let worker = {
+    canWorkOn,
+    startWorkingOn,
+    name: strategy.renderName,
+    id
+  };
+
+  function calculateTimeoutFor(workCriteria) {
+    const { item, skill } = workCriteria;
+    return 1000 * TimeAdjustments.multiplicator() * item.work[skill] / strategy.workSpeedFor(workCriteria);
   }
 
   function startWorkingOn({ inbox, inProgress, outbox, item }) {
@@ -41,7 +50,8 @@ function Worker(skills = {dev: 1}) {
       PubSub.publish('worker.working', worker);
       let skill = inProgress.necessarySkill;
       inbox.move(inProgress, item);
-      let timeout = calculateTimeoutFor(item, skill);
+      const workCriteria = { item, skill };
+      let timeout = calculateTimeoutFor(workCriteria);
       setTimeout(() => {
         idle = true;
         inProgress.move(outbox, item);
