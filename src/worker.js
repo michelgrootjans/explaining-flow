@@ -35,8 +35,7 @@ function Worker(skills = {dev: 1}) {
     return 1000 * TimeAdjustments.multiplicator() * workItem.work[skill] / workSpeedFor(skill);
   }
 
-  function startWorkingOn(inbox, inProgress, outbox) {
-    let item = inbox.peek();
+  function startWorkingOn({ inbox, inProgress, outbox, item }) {
     if (item) {
       idle = false;
       PubSub.publish('worker.working', worker);

@@ -69,7 +69,12 @@ let Board = function (workColumnNames) {
         });
 
       if (availableWorker) {
-        availableWorker.startWorkingOn(columnWithWork.inbox, columnWithWork, columnWithWork.outbox);
+        availableWorker.startWorkingOn({
+          inbox: columnWithWork.inbox,
+          inProgress: columnWithWork,
+          outbox: columnWithWork.outbox,
+          item: itemToWorkOn
+        });
       }
     }
   }
