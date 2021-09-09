@@ -8,6 +8,10 @@ function SimpleSkillStrategy(skills) {
     return skills[skill] || skills['all'] || skills['rest'] || skills['fs'] || skills['fullstack'];
   }
 
+  function startWorkOn(workCriteria) {
+    // nothing to do
+  }
+
   function renderName() {
     function renderSkills() {
       return Object.keys(skills).map(skill => `${skill}`)
@@ -18,8 +22,30 @@ function SimpleSkillStrategy(skills) {
 
   return {
     workSpeedFor,
+    startWorkOn,
     renderName
   };
+}
+
+function DontWorkOnSameItemStrategy(strategy) {
+  const itemsWorkedOn = [];
+
+  function workSpeedFor(workCriteria) {
+    if (itemsWorkedOn.includes(workCriteria.item)) return 0;
+    return strategy.workSpeedFor(workCriteria);
+  }
+
+  function startWorkOn(workCriteria) {
+    itemsWorkedOn.push(workCriteria.item);
+    strategy.startWorkOn(workCriteria);
+  }
+
+  return {
+    workSpeedFor,
+    startWorkOn,
+    renderName: strategy.renderName
+  };
+
 }
 
 function Worker(strategy) {
@@ -51,6 +77,7 @@ function Worker(strategy) {
       inbox.move(inProgress, item);
       const workCriteria = { item, skill };
       let timeout = calculateTimeoutFor(workCriteria);
+      strategy.startWorkOn(workCriteria);
       setTimeout(() => {
         idle = true;
         inProgress.move(outbox, item);
@@ -115,4 +142,4 @@ function WorkList(skill = "dev") {
   return column;
 }
 
-module.exports = {Worker, WorkItem, WorkList, SimpleSkillStrategy};
+module.exports = {Worker, WorkItem, WorkList, SimpleSkillStrategy, DontWorkOnSameItemStrategy};
