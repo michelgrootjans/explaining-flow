@@ -1,6 +1,6 @@
 const Board = require("./board");
 const {generateWorkItems} = require("./generator");
-const {Worker, SimpleSkillStrategy} = require('./worker')
+const {Worker, SimpleSkillStrategy, DontWorkOnSameItemStrategy} = require('./worker')
 
 let counter = 1;
 
@@ -8,10 +8,18 @@ const Scenario = scenario => {
   const id = counter++;
   const wipLimit = scenario.wipLimit || scenario.stories.amount
 
-  const createWorker = ({ skills: skillNames }, speed = 1) => {
+  const createWorker = ({ skills: skillNames, workOnUniqueItems }, speed = 1) => {
     let skills = {};
     skillNames.forEach(skillName => skills[skillName] = speed);
-    return new Worker(new SimpleSkillStrategy(skills));
+    return new Worker(createWorkerStrategy(skills, workOnUniqueItems));
+  };
+
+  const createWorkerStrategy = (skills, workOnUniqueItems) => {
+    const skillStrategy = new SimpleSkillStrategy(skills);
+
+    return workOnUniqueItems
+        ? new DontWorkOnSameItemStrategy(skillStrategy)
+        : skillStrategy;
   };
 
   const columnNames = () => Object.keys(scenario.stories.work);
