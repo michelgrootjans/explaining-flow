@@ -22,10 +22,9 @@ function SimpleSkillStrategy(skills) {
   };
 }
 
-function Worker(skills = {dev: 1}) {
+function Worker(strategy) {
   let idle = true;
   const id = workerCounter++;
-  const strategy = new SimpleSkillStrategy(skills);
 
   function canWorkOn(workCriteria) {
     if (!idle) return 0;
@@ -116,4 +115,4 @@ function WorkList(skill = "dev") {
   return column;
 }
 
-module.exports = {Worker, WorkItem, WorkList};
+module.exports = {Worker, WorkItem, WorkList, SimpleSkillStrategy};

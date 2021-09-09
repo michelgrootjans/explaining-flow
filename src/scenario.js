@@ -1,6 +1,6 @@
 const Board = require("./board");
 const {generateWorkItems} = require("./generator");
-const {Worker} = require('./worker')
+const {Worker, SimpleSkillStrategy} = require('./worker')
 
 let counter = 1;
 
@@ -11,7 +11,7 @@ const Scenario = scenario => {
   const createWorker = ({ skills: skillNames }, speed = 1) => {
     let skills = {};
     skillNames.forEach(skillName => skills[skillName] = speed);
-    return new Worker(skills);
+    return new Worker(new SimpleSkillStrategy(skills));
   };
 
   const columnNames = () => Object.keys(scenario.stories.work);
