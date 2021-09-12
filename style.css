@@ -70,6 +70,12 @@ ul.cards li {
     height: 1em;
 }
 
+.daysWorked {
+    background-color: rgba(211, 211, 211, 0.1);
+    border: rgb(211, 211, 211) solid 1px;
+    height: 1em;
+}
+
 .amount {
     color: darkgray;
     padding-left: 3px;

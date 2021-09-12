@@ -13654,6 +13654,7 @@ const initialize = (currentSenarioId) => {
     document.querySelector(`${currentSenarioId} .throughput`).innerHTML = round(stats.throughput);
     document.querySelector(`${currentSenarioId} .cycletime`).innerHTML = round(stats.cycleTime)
     document.querySelector(`${currentSenarioId} .wip`).innerHTML = renderWip(stats)
+    document.querySelector(`${currentSenarioId} .daysWorked`).innerHTML = round(stats.daysWorked, 0);
   });
 
   PubSub.subscribe('worker.created', (topic, worker) => {
@@ -14248,7 +14249,8 @@ document.addEventListener('DOMContentLoaded', () => {
       .addEventListener('submit', event => {
         event.preventDefault()
         const scenario = parseScenario(event);
-        document.getElementById('scenarios').append(createScenarioContainer(scenario))
+          const container = createScenarioContainer(scenario);
+          document.getElementById('scenarios').append(container)
         run(scenario);
       })
 });
@@ -14287,7 +14289,8 @@ function initialState() {
     maxEndtime: 0,
     minStarttime: Math.min(),
     doneItems: [],
-    sumOfDurations: 0
+    sumOfDurations: 0,
+    daysWorked: 0
   };
 }
 
@@ -14341,7 +14344,8 @@ function initialize() {
       sliding: {
         throughput: throughputForLast,
         cycleTime: cycleTimeForLast,
-      }
+      },
+      daysWorked: state.daysWorked
     });
   }
 
@@ -14355,10 +14359,15 @@ function initialize() {
     publishStats();
   });
 
+  function calculateDaysWorked() {
+    return (state.maxEndtime - state.minStarttime)/(TimeAdjustments.multiplicator() * 1000);
+  }
+
   PubSub.subscribe('workitem.finished', (topic, item) => {
     state.wip--;
     state.maxEndtime = Math.max(state.maxEndtime, item.endTime);
     state.minStarttime = Math.min(state.minStarttime, item.startTime);
+    state.daysWorked = calculateDaysWorked()
     state.sumOfDurations += (item.endTime - item.startTime)
     state.doneItems.push(item);
     publishStats();
