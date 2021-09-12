@@ -64,7 +64,7 @@ const initialize = (currentSenarioId) => {
     document.querySelector(`${currentSenarioId} .throughput`).innerHTML = round(stats.throughput);
     document.querySelector(`${currentSenarioId} .cycletime`).innerHTML = round(stats.cycleTime)
     document.querySelector(`${currentSenarioId} .wip`).innerHTML = renderWip(stats)
-    document.querySelector(`${currentSenarioId} .daysWorked`).innerHTML = round(stats.daysWorked, 0);
+    document.querySelector(`${currentSenarioId} .timeWorked`).innerHTML = round(stats.timeWorked, 0);
   });
 
   PubSub.subscribe('worker.created', (topic, worker) => {

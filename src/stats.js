@@ -9,7 +9,7 @@ function initialState() {
     minStarttime: Math.min(),
     doneItems: [],
     sumOfDurations: 0,
-    daysWorked: 0
+    timeWorked: 0
   };
 }
 
@@ -64,7 +64,7 @@ function initialize() {
         throughput: throughputForLast,
         cycleTime: cycleTimeForLast,
       },
-      daysWorked: state.daysWorked
+      timeWorked: state.timeWorked
     });
   }
 
@@ -86,7 +86,7 @@ function initialize() {
     state.wip--;
     state.maxEndtime = Math.max(state.maxEndtime, item.endTime);
     state.minStarttime = Math.min(state.minStarttime, item.startTime);
-    state.daysWorked = calculateDaysWorked()
+    state.timeWorked = calculateDaysWorked()
     state.sumOfDurations += (item.endTime - item.startTime)
     state.doneItems.push(item);
     publishStats();

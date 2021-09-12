@@ -16,7 +16,7 @@ describe('calculate basic stats', () => {
           throughput: 0,
           cycleTime: 0,
           workInProgress: 1,
-          daysWorked: 0
+          timeWorked: 0
         });
         done();
       });
