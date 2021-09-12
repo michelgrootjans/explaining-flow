@@ -8,7 +8,8 @@ function initialState() {
     maxEndtime: 0,
     minStarttime: Math.min(),
     doneItems: [],
-    sumOfDurations: 0
+    sumOfDurations: 0,
+    daysWorked: 0
   };
 }
 
@@ -62,7 +63,8 @@ function initialize() {
       sliding: {
         throughput: throughputForLast,
         cycleTime: cycleTimeForLast,
-      }
+      },
+      daysWorked: state.daysWorked
     });
   }
 
@@ -76,10 +78,15 @@ function initialize() {
     publishStats();
   });
 
+  function calculateDaysWorked() {
+    return (state.maxEndtime - state.minStarttime)/(TimeAdjustments.multiplicator() * 1000);
+  }
+
   PubSub.subscribe('workitem.finished', (topic, item) => {
     state.wip--;
     state.maxEndtime = Math.max(state.maxEndtime, item.endTime);
     state.minStarttime = Math.min(state.minStarttime, item.startTime);
+    state.daysWorked = calculateDaysWorked()
     state.sumOfDurations += (item.endTime - item.startTime)
     state.doneItems.push(item);
     publishStats();

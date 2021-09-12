@@ -15,7 +15,8 @@ describe('calculate basic stats', () => {
         expect(stats).toMatchObject({
           throughput: 0,
           cycleTime: 0,
-          workInProgress: 1
+          workInProgress: 1,
+          daysWorked: 0
         });
         done();
       });

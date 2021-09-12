@@ -15,11 +15,12 @@
   "devDependencies": {
     "browserify": "^16.2.3",
     "jest": "^24.8.0",
-    "open": "^7.4.2",
-    "node-notifier": ">=8.0.1"
+    "node-notifier": ">=8.0.1",
+    "open": "^7.4.2"
   },
   "dependencies": {
     "chart.js": "^3.5.0",
-    "pubsub-js": "^1.7.0"
+    "pubsub-js": "^1.7.0",
+    "seedrandom": "^3.0.5"
   }
 }

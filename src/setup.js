@@ -46,7 +46,8 @@ document.addEventListener('DOMContentLoaded', () => {
       .addEventListener('submit', event => {
         event.preventDefault()
         const scenario = parseScenario(event);
-        document.getElementById('scenarios').append(createScenarioContainer(scenario))
+          const container = createScenarioContainer(scenario);
+          document.getElementById('scenarios').append(container)
         run(scenario);
       })
 });

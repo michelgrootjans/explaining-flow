@@ -92,7 +92,12 @@ describe('animation', () => {
   describe('stats', () => {
     beforeEach(() => {
       document.body.innerHTML =
-        '<div id="stats-container"><span class="throughput"></span><span class="cycletime"></span><span class="wip"></span></div>';
+        '<div id="stats-container">' +
+        '    <span class="throughput"></span>' +
+        '    <span class="cycletime"></span>' +
+        '    <span class="wip"></span>' +
+        '    <span class="daysWorked"></span>' +
+        '</div>';
     });
 
     it('shows on workitem done', () => {
@@ -101,12 +106,14 @@ describe('animation', () => {
         cycleTime: 2,
         workInProgress: 3,
         maxWorkInProgress: 4,
+        daysWorked: 5
       });
       jest.runAllTimers();
 
       expect(find('.throughput').innerHTML).toBe("1");
       expect(find('.cycletime').innerHTML).toBe("2");
       expect(find('.wip').innerHTML).toBe("3 (max 4)");
+      expect(find('.daysWorked').innerHTML).toBe("5");
     });
 
     it('excludes max WIP when equal to current WIP', () => {
@@ -115,12 +122,14 @@ describe('animation', () => {
         cycleTime: 2,
         workInProgress: 3,
         maxWorkInProgress: 3,
+        daysWorked: 5
       });
       jest.runAllTimers();
 
       expect(find('.throughput').innerHTML).toBe("1");
       expect(find('.cycletime').innerHTML).toBe("2");
       expect(find('.wip').innerHTML).toBe("3");
+      expect(find('.daysWorked').innerHTML).toBe("5");
     });
   });
 
