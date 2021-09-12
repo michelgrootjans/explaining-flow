@@ -9,6 +9,9 @@ const Scenario = require("./scenario");
 const LineChart = require("./charts");
 const {parseInput} = require("./parsing");
 
+// force repeatable randomness
+const seedrandom = require('seedrandom');
+
 function createScenarioContainer(scenario) {
     const template = document.querySelector('#scenario-template');
 
@@ -60,7 +63,12 @@ let currentChart = undefined;
 function run(scenario) {
     PubSub.clearAllSubscriptions();
 
-    Animation.initialize(`#scenario-${scenario.id}`);
+    // force predicatable randomness
+    seedrandom('limit wip', {global: true});
+    console.log(Math.random())
+    console.log(Math.random())
+
+  Animation.initialize(`#scenario-${scenario.id}`);
     Stats.initialize();
 
     new WorkerStats();
