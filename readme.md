@@ -64,8 +64,8 @@ However, if the simulation runs for long enough, a queue will start to appear be
 The reason is simple: As long as qa works faster than dev, everything will run smoothly. Once development starts going faster than qa, its output will wait in the queue.
 
 **Input**
-- Work per story: `dev: 1, qa: 1`
-- Workers: `dev, qa`
+- Work per story: **dev: 1, qa: 1**
+- Workers: **dev, qa**
 - Average work distribution: ☑️
 
 **Example Results**
@@ -79,8 +79,8 @@ Let's accelerate the simulation. This allows us to see patterns we wouldn't reco
 Ux, development and qa will each spend 2 days _on average_ for each story. So each story will have 6 days of work on average (2 ux + 2 dev + 2 qa).
 
 **Input**
-- Work per story: `ux: 2, dev: 2, qa: 2`
-- Workers: `ux, dev, qa`
+- Work per story: **ux: 2, dev: 2, qa: 2**
+- Workers: **ux, dev, qa**
 - Average work distribution: ☑️
 
 **Example Results**
@@ -99,7 +99,7 @@ The ideal cycle time is still 6 days (1 + 3 + 2).
 Predictably, a big queue will appear in front of the dev column as dev has three times as much work as ux. The average velocity will go down significantly, and the cycle time will start to skyrocket.
 
 **Input**
-- Work per story: **`ux: 1, dev: 3, qa: 2`**
+- Work per story: **ux: 1, dev: 3, qa: 2**
 - Workers: `ux, dev, qa`
 - Average work distribution: ☑️
 
@@ -108,15 +108,16 @@ Predictably, a big queue will appear in front of the dev column as dev has three
 - Cycle time: **200 days per story**
 - WIP: **about 60 with a peak of 120**
 
-This is bad. The low velocity and high cycle time will make customers very unhappy. How can we change team structure to improve this?
+This is bad. The low velocity and high cycle time will make customers very unhappy. Let me remind you that each work item takes 6 days of work on average. Because they wait in a queue for most of their lifecycle, it takes 200 days on average to go from start to finish. This is one of the reasons why the amount of work for a task has no correlation to when it will be finished.
 
+How can we change team structure to improve this?
 
 ### Let's add an extra developer
 The usual reflex at this point is to add developers to speed things up. This will obviously raise the daily cost of the team. What would be the expected benefit? Twice the throughput? Let's try that out in the next simulation.
 
 **Input**
-- Work per story: **`ux: 1, dev: 3, qa: 2`**
-- Workers: `ux, dev, dev, qa`
+- Work per story: `ux: 1, dev: 3, qa: 2`
+- Workers: ux, **dev, dev**, qa
 - Average work distribution: ☑️
 
 **Example Results**
@@ -124,20 +125,35 @@ The usual reflex at this point is to add developers to speed things up. This wil
 - Cycle time: **100 days per story**
 - WIP: **about 50 with a peak of 100**
 
-We have an improvement in throughput, but it's not what we expected. We solved the development bottleneck. A new bottleneck appeared before QA, which caused the slowdown.
+We have an improvement in throughput, but it's not the doubling we expected. Cycle time halved, but is still disastrous.
 
-### Let's go back to the original team and introduce a WIP-limit instead of a new developer
-We will simulate with the same team from scenario 5, but introduce a WIP-limit of 10. This means that no-one is allowed to start on a new story for as long as there are 10 stories _in flight_.
+### Let's add yet an extra developer
+Since adding a developer improved matters, let's try by adding yet another developer
 
 **Input**
 - Work per story: **`ux: 1, dev: 3, qa: 2`**
-- Workers: `ux, dev, dev, qa`
-- WIP-limit: `10`
+- Workers: ux, **dev, dev, dev**, qa
+- Average work distribution: ☑️
+
+**Example Results**
+- Throughput: **0.45 stories/day**
+- Cycle time: **100 days per story**
+- WIP: **about 50 with a peak of 100**
+
+Adding an extra developer had absolutely no effect on throughput or cycle time. This was obviously a bad strategy
+
+### Let's go back to the original team of 3 and introduce a WIP-limit instead
+We will simulate with the same team from scenario 5, but introduce a WIP-limit of 10. This means that no-one is allowed to start a new story as long as there are 10 stories _in flight_.
+
+**Input**
+- Work per story: **`ux: 1, dev: 3, qa: 2`**
+- Workers: `ux, dev, qa`
+- WIP-limit: **10**
 - Average work distribution: ☑️
 
 **Example Results**
 - Throughput: **0.30 stories/day**
-- Cycle time: **29.6 days per story**
+- Cycle time: **30 days per story**
 - WIP: **10 stories**
 
 With no extra cost, our throughput was unaffected, while our cycle time went from 200 days to 30 days.
@@ -147,13 +163,13 @@ Since limiting WIP works so well, why not limiting it to 5?
 
 **Input**
 - Work per story: **`ux: 1, dev: 3, qa: 2`**
-- Workers: `ux, dev, dev, qa`
-- WIP-limit: `5`
+- Workers: `ux, dev, qa`
+- WIP-limit: **5**
 - Average work distribution: ☑️
 
 **Example Results**
 - Throughput: **0.30 stories/day**
-- Cycle time: **15.9 days per story**
+- Cycle time: **15 days per story**
 - WIP: **5 stories**
 
 Again, with no extra cost, our throughput was unaffected, while our cycle time halved yet again.
@@ -163,16 +179,34 @@ Let's try limiting WIP to 2 now.
 
 **Input**
 - Work per story: **`ux: 1, dev: 3, qa: 2`**
-- Workers: `ux, dev, dev, qa`
-- WIP-limit: `2`
+- Workers: `ux, dev, qa`
+- WIP-limit: **2**
 - Average work distribution: ☑️
 
 **Example Results**
 - Throughput: **0.25 stories/day**
-- Cycle time: **7.3 days per story**
+- Cycle time: **7 days per story**
 - WIP: **2 stories**
 
-Now we start to see a drop in throughput. This means we went too far in limiting WIP. Our bottleneck, development, was not working at 100% anymore, which caused the whole drop in throughput.
+Now we start to see a drop in throughput. This might be a good tradeoff depending on your situation. If you care more about rapid feedback than feature delivery speed, you might choose this configuration.
+
+If you prefer a higher throughput with longer feedback cycles, you went too far in limiting WIP.
+
+### Introducing multidisciplinary team members
+Now that we control our cycle time, is there anything we could do to improve the throughput while keeping cycle time low? Let's introduce a tester that can also develop.
+
+**Input**
+- Work per story: **`ux: 1, dev: 3, qa: 2`**
+- Workers: ux, dev, **qa+test**
+- WIP-limit: `5`
+- Average work distribution: ☑️
+
+**Example Results**
+- Throughput: **0.38 stories/day**
+- Cycle time: **15 days per story**
+- WIP: **5 stories**
+
+Now the throughput is highgher. A throughput improvement from `0.30` to `0.38` means we finished our project of 200 work items in about 530 days instead of about 640 days.
 
 ### The best solution: full stack developers
 **Input**
