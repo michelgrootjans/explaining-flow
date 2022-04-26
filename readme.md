@@ -206,7 +206,7 @@ Now that we control our cycle time, is there anything we could do to improve the
 - Cycle time: **15 days per story**
 - WIP: **5 stories**
 
-Now the throughput is highgher. A throughput improvement from `0.30` to `0.38` means we finished our project of 200 work items in about 530 days instead of about 640 days.
+Now the throughput is higher. A throughput improvement from `0.30` to `0.38` means we finished our project of 200 work items in about 530 days instead of about 640 days.
 
 ### The best solution: full stack developers
 **Input**
