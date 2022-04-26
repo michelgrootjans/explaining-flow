@@ -60,9 +60,18 @@ const initialize = (currentSenarioId) => {
     return `${workInProgress} (max ${maxWorkInProgress})`;
   };
 
+  const renderCycleTime = ({cycleTime, maxCycleTime}) => {
+    const value = round(cycleTime);
+    const max = round(maxCycleTime || cycleTime);
+
+    if (!max) return value;
+    if (value === max) return value;
+    return `${value} (max ${max})`;
+  };
+
   PubSub.subscribe('stats.calculated', (topic, stats) => {
     document.querySelector(`${currentSenarioId} .throughput`).innerHTML = round(stats.throughput);
-    document.querySelector(`${currentSenarioId} .cycletime`).innerHTML = round(stats.cycleTime)
+    document.querySelector(`${currentSenarioId} .cycletime`).innerHTML = renderCycleTime(stats)
     document.querySelector(`${currentSenarioId} .wip`).innerHTML = renderWip(stats)
     document.querySelector(`${currentSenarioId} .timeWorked`).innerHTML = round(stats.timeWorked, 0);
   });
