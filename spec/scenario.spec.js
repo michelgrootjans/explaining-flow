@@ -59,11 +59,11 @@ describe('scenario', () => {
       });
     });
     it('starts working immidiately', () => {
-      jest.advanceTimersByTime(0);
+      jest.advanceTimersByTime(1);
       expect(cardsInColumns()).toEqual([9, 1, 0]);
     });
     it('starts working on second story after 1 unit of time', () => {
-      jest.advanceTimersByTime(1000);
+      jest.advanceTimersByTime(1009);
       expect(cardsInColumns()).toEqual([8, 1, 1]);
     });
   });
@@ -79,12 +79,12 @@ describe('scenario', () => {
         }
       });
     });
-    it('starts working immidiately', () => {
-      jest.advanceTimersByTime(0);
+    it('starts working immediately', () => {
+      jest.advanceTimersByTime(1);
       expect(cardsInColumns()).toEqual([9, 1, 0, 0, 0]);
     });
     it('starts working on second story after 1 unit of time', () => {
-      jest.advanceTimersByTime(1000);
+      jest.advanceTimersByTime(1009);
       expect(cardsInColumns()).toEqual([8, 1, 0, 1, 0]);
     });
   });
@@ -101,11 +101,11 @@ describe('scenario', () => {
       });
     });
     it('starts working immidiately', () => {
-      jest.advanceTimersByTime(0);
+      jest.advanceTimersByTime(1);
       expect(cardsInColumns()).toEqual([9, 1, 0, 0, 0]);
     });
     it('starts working on second story after 1 unit of time', () => {
-      jest.advanceTimersByTime(1000);
+      jest.advanceTimersByTime(1009);
       expect(cardsInColumns()).toEqual([9, 0, 0, 1, 0]);
     });
   });

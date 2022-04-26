@@ -50,7 +50,7 @@ describe('a worker', () => {
     });
 
     it('finishes the item', () => {
-      jest.advanceTimersByTime(1000);
+      jest.advanceTimersByTime(1001);
       expect(board.items()).toEqual([[], [], [workItem]]);
       expect(workItem.startTime).toBe(now);
       expect(workItem.endTime).toBe(now);
@@ -94,7 +94,7 @@ describe('a worker', () => {
     });
 
     it('finishes the first item and starts on the second', () => {
-      jest.advanceTimersByTime(1000);
+      jest.advanceTimersByTime(1003);
       expect(board.items()).toEqual([[], [workItem2],[workItem1]])
       expect(workItem1.startTime).toBe(now);
       expect(workItem1.endTime).toBe(now);
@@ -112,7 +112,7 @@ describe('a worker', () => {
     });
 
     it('finishes the second item', () => {
-      jest.advanceTimersByTime(2000);
+      jest.advanceTimersByTime(2002);
       expect(board.items()).toEqual([[], [],[workItem1, workItem2]])
       expect(workItem1.startTime).toBe(now);
       expect(workItem1.endTime).toBe(now);
@@ -195,19 +195,19 @@ describe('a typical workflow', () => {
     expect(board.items()).toEqual([[workItem2], [workItem1], [], [], []]);
   });
   it('after 1 tick', () => {
-    jest.advanceTimersByTime(1000);
+    jest.advanceTimersByTime(1009);
     expect(board.items()).toEqual([[], [workItem2], [], [workItem1], []]);
   });
   it('after 2 ticks', () => {
-    jest.advanceTimersByTime(2000);
+    jest.advanceTimersByTime(2009);
     expect(board.items()).toEqual([[], [workItem2], [], [workItem1], []]);
   });
   it('after 3 ticks', () => {
-    jest.advanceTimersByTime(3000);
+    jest.advanceTimersByTime(3009);
     expect(board.items()).toEqual([[], [], [], [workItem2], [workItem1]]);
   });
   it('after 4 ticks', () => {
-    jest.advanceTimersByTime(4000);
+    jest.advanceTimersByTime(4009);
     expect(board.items()).toEqual([[], [], [], [], [workItem1, workItem2]]);
   });
 });

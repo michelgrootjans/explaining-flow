@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
-    "test:watch": "jest --watchAll",
+    "test": "jest --env=jsdom",
+    "test:watch": "jest --env=jsdom --watchAll",
     "refactor": "jest && npm run bundle && git commit --amend --no-edit -a || git reset --hard",
     "bundle": "node bundle.js"
   },

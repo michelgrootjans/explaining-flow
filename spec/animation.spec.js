@@ -66,7 +66,7 @@ describe('animation', () => {
       board.addWorkers(new Worker({dev: 1}));
       let workItem = new WorkItem({dev: 1});
       board.addWorkItems(workItem);
-      jest.advanceTimersByTime(0);
+      jest.advanceTimersByTime(1);
 
       expect(find('#board li:nth-child(1) .cards').innerHTML).toBe('');
 
@@ -80,7 +80,7 @@ describe('animation', () => {
     it('shows card amount', () => {
       board.addWorkers(new Worker({dev: 1}));
       board.addWorkItems(new WorkItem({dev: 1}));
-      jest.advanceTimersByTime(0);
+      jest.advanceTimersByTime(1);
 
       expect(find('#board li:nth-child(1) h2 .amount').innerHTML).toBe('0');
       expect(find('#board li:nth-child(2) h2 .amount').innerHTML).toBe('1');

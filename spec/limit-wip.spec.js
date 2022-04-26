@@ -35,7 +35,7 @@ describe('limiting overall wip', () => {
     });
 
     it('should do (qa on item 1), not (dev on item 2)', () => {
-      jest.advanceTimersByTime(1000);
+      jest.advanceTimersByTime(1001);
       expect(board.items()[0]).toContain(item2);
       expect(board.items()[1]).toEqual([]);
       expect(board.items()[2]).toEqual([]);
@@ -44,7 +44,7 @@ describe('limiting overall wip', () => {
     });
 
     it('should do (dev on item 2) after (qa on item 1)', () => {
-      jest.advanceTimersByTime(2000);
+      jest.advanceTimersByTime(2004);
       expect(board.items()[0]).toEqual([]);
       expect(board.items()[1]).toContain(item2);
       expect(board.items()[2]).toEqual([]);
