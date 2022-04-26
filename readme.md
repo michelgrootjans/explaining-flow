@@ -48,7 +48,7 @@ This is a direct illustration of [Little's law](https://en.wikipedia.org/wiki/Li
 **Input**
 - Work per story: `dev: 1`
 - Workers: `dev`
-- Average work distribution: ☑️
+- Variable work: ☑️
 
 **Expected Results**
 - Throughput: **1 story/day**
@@ -66,7 +66,7 @@ The reason is simple: As long as qa works faster than dev, everything will run s
 **Input**
 - Work per story: **dev: 1, qa: 1**
 - Workers: **dev, qa**
-- Average work distribution: ☑️
+- Variable work: ☑️
 
 **Example Results**
 - Throughput: **0.85 stories/day**
@@ -81,7 +81,7 @@ Ux, development and qa will each spend 2 days _on average_ for each story. So ea
 **Input**
 - Work per story: **ux: 2, dev: 2, qa: 2**
 - Workers: **ux, dev, qa**
-- Average work distribution: ☑️
+- Variable work: ☑️
 
 **Example Results**
 - Throughput: **0.45 stories/day**
@@ -101,7 +101,7 @@ Predictably, a big queue will appear in front of the dev column as dev has three
 **Input**
 - Work per story: **ux: 1, dev: 3, qa: 2**
 - Workers: `ux, dev, qa`
-- Average work distribution: ☑️
+- Variable work: ☑️
 
 **Example Results**
 - Throughput: **0.30 stories/day**
@@ -118,7 +118,7 @@ The usual reflex at this point is to add developers to speed things up. This wil
 **Input**
 - Work per story: `ux: 1, dev: 3, qa: 2`
 - Workers: ux, **dev, dev**, qa
-- Average work distribution: ☑️
+- Variable work: ☑️
 
 **Example Results**
 - Throughput: **0.45 stories/day**
@@ -133,7 +133,7 @@ Since adding a developer improved matters, let's try by adding yet another devel
 **Input**
 - Work per story: **`ux: 1, dev: 3, qa: 2`**
 - Workers: ux, **dev, dev, dev**, qa
-- Average work distribution: ☑️
+- Variable work: ☑️
 
 **Example Results**
 - Throughput: **0.45 stories/day**
@@ -149,7 +149,7 @@ We will simulate with the same team from scenario 5, but introduce a WIP-limit o
 - Work per story: **`ux: 1, dev: 3, qa: 2`**
 - Workers: `ux, dev, qa`
 - WIP-limit: **10**
-- Average work distribution: ☑️
+- Variable work: ☑️
 
 **Example Results**
 - Throughput: **0.30 stories/day**
@@ -165,7 +165,7 @@ Since limiting WIP works so well, why not limiting it to 5?
 - Work per story: **`ux: 1, dev: 3, qa: 2`**
 - Workers: `ux, dev, qa`
 - WIP-limit: **5**
-- Average work distribution: ☑️
+- Variable work: ☑️
 
 **Example Results**
 - Throughput: **0.30 stories/day**
@@ -181,7 +181,7 @@ Let's try limiting WIP to 2 now.
 - Work per story: **`ux: 1, dev: 3, qa: 2`**
 - Workers: `ux, dev, qa`
 - WIP-limit: **2**
-- Average work distribution: ☑️
+- Variable work: ☑️
 
 **Example Results**
 - Throughput: **0.25 stories/day**
@@ -199,7 +199,7 @@ Now that we control our cycle time, is there anything we could do to improve the
 - Work per story: **`ux: 1, dev: 3, qa: 2`**
 - Workers: ux, dev, **qa+dev**
 - WIP-limit: `5`
-- Average work distribution: ☑️
+- Variable work: ☑️
 
 **Example Results**
 - Throughput: **0.38 stories/day**
@@ -213,7 +213,7 @@ Now the throughput is higher. A throughput improvement from `0.30` to `0.38` mea
 - Work per story: **`ux: 1, dev: 3, qa: 2`**
 - Workers: `fullstack, fullstack, fullstack`
 - WIP-limit: ``
-- Average work distribution: ☑️
+- Variable work: ☑️
 
 **Example Results**
 - Throughput: **0.47 stories/day**
