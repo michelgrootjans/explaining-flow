@@ -197,7 +197,7 @@ Now that we control our cycle time, is there anything we could do to improve the
 
 **Input**
 - Work per story: **`ux: 1, dev: 3, qa: 2`**
-- Workers: ux, dev, **qa+test**
+- Workers: ux, dev, **qa+dev**
 - WIP-limit: `5`
 - Average work distribution: ☑️
 
