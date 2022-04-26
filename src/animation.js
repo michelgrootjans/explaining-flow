@@ -60,9 +60,9 @@ const initialize = (currentSenarioId) => {
     return `${workInProgress} (max ${maxWorkInProgress})`;
   };
 
-  const renderCycleTime = ({cycleTime, maxCycleTime}) => {
-    const value = round(cycleTime);
-    const max = round(maxCycleTime || cycleTime);
+  const renderCycleTime = ({cycleTime, minCycleTime, maxCycleTime}) => {
+    const value = round(cycleTime, 1);
+    const max = round(maxCycleTime || cycleTime, 1);
 
     if (!max) return value;
     if (value === max) return value;

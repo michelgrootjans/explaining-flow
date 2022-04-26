@@ -6,6 +6,7 @@ function initialState() {
     wip: 0,
     maxWip: 0,
     maxEndtime: 0,
+    maxCycletime: 0,
     minStarttime: Math.min(),
     doneItems: [],
     sumOfDurations: 0,
@@ -58,7 +59,7 @@ function initialize() {
     PubSub.publish('stats.calculated', {
       throughput: calculateAllThroughput(state.doneItems) * TimeAdjustments.multiplicator(),
       cycleTime: calculateAllCycleTime(state.doneItems) / TimeAdjustments.multiplicator(),
-      maxCycleTime: calculateAllCycleTime(state.doneItems),
+      maxCycleTime: state.maxCycletime / TimeAdjustments.multiplicator(),
       workInProgress: state.wip,
       maxWorkInProgress: state.maxWip,
       sliding: {
@@ -87,6 +88,7 @@ function initialize() {
     state.wip--;
     state.maxEndtime = Math.max(state.maxEndtime, item.endTime);
     state.minStarttime = Math.min(state.minStarttime, item.startTime);
+    state.maxCycletime = Math.max(state.maxCycletime, item.duration / 1000)
     state.timeWorked = calculateDaysWorked()
     state.sumOfDurations += (item.endTime - item.startTime)
     state.doneItems.push(item);
