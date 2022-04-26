@@ -58,6 +58,7 @@ function initialize() {
     PubSub.publish('stats.calculated', {
       throughput: calculateAllThroughput(state.doneItems) * TimeAdjustments.multiplicator(),
       cycleTime: calculateAllCycleTime(state.doneItems) / TimeAdjustments.multiplicator(),
+      maxCycleTime: calculateAllCycleTime(state.doneItems),
       workInProgress: state.wip,
       maxWorkInProgress: state.maxWip,
       sliding: {
