@@ -14608,9 +14608,18 @@ const initialize = (currentSenarioId) => {
     return `${workInProgress} (max ${maxWorkInProgress})`;
   };
 
+  const renderCycleTime = ({cycleTime, minCycleTime, maxCycleTime}) => {
+    const value = round(cycleTime, 1);
+    const max = round(maxCycleTime || cycleTime, 1);
+
+    if (!max) return value;
+    if (value === max) return value;
+    return `${value} (max ${max})`;
+  };
+
   PubSub.subscribe('stats.calculated', (topic, stats) => {
     document.querySelector(`${currentSenarioId} .throughput`).innerHTML = round(stats.throughput);
-    document.querySelector(`${currentSenarioId} .cycletime`).innerHTML = round(stats.cycleTime)
+    document.querySelector(`${currentSenarioId} .cycletime`).innerHTML = renderCycleTime(stats)
     document.querySelector(`${currentSenarioId} .wip`).innerHTML = renderWip(stats)
     document.querySelector(`${currentSenarioId} .timeWorked`).innerHTML = round(stats.timeWorked, 0);
   });
@@ -15253,6 +15262,7 @@ function initialState() {
     wip: 0,
     maxWip: 0,
     maxEndtime: 0,
+    maxCycletime: 0,
     minStarttime: Math.min(),
     doneItems: [],
     sumOfDurations: 0,
@@ -15305,6 +15315,7 @@ function initialize() {
     PubSub.publish('stats.calculated', {
       throughput: calculateAllThroughput(state.doneItems) * TimeAdjustments.multiplicator(),
       cycleTime: calculateAllCycleTime(state.doneItems) / TimeAdjustments.multiplicator(),
+      maxCycleTime: state.maxCycletime / TimeAdjustments.multiplicator(),
       workInProgress: state.wip,
       maxWorkInProgress: state.maxWip,
       sliding: {
@@ -15333,6 +15344,7 @@ function initialize() {
     state.wip--;
     state.maxEndtime = Math.max(state.maxEndtime, item.endTime);
     state.minStarttime = Math.min(state.minStarttime, item.startTime);
+    state.maxCycletime = Math.max(state.maxCycletime, item.duration / 1000)
     state.timeWorked = calculateDaysWorked()
     state.sumOfDurations += (item.endTime - item.startTime)
     state.doneItems.push(item);
