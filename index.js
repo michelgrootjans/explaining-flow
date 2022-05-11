@@ -15220,7 +15220,12 @@ document.addEventListener('DOMContentLoaded', () => {
         event.preventDefault()
         const scenario = parseScenario(event);
           const container = createScenarioContainer(scenario);
-          document.getElementById('scenarios').append(container)
+        const $scenarios = document.getElementById('scenarios');
+        // $scenarios.append(container)
+
+        const $lastScenario = document.getElementsByClassName('scenario instance')[0];
+        $scenarios.insertBefore(container, $lastScenario);
+
         run(scenario);
       })
 });
@@ -15234,9 +15239,7 @@ function run(scenario) {
     PubSub.clearAllSubscriptions();
 
     // force predicatable randomness
-    seedrandom('limit wip', {global: true});
-    console.log(Math.random())
-    console.log(Math.random())
+    seedrandom('limit work in progress', {global: true});
 
   Animation.initialize(`#scenario-${scenario.id}`);
     Stats.initialize();
