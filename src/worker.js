@@ -3,21 +3,14 @@ const TimeAdjustments = require('./timeAdjustments');
 
 let workerCounter = 1;
 
-function Worker(skills = {dev: 1}) {
-  let idle = true;
-  const id = workerCounter++;
-
-  function canWorkOn(skill) {
-    if (!idle) return 0;
-    return workSpeedFor(skill);
+function SimpleSkillStrategy(skills) {
+  function workSpeedFor({ skill }) {
+    return skills[skill] || skills['all'] || skills['rest'] || skills['fs'] || skills['fullstack'];
   }
 
-  let worker = {
-    canWorkOn,
-    startWorkingOn,
-    name: renderName,
-    id
-  };
+  function startWorkOn(workCriteria) {
+    // nothing to do
+  }
 
   function renderName() {
     function renderSkills() {
@@ -27,22 +20,64 @@ function Worker(skills = {dev: 1}) {
     return `${renderSkills()}`;
   }
 
-  function workSpeedFor(skill) {
-    return skills[skill] || skills['all'] || skills['rest'] || skills['fs'] || skills['fullstack'];
+  return {
+    workSpeedFor,
+    startWorkOn,
+    renderName
+  };
+}
+
+function DontWorkOnSameItemStrategy(strategy) {
+  const itemsWorkedOn = [];
+
+  function workSpeedFor(workCriteria) {
+    if (itemsWorkedOn.includes(workCriteria.item)) return 0;
+    return strategy.workSpeedFor(workCriteria);
   }
 
-  function calculateTimeoutFor(workItem, skill) {
-    return 1000 * TimeAdjustments.multiplicator() * workItem.work[skill] / workSpeedFor(skill);
+  function startWorkOn(workCriteria) {
+    itemsWorkedOn.push(workCriteria.item);
+    strategy.startWorkOn(workCriteria);
   }
 
-  function startWorkingOn(inbox, inProgress, outbox) {
-    let item = inbox.peek();
+  return {
+    workSpeedFor,
+    startWorkOn,
+    renderName: strategy.renderName
+  };
+
+}
+
+function Worker(strategy) {
+  let idle = true;
+  const id = workerCounter++;
+
+  function canWorkOn(workCriteria) {
+    if (!idle) return 0;
+    return strategy.workSpeedFor(workCriteria);
+  }
+
+  let worker = {
+    canWorkOn,
+    startWorkingOn,
+    name: strategy.renderName,
+    id
+  };
+
+  function calculateTimeoutFor(workCriteria) {
+    const { item, skill } = workCriteria;
+    return 1000 * TimeAdjustments.multiplicator() * item.work[skill] / strategy.workSpeedFor(workCriteria);
+  }
+
+  function startWorkingOn({ inbox, inProgress, outbox, item }) {
     if (item) {
       idle = false;
       PubSub.publish('worker.working', worker);
       let skill = inProgress.necessarySkill;
       inbox.move(inProgress, item);
-      let timeout = calculateTimeoutFor(item, skill);
+      const workCriteria = { item, skill };
+      let timeout = calculateTimeoutFor(workCriteria);
+      strategy.startWorkOn(workCriteria);
       setTimeout(() => {
         idle = true;
         inProgress.move(outbox, item);
@@ -107,4 +142,4 @@ function WorkList(skill = "dev") {
   return column;
 }
 
-module.exports = {Worker, WorkItem, WorkList};
+module.exports = {Worker, WorkItem, WorkList, SimpleSkillStrategy, DontWorkOnSameItemStrategy};

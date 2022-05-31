@@ -1,4 +1,4 @@
-const {Worker, WorkItem, WorkList} = require('../src/worker');
+const {Worker, WorkItem, WorkList, SimpleSkillStrategy} = require('../src/worker');
 const Board = require('../src/board');
 const PubSub = require('pubsub-js');
 
@@ -15,7 +15,7 @@ describe('a worker', () => {
 
   describe('without tasks', () => {
     it('doesnt crash', () => {
-      board.addWorkers(new Worker({dev: 1}));
+      board.addWorkers(new Worker(new SimpleSkillStrategy({dev: 1})));
       jest.runAllTimers();
       expect(board.items()).toEqual([[], [], []]);
     });
@@ -23,7 +23,7 @@ describe('a worker', () => {
 
   describe('with one task', () => {
     beforeEach(() => {
-      board.addWorkers(new Worker({dev: 1}));
+      board.addWorkers(new Worker(new SimpleSkillStrategy({dev: 1})));
       workItem = new WorkItem({dev: 1});
       board.addWorkItems(workItem);
     });
@@ -66,7 +66,7 @@ describe('a worker', () => {
 
   describe('works on an item added after simulation started', () => {
     it('works', () => {
-      board.addWorkers(new Worker({dev: 1}));
+      board.addWorkers(new Worker(new SimpleSkillStrategy({dev: 1})));
       let workItem = new WorkItem({dev: 1});
       workItem.foo = 'bar';
       board.addWorkItems(workItem);
@@ -78,7 +78,7 @@ describe('a worker', () => {
 
   describe('with two tasks', () => {
     beforeEach(() => {
-      board.addWorkers(new Worker({dev: 1}));
+      board.addWorkers(new Worker(new SimpleSkillStrategy({dev: 1})));
       workItem1 = new WorkItem({dev: 1});
       workItem2 = new WorkItem({dev: 1});
       board.addWorkItems(workItem1, workItem2);
@@ -135,7 +135,7 @@ describe('workers work at their own speed', () => {
     beforeEach(() => {
       workItem = new WorkItem({dev: 1});
       board.addWorkItems(workItem);
-      board.addWorkers(new Worker({dev: 1}));
+      board.addWorkers(new Worker(new SimpleSkillStrategy({dev: 1})));
     });
     it('starts instantly', () => {
       jest.advanceTimersByTime(0);
@@ -155,7 +155,7 @@ describe('workers work at their own speed', () => {
     beforeEach(() => {
       workItem = new WorkItem({dev: 1});
       board.addWorkItems(workItem);
-      board.addWorkers(new Worker({dev: 0.5}));
+      board.addWorkers(new Worker(new SimpleSkillStrategy({dev: 0.5})));
     });
     it('starts instantly', () => {
       jest.advanceTimersByTime(0);
@@ -183,8 +183,8 @@ describe('a typical workflow', () => {
   beforeEach(() => {
     board = new Board(['dev', 'qa'])
     board.addWorkers(
-      new Worker({dev: 1}),
-      new Worker({qa: 1}),
+      new Worker(new SimpleSkillStrategy({dev: 1})),
+      new Worker(new SimpleSkillStrategy({qa: 1})),
     );
     workItem1 = new WorkItem({dev: 1, qa: 2});
     workItem2 = new WorkItem({dev: 2, qa: 1});

@@ -1,6 +1,6 @@
 const PubSub = require('pubsub-js');
 const Board = require('../src/board');
-const {WorkList, Worker, WorkItem} = require('../src/worker');
+const {WorkList, Worker, WorkItem, SimpleSkillStrategy} = require('../src/worker');
 const {LimitBoardWip} = require('../src/strategies');
 
 describe('limiting overall wip', () => {
@@ -17,7 +17,7 @@ describe('limiting overall wip', () => {
     beforeEach(() => {
       board = new Board(['dev', 'qa']);
       new LimitBoardWip().initialize(1);
-      board.addWorkers(new Worker({dev: 1}), new Worker({qa: 1}));
+      board.addWorkers(new Worker(new SimpleSkillStrategy({dev: 1})), new Worker(new SimpleSkillStrategy({qa: 1})));
 
       item1 = new WorkItem({dev: 1, qa: 1});
       item2 = new WorkItem({dev: 1, qa: 1});

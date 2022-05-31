@@ -18,16 +18,16 @@ describe('parseWorkload', () => {
 
 describe('parseWorkers', () => {
   it('parses a single worker with a single skill', () => {
-    expect(parseWorkers('dev')).toEqual([{skills: ['dev']}]);
-    expect(parseWorkers('qa')).toEqual([{skills: ['qa']}]);
+    expect(parseWorkers('dev', {workOnUniqueItems: false})).toEqual([{skills: ['dev'], workOnUniqueItems: false}]);
+    expect(parseWorkers('qa', {workOnUniqueItems: true})).toEqual([{skills: ['qa'], workOnUniqueItems: true}]);
   });
 
   it('parses multiple workers with single skills', () => {
-    expect(parseWorkers('dev, qa')).toEqual([{skills: ['dev']}, {skills: ['qa']}]);
+    expect(parseWorkers('dev, qa', {workOnUniqueItems: false})).toEqual([{skills: ['dev'], workOnUniqueItems: false}, {skills: ['qa'], workOnUniqueItems: false}]);
   });
 
   it('parses a single worker with multiple skills', () => {
-    expect(parseWorkers('dev+qa')).toEqual([{skills: ['dev', 'qa']}]);
+    expect(parseWorkers('dev+qa', {workOnUniqueItems: false})).toEqual([{skills: ['dev', 'qa'], workOnUniqueItems: false}]);
   });
 })
 
@@ -37,12 +37,17 @@ describe('parseInput', () => {
     workload: 'dev: 3, qa: 1',
     workers: 'dev, qa, qa',
     wipLimit: '3',
-    random: true
+    random: true,
+    workOnUniqueItems: true
   };
 
   const exampleParsedInput = {
     title: 'dev: 3, qa: 1',
-    workers: [{skills: ['dev']}, {skills: ['qa']}, {skills: ['qa']}],
+    workers: [
+      {skills: ['dev'], workOnUniqueItems: true},
+      {skills: ['qa'], workOnUniqueItems: true},
+      {skills: ['qa'], workOnUniqueItems: true}
+    ],
     wipLimit: "3",
     distribution: average,
     speed: 20,

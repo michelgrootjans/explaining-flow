@@ -22,14 +22,17 @@ function createScenarioContainer(scenario) {
 }
 
 function parse(form) {
-  const field = fieldName => form.querySelector(`[name="${fieldName}"]`).value;
+  const field = fieldName => form.querySelector(`[name="${fieldName}"]`);
+  const fieldValue = fieldName => field(fieldName).value;
+  const isChecked = fieldName => field(fieldName).checked;
 
   return parseInput({
-      title: field('workload'),
-      workers: field('workers'),
-      workload: field('workload'),
-      wipLimit: field('wip-limit'),
-      random: form.querySelector('[name="random"]').checked
+      title: fieldValue('workload'),
+      workers: fieldValue('workers'),
+      workload: fieldValue('workload'),
+      wipLimit: fieldValue('wip-limit'),
+      workOnUniqueItems: isChecked('unique-items'),
+      random: isChecked('random'),
   });
 }
 

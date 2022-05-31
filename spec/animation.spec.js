@@ -1,7 +1,7 @@
 const PubSub = require('pubsub-js');
 const animation = require('../src/animation');
 
-const {Worker, WorkItem} = require('../src/worker');
+const {Worker, WorkItem, SimpleSkillStrategy} = require('../src/worker');
 const Board = require('../src/board');
 
 const find = selector => document.querySelector(selector);
@@ -63,7 +63,7 @@ describe('animation', () => {
     });
 
     it('a worker picks up an item', () => {
-      board.addWorkers(new Worker({dev: 1}));
+      board.addWorkers(new Worker(new SimpleSkillStrategy({dev: 1})));
       let workItem = new WorkItem({dev: 1});
       board.addWorkItems(workItem);
       jest.advanceTimersByTime(1);
@@ -78,7 +78,7 @@ describe('animation', () => {
     })
 
     it('shows card amount', () => {
-      board.addWorkers(new Worker({dev: 1}));
+      board.addWorkers(new Worker(new SimpleSkillStrategy({dev: 1})));
       board.addWorkItems(new WorkItem({dev: 1}));
       jest.advanceTimersByTime(1);
 
@@ -140,7 +140,7 @@ describe('animation', () => {
     });
 
     it('adds new workers', () => {
-      const worker = new Worker({dev: 0});
+      const worker = new Worker(new SimpleSkillStrategy({dev: 0}));
       jest.runAllTimers();
       let $worker = find(`.workers [data-worker-id="${worker.id}"]`);
       expect($worker.querySelector('.name').innerHTML).toEqual(`${worker.name()}: `);
@@ -148,7 +148,7 @@ describe('animation', () => {
     });
 
     it('stat update', () => {
-      const worker = new Worker({dev: 0});
+      const worker = new Worker(new SimpleSkillStrategy({dev: 0}));
       const newStats = {workerId: worker.id, stats: {efficiency: 0.9500111}};
       PubSub.publish('worker.stats.updated', newStats);
       jest.runAllTimers();
