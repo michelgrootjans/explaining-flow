@@ -14539,7 +14539,7 @@ function Cfd($chart, updateInterval, speed) {
         },
         y: {
           type: 'linear',
-          ticks: {stepSize: 50},
+          ticks: {stepSize: 50, mirror: true},
           stacked: true,
         },
       },
@@ -14941,6 +14941,7 @@ function createChart(ctx,speed) {
         },
         y: {
           type: 'linear',
+          ticks: {mirror: true},
           position: 'left'
         },
       },
