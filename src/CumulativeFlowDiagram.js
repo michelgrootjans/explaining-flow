@@ -108,8 +108,8 @@ function Cfd($chart, updateInterval, speed) {
     chart.data.datasets = board.columns
       .map(nameOfColumn)
       .filter(distinct)
-      .reverse()
       .map((column, index) => createDataset(column, colors[index]))
+      .reverse()
 
     const timerId = setInterval(() => chart.update(), updateInterval);
 
