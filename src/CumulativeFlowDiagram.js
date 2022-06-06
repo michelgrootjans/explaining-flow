@@ -61,13 +61,19 @@ function Cfd($chart, updateInterval, speed) {
   const chart = new Chart(ctx, config);
 
   PubSub.subscribe('board.ready', (t, board) => {
-    console.log(t, board.columns)
+    const start = new Date();
+
+    function currentDate() {
+      return (new Date() - start) * speed / 1000;
+    }
+
     chart.data.datasets = board.columns
       .map(nameOfColumn)
       .filter(distinct)
       .map((column, index) => createDataset(column, colors[index]))
 
     const timerId = setInterval(() => chart.update(), updateInterval);
+
     PubSub.subscribe('board.done', () => {
       clearInterval(timerId);
       chart.update()
@@ -75,13 +81,13 @@ function Cfd($chart, updateInterval, speed) {
 
     let previousPoint = {x: 1, y: 1};
     PubSub.subscribe('workitem.added', (topic, data) => {
-      const newPoint = {x: previousPoint.x + 1, y: previousPoint.y + 1};
+      const newPoint = {x: currentDate(), y: previousPoint.y + 1};
       previousPoint = newPoint;
       chart.data.datasets[1].data.push(newPoint)
     });
 
     PubSub.subscribe('workitem.removed', (topic, data) => {
-      const newPoint = {x: previousPoint.x, y: previousPoint.y - 1};
+      const newPoint = {x: currentDate(), y: previousPoint.y - 1};
       previousPoint = newPoint;
       chart.data.datasets[1].data.push(newPoint)
     });
