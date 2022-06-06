@@ -37,9 +37,18 @@
                 <div class="workers">Workers</div>
             </div>
         </div>
-        <canvas id="myChart" class="chart" width="500px" height="100px"></canvas>
     </div>
-    <ul id="board"></ul>
+    <div id="charts">
+        <div class="chart">
+            <canvas id="lineChart" class="lineChart"></canvas>
+        </div>
+        <div class="chart">
+            <canvas id="cfd" class="cfd"></canvas>
+        </div>
+    </div>
+    <div id="board_container">
+        <ul id="board"></ul>
+    </div>
 
     <template id="scenario-template">
         <div class="scenario instance">

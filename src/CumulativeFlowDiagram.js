@@ -1,83 +1,97 @@
 const Chart = require('chart.js');
+const PubSub = require("pubsub-js");
 
-const colors = {
-  Backlog: {border: 'rgba(255, 99, 132, 1)', background: 'rgba(255, 99, 132, 0.2)'},
-  ux: {border: 'rgba(255, 159, 64, 1)', background: 'rgba(255, 159, 64, 0.2)'},
-  dev: {border: 'rgba(255, 206, 86, 1)', background: 'rgba(255, 206, 86, 0.2)'},
-  qa: {border: 'rgba(54, 162, 235, 1)', background: 'rgba(54, 162, 235, 0.2)'},
-  Done: {border: 'rgba(75, 192, 192, 1)', background: 'rgba(75, 192, 192, 0.2)'}
+const createDataset = (label, color) => ({
+  label: label,
+  type: 'line',
+  data: [],
+  fill: true,
+  stepped: true,
+  pointRadius: 0,
+  backgroundColor: `rgba(${color}, 0.1)`,
+  borderColor: `rgba(${color}, 1)`,
+  borderWidth: 1,
+});
+
+const colors = [
+  '101, 103, 107',
+  '153, 102, 255',
+  '54, 162, 235',
+  '75, 192, 192',
+  '255, 205, 86',
+  '255, 159, 64',
+  '255, 99, 132',
+]
+
+const Column = name => {
+  let count = 0;
+  return {
+    name,
+    count: () => count,
+    increment: () => count++,
+    decrement: () => count--,
+  };
+};
+
+const Columns = rawColumns => {
+  const columns = rawColumns
+    .filter(c => c.type === 'work' || c.name === 'Done')
+    .map(c => Column(c.name))
+
+  const find = name => columns.find(c => c.name === name) || Column('n/a');
+
+  return {
+    increment: (column) => find(column.name).increment(),
+    decrement: (column) => find(column.name).decrement(),
+
+    columns: () => columns.map(c => ({name: c.name, count: c.count()}))
+  };
 }
 
-function getColorFor(stat) {
-  return colors[stat.name] || {border: 'rgba(128, 128, 128, 1)', background: 'rgba(128, 128, 128, 0.2)'};
-}
-
-function CumulativeFlowDiagram($chart, stats) {
+function Cfd($chart, updateInterval, speed) {
   const ctx = $chart.getContext('2d');
 
-  const labels = [];
-
-  function createDataSet(stat) {
-    return {
-      label: stat.name,
-      type: 'line',
-      lineTension: 0,
-      data: [],
-      borderColor: getColorFor(stat).border,
-      backgroundColor: getColorFor(stat).background,
-      borderWidth: 1,
-      pointRadius: 0.5,
-      yAxisID: 'left-y-axis',
-    };
-  }
-
-  const data = {
-    labels,
-    datasets: [...stats.current()].reverse().map(createDataSet)
-  };
-
-  const chart = new Chart(ctx, {
-    data: data,
+  const config = {
+    type: 'line',
+    data: {
+      datasets: []
+    },
     options: {
       animation: false,
-      title: {
-        text: 'team flow'
-      },
       scales: {
-        xAxes: [{
-          type: 'time',
-        }],
-        yAxes: [{
-          id: 'left-y-axis',
+        x: {
           type: 'linear',
-          position: 'left',
-          ticks: {
-            beginAtZero: true
-          },
-          stacked: true
-        }]
-      },
-      plugins:{
-        filler: {
-          propagate: false
+          ticks: {stepSize: 5}
         },
+        y: {
+          type: 'linear',
+          ticks: {stepSize: 5},
+          stacked: true,
+        },
+      },
+      plugins: {
+        legend: {display: true, position: 'left', align: 'start', reverse: true},
       }
-    }
-  });
-  const dataSetFor = name => data.datasets.find(dataset => dataset.label === name);
-
-  const pollStats = () => {
-    data.labels.push(new Date())
-    stats.current()
-      .forEach(stat => dataSetFor(stat.name).data.push(stat.value))
-    chart.update()
-    if (stats.done()) {
-      clearInterval(timerId);
-      chart.update();
-    }
+    },
   };
 
-  let timerId = setInterval(pollStats, 1000);
+  const chart = new Chart(ctx, config);
+
+  PubSub.subscribe('board.ready', (t, board) => {
+    const timerId = setInterval(() => chart.update(), updateInterval);
+    PubSub.subscribe('board.done', () => {
+      clearInterval(timerId);
+      chart.update()
+    });
+
+    PubSub.subscribe('workitem.added', (topic, data) => {
+    });
+
+    PubSub.subscribe('workitem.removed', (topic, data) => {
+    });
+  });
+
+  return chart
 }
 
-module.exports = CumulativeFlowDiagram
+module.exports = Cfd

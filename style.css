@@ -86,3 +86,16 @@ ul.cards li {
 .amount:after {
     content: ')'
 }
+
+.lineChart, .cfd {
+    width: 50%;
+    height: 400px;
+}
+
+#charts {
+    display: flex;
+}
+
+.chart {
+    float: left;
+}

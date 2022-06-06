@@ -6,7 +6,7 @@ function parseInput(rawInput) {
     const work = parseWorkload(rawInput.workload);
     const wipLimit = rawInput.wipLimit;
     const speed = (workers.length > 2) ? 20 : 1;
-    const numberOfStories = (workers.length > 2) ? 200 : 50;
+    const numberOfStories = (workers.length > 2) ? 200 : 5;
     let input = {
         title,
         workers,

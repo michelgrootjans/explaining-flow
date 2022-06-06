@@ -7,6 +7,7 @@ const Stats = require('./stats');
 const WorkerStats = require('./worker-stats');
 const Scenario = require("./scenario");
 const LineChart = require("./charts");
+const Cfd = require("./CumulativeFlowDiagram");
 const {parseInput} = require("./parsing");
 
 // force repeatable randomness
@@ -63,7 +64,8 @@ document.addEventListener('DOMContentLoaded', () => {
 const wipLimiter = LimitBoardWip();
 
 
-let currentChart = undefined;
+let lineChart = undefined;
+let cfd = undefined;
 
 function run(scenario) {
     PubSub.clearAllSubscriptions();
@@ -79,8 +81,11 @@ function run(scenario) {
     TimeAdjustments.speedUpBy(scenario.speed || 1);
 
     wipLimiter.initialize(scenario.wipLimit)
-    if(currentChart) currentChart.destroy()
-    currentChart = LineChart(document.getElementById('myChart'), 2000, scenario.speed)
+    if(lineChart) lineChart.destroy()
+    lineChart = LineChart(document.getElementById('lineChart'), 2000, scenario.speed)
+
+    if(cfd) cfd.destroy()
+    cfd = Cfd(document.getElementById('cfd'), 2000, scenario.speed)
 
     const board = scenario.run();
 }
