@@ -72,16 +72,16 @@ function Cfd($chart, updateInterval, speed) {
       scales: {
         x: {
           type: 'linear',
-          ticks: {stepSize: 5}
+          ticks: {stepSize: 10}
         },
         y: {
           type: 'linear',
-          ticks: {stepSize: 5},
+          ticks: {stepSize: 50},
           stacked: true,
         },
       },
       plugins: {
-        legend: {display: true, position: 'top', align: 'start', reverse: false},
+        legend: {display: true, position: 'top', align: 'start', reverse: true},
         title: {
           display: true,
           text: 'Cumulative flow diagram'
@@ -108,6 +108,7 @@ function Cfd($chart, updateInterval, speed) {
     chart.data.datasets = board.columns
       .map(nameOfColumn)
       .filter(distinct)
+      .filter(c => c !== 'Backlog')
       .map((column, index) => createDataset(column, colors[index]))
       .reverse()
 
@@ -132,7 +133,7 @@ function Cfd($chart, updateInterval, speed) {
         }
         chart.data.datasets.forEach(ds => ds.data.push({x, y: columns[ds.label]}))
       };
-      if (['Backlog', 'Done'].includes(data.column.name)) execute()
+      if (['Done'].includes(data.column.name)) execute()
       if (data.column.type === 'work') execute();
     });
   });

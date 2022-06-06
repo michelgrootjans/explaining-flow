@@ -57,7 +57,7 @@ function createChart(ctx,speed) {
       scales: {
         x: {
           type: 'linear',
-          ticks: {stepSize: 5 * speed}
+          ticks: {stepSize: 10 * speed}
         },
         y: {
           type: 'linear',
