@@ -60,6 +60,7 @@ function createChart(ctx,speed) {
         },
         y: {
           type: 'linear',
+          ticks: {mirror: true},
           position: 'left'
         },
       },

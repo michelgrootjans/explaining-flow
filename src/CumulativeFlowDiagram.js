@@ -75,7 +75,7 @@ function Cfd($chart, updateInterval, speed) {
         },
         y: {
           type: 'linear',
-          ticks: {stepSize: 50},
+          ticks: {stepSize: 50, mirror: true},
           stacked: true,
         },
       },
