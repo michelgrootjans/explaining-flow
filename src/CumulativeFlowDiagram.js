@@ -3,17 +3,18 @@ const PubSub = require("pubsub-js");
 
 const distinct = (value, index, self) => self.indexOf(value) === index;
 
-const createDataset = (label, color) => ({
-  label: label,
-  type: 'line',
-  data: [],
-  fill: true,
-  stepped: true,
-  pointRadius: 0,
-  backgroundColor: `rgba(${color}, 0.1)`,
-  borderColor: `rgba(${color}, 1)`,
-  borderWidth: 1,
-});
+const createDataset = (label, color) =>
+  ({
+    label: label,
+    type: 'line',
+    data: [],
+    fill: true,
+    stepped: true,
+    pointRadius: 0,
+    backgroundColor: `rgba(${color}, 0.1)`,
+    borderColor: `rgba(${color}, 1)`,
+    borderWidth: 1,
+  });
 
 const colors = [
   '101, 103, 107',
@@ -67,6 +68,12 @@ function Cfd($chart, updateInterval, speed) {
       return (new Date() - start) * speed / 1000;
     }
 
+    const columns = {}
+    board.columns
+      .map(nameOfColumn)
+      .filter(distinct)
+      .forEach(name => columns[name] = 0)
+
     chart.data.datasets = board.columns
       .map(nameOfColumn)
       .filter(distinct)
@@ -78,18 +85,33 @@ function Cfd($chart, updateInterval, speed) {
       clearInterval(timerId);
       chart.update()
     });
-
-    let previousPoint = {x: 1, y: 1};
     PubSub.subscribe('workitem.added', (topic, data) => {
-      const newPoint = {x: currentDate(), y: previousPoint.y + 1};
-      previousPoint = newPoint;
-      chart.data.datasets[1].data.push(newPoint)
-    });
+      const x = currentDate();
+      const columnName = nameOfColumn(data.column)
+      const column = chart.data.datasets
+        .find(data => data.label === columnName)
 
-    PubSub.subscribe('workitem.removed', (topic, data) => {
-      const newPoint = {x: currentDate(), y: previousPoint.y - 1};
-      previousPoint = newPoint;
-      chart.data.datasets[1].data.push(newPoint)
+      const execute = () => {
+        if (columnName === 'Backlog') {
+          columns[columnName]++
+          column.data.push({x: x, y: columns[columnName]});
+          return;
+        }
+
+        columns[columnName]++;
+        column.data.push({x: x, y: columns[columnName]});
+
+        const inboxName = nameOfColumn(data.column.inbox);
+        const inbox = chart.data.datasets
+          .find(data => data.label === inboxName)
+        columns[inboxName]--;
+        inbox.data.push({x: x, y: columns[inboxName]});
+
+        console.log({inbox, column})
+        console.log(columns)
+      };
+      if (['Backlog', 'Done'].includes(data.column.name)) execute()
+      if (data.column.type === 'work') execute();
     });
   });
 
