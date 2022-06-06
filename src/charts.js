@@ -12,7 +12,7 @@ function createChart(ctx,speed) {
     labels,
     datasets: [
       {
-        label: 'throughput (a.k.a. velocity)',
+        label: 'throughput',
         type: 'line',
         lineTension: 0,
         data: throughput,
@@ -49,7 +49,7 @@ function createChart(ctx,speed) {
     ]
   };
 
-  const chart = new Chart(ctx, {
+  const config = {
     type: 'line',
     data: data,
     options: {
@@ -64,13 +64,15 @@ function createChart(ctx,speed) {
         },
       },
       plugins: {
+        legend: {display: true, position: 'bottom', align: 'start'},
         title: {
           display: true,
           text: 'Flow metrics'
         }
       }
     }
-  });
+  };
+  const chart = new Chart(ctx, config);
   return {cycleTime, throughput, wip, data, chart, labels, startTime};
 }
 

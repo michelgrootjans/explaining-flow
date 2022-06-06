@@ -87,15 +87,20 @@ ul.cards li {
     content: ')'
 }
 
+#board_container {
+
+}
+
 .lineChart, .cfd {
-    width: 50%;
-    height: 400px;
+    height: 350px;
 }
 
 #charts {
-    display: flex;
+    /*display: flex;*/
+    float: right;
 }
 
 .chart {
-    float: left;
+    padding: 2em;
+    /*float: left;*/
 }

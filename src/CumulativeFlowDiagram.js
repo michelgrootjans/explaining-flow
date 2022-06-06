@@ -80,7 +80,7 @@ function Cfd($chart, updateInterval, speed) {
         },
       },
       plugins: {
-        legend: {display: true, position: 'top', align: 'start', reverse: true},
+        legend: {display: true, position: 'bottom', align: 'start', reverse: true},
         title: {
           display: true,
           text: 'Cumulative flow diagram'

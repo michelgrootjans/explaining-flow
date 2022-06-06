@@ -7,6 +7,14 @@
     <script src="dist/index.js"></script>
 </head>
 <body>
+<div id="charts">
+    <div class="chart">
+        <canvas id="lineChart" class="lineChart"></canvas>
+    </div>
+    <div class="chart">
+        <canvas id="cfd" class="cfd"></canvas>
+    </div>
+</div>
     <div id="stats">
         <form id="new-scenario">
             <label>
@@ -36,14 +44,6 @@
                 <div class="timeWorked">Time worked</div>
                 <div class="workers">Workers</div>
             </div>
-        </div>
-    </div>
-    <div id="charts">
-        <div class="chart">
-            <canvas id="lineChart" class="lineChart"></canvas>
-        </div>
-        <div class="chart">
-            <canvas id="cfd" class="cfd"></canvas>
         </div>
     </div>
     <div id="board_container">
