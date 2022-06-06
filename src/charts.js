@@ -56,13 +56,11 @@ function createChart(ctx,speed) {
       animation: false,
       scales: {
         x: {
-          type: 'linear',
-          ticks: {stepSize: 10 * speed}
+          type: 'linear'
         },
         y: {
           type: 'linear',
-          position: 'left',
-          ticks: {stepSize: 1}
+          position: 'left'
         },
       },
       plugins: {

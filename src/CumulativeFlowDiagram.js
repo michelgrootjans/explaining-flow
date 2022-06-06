@@ -72,7 +72,6 @@ function Cfd($chart, updateInterval, speed) {
       scales: {
         x: {
           type: 'linear',
-          ticks: {stepSize: 10}
         },
         y: {
           type: 'linear',
