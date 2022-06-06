@@ -64,6 +64,12 @@ function createChart(ctx,speed) {
           position: 'left',
           ticks: {stepSize: 1}
         },
+      },
+      plugins: {
+        title: {
+          display: true,
+          text: 'Flow metrics'
+        }
       }
     }
   });

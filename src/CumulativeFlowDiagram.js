@@ -1,4 +1,31 @@
-const Chart = require('chart.js');
+const {
+  Chart,
+  ArcElement,
+  LineElement,
+  BarElement,
+  PointElement,
+  BarController,
+  BubbleController,
+  DoughnutController,
+  LineController,
+  PieController,
+  PolarAreaController,
+  RadarController,
+  ScatterController,
+  CategoryScale,
+  LinearScale,
+  LogarithmicScale,
+  RadialLinearScale,
+  TimeScale,
+  TimeSeriesScale,
+  Decimation,
+  Filler,
+  Legend,
+  Title,
+  Tooltip,
+  SubTitle
+} = require('chart.js');
+Chart.register(ArcElement, LineElement, BarElement, PointElement, BarController, BubbleController, DoughnutController, LineController, PieController, PolarAreaController, RadarController, ScatterController, CategoryScale, LinearScale, LogarithmicScale, RadialLinearScale, TimeScale, TimeSeriesScale, Decimation, Filler, Legend, Title, Tooltip, SubTitle);
 const PubSub = require("pubsub-js");
 
 const distinct = (value, index, self) => self.indexOf(value) === index;
@@ -55,6 +82,10 @@ function Cfd($chart, updateInterval, speed) {
       },
       plugins: {
         legend: {display: true, position: 'top', align: 'start', reverse: false},
+        title: {
+          display: true,
+          text: 'Cumulative flow diagram'
+        }
       }
     },
   };
@@ -77,6 +108,7 @@ function Cfd($chart, updateInterval, speed) {
     chart.data.datasets = board.columns
       .map(nameOfColumn)
       .filter(distinct)
+      .reverse()
       .map((column, index) => createDataset(column, colors[index]))
 
     const timerId = setInterval(() => chart.update(), updateInterval);
@@ -87,28 +119,18 @@ function Cfd($chart, updateInterval, speed) {
     });
     PubSub.subscribe('workitem.added', (topic, data) => {
       const x = currentDate();
-      const columnName = nameOfColumn(data.column)
-      const column = chart.data.datasets
-        .find(data => data.label === columnName)
 
       const execute = () => {
+        const columnName = nameOfColumn(data.column)
         if (columnName === 'Backlog') {
           columns[columnName]++
-          column.data.push({x: x, y: columns[columnName]});
-          return;
+        } else {
+          columns[columnName]++;
+
+          const inboxName = nameOfColumn(data.column.inbox);
+          columns[inboxName]--;
         }
-
-        columns[columnName]++;
-        column.data.push({x: x, y: columns[columnName]});
-
-        const inboxName = nameOfColumn(data.column.inbox);
-        const inbox = chart.data.datasets
-          .find(data => data.label === inboxName)
-        columns[inboxName]--;
-        inbox.data.push({x: x, y: columns[inboxName]});
-
-        console.log({inbox, column})
-        console.log(columns)
+        chart.data.datasets.forEach(ds => ds.data.push({x, y: columns[ds.label]}))
       };
       if (['Backlog', 'Done'].includes(data.column.name)) execute()
       if (data.column.type === 'work') execute();
