@@ -1,5 +1,5 @@
 const {parseWorkload, parseWorkers, parseInput} = require('../src/parsing')
-const {average} = require("../src/generator");
+const {average, poisson} = require("../src/generator");
 
 describe('parseWorkload', () => {
   it('parses a single workload', () => {
@@ -44,7 +44,7 @@ describe('parseInput', () => {
     title: 'dev: 3, qa: 1',
     workers: [{skills: ['dev']}, {skills: ['qa']}, {skills: ['qa']}],
     wipLimit: "3",
-    distribution: average,
+    distribution: poisson,
     speed: 20,
     stories: {
       amount: 200,

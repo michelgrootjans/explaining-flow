@@ -1,4 +1,4 @@
-const {average} = require("./generator");
+const {average, poisson} = require("./generator");
 
 function parseInput(rawInput) {
     const title = rawInput.title;
@@ -17,7 +17,7 @@ function parseInput(rawInput) {
         wipLimit,
         speed
     };
-    if (rawInput.random) input.distribution = average
+    if (rawInput.random) input.distribution = poisson
     return input;
 }
 
