@@ -15015,10 +15015,26 @@ function averageOf(value) {
   return randomBetween(value - distance, value + distance);
 }
 
-module.exports = {generateWorkItems, randomBetween, averageOf, average: averageOf};
+function poisson(value) {
+  const multiplier = 10;
+  const mean = value * multiplier;
+
+  const L = Math.exp(-mean);
+  let p = 1.0;
+  let k = 0;
+
+  do {
+    k++;
+    p *= Math.random();
+  } while (p > L);
+
+  return (k-1)/multiplier;
+}
+
+module.exports = {generateWorkItems, randomBetween, averageOf, average: averageOf, poisson};
 
 },{"./worker":29}],20:[function(require,module,exports){
-const {average} = require("./generator");
+const {average, poisson} = require("./generator");
 
 function parseInput(rawInput) {
     const title = rawInput.title;
@@ -15037,7 +15053,7 @@ function parseInput(rawInput) {
         wipLimit,
         speed
     };
-    if (rawInput.random) input.distribution = average
+    if (rawInput.random) input.distribution = poisson
     return input;
 }
 
