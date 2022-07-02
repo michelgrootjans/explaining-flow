@@ -14462,6 +14462,37 @@ if ((typeof module) == 'object' && module.exports) {
 );
 
 },{"crypto":1}],12:[function(require,module,exports){
+// from https://www.color-hex.com/color-palette/29241
+// and http://writersbrick.org/css/post-it-note-colors.html
+const cardColors = [
+  '#FF7EB9',
+  '#F59DB9',
+  '#FF65A3',
+  '#EE5E9F',
+  '#7AFCFF',
+  '#7AFCFF',
+  '#7AFCFF',
+  '#7AFCFF',
+  '#FEFF9C',
+  '#FEFF9C',
+  '#FFF740',
+  '#FFF740',
+  '#FCF0AD',
+  '#E9E74A',
+  '#FFDD2A',
+  '#F9A55B',
+]
+
+function any(array) {
+  return array[Math.floor(Math.random() * array.length)];
+}
+
+function anyCardColor() {
+  return any(cardColors);
+}
+
+module.exports = {anyCardColor};
+},{}],13:[function(require,module,exports){
 const {
   Chart,
   ArcElement,
@@ -14605,7 +14636,7 @@ function Cfd($chart, updateInterval, speed) {
 }
 
 module.exports = Cfd
-},{"chart.js":2,"pubsub-js":3}],13:[function(require,module,exports){
+},{"chart.js":2,"pubsub-js":3}],14:[function(require,module,exports){
 const PubSub = require('pubsub-js');
 const {createElement} = require('./dom-manipulation')
 
@@ -14619,14 +14650,15 @@ const initialize = (currentSenarioId) => {
 
     columns.forEach(column => {
       const $column = createElement({
-        type: 'li',
-        className: `column ${column.type}`,
+        type: 'div',
+        className: `col ${column.type}`,
         attributes: {'data-column-id': column.id}
       })
 
-      const $header = createElement({type: 'h2', text: column.name });
+      const $header = createElement({type: 'h5', text: column.name });
       $header.append(createElement({type : 'span', className: 'amount', text: '0' }));
 
+      $column.append($header);
       $column.append($header);
       $column.append(createElement({type: 'ul', className: 'cards'}))
 
@@ -14637,9 +14669,10 @@ const initialize = (currentSenarioId) => {
   PubSub.subscribe('workitem.added', (topic, {column, item}) => {
     let $card = createElement({
       type: 'li',
-      className: 'card',
-      text: item.id,
-      attributes:{'data-card-id': item.id}})
+      className: 'post-it',
+      attributes:{'data-card-id': item.id},
+      style: `background: ${item.color};`
+    })
 
     let $column = document.querySelector(`[data-column-id="${column.id}"] .cards`);
     if ($column) $column.append($card); // FIXME: this check should not happen
@@ -14704,7 +14737,7 @@ const initialize = (currentSenarioId) => {
 
 module.exports = {initialize};
 
-},{"./dom-manipulation":18,"pubsub-js":3}],14:[function(require,module,exports){
+},{"./dom-manipulation":19,"pubsub-js":3}],15:[function(require,module,exports){
 const BoardFactory = require("./boardFactory");
 const PubSub = require("pubsub-js");
 
@@ -14800,7 +14833,7 @@ let Board = function (workColumnNames) {
 
 module.exports = Board
 
-},{"./boardFactory":15,"pubsub-js":3}],15:[function(require,module,exports){
+},{"./boardFactory":16,"pubsub-js":3}],16:[function(require,module,exports){
 const {WorkList} = require("./worker");
 
 function BoardFactory() {
@@ -14839,7 +14872,7 @@ function BoardFactory() {
 }
 
 module.exports = BoardFactory
-},{"./worker":29}],16:[function(require,module,exports){
+},{"./worker":30}],17:[function(require,module,exports){
 const CurrentStats = columns => {
 
   const needsAStatistic = column => column.name !== '-';
@@ -14878,7 +14911,7 @@ const CurrentStats = columns => {
 };
 
 module.exports = CurrentStats
-},{}],17:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 const Chart = require('chart.js');
 const PubSub = require("pubsub-js");
 
@@ -14986,18 +15019,20 @@ function LineChart($chart, updateInterval, speed) {
 }
 
 module.exports = LineChart
-},{"chart.js":2,"pubsub-js":3}],18:[function(require,module,exports){
-const createElement = ({type='div', id, className, attributes=[], text}) => {
+},{"chart.js":2,"pubsub-js":3}],19:[function(require,module,exports){
+const createElement = ({type='div', id, className, attributes=[], text, style}) => {
     const $element = document.createElement(type);
     if (id) $element.setAttribute('id', id)
     if (className) $element.className = className
     if (text) $element.innerHTML = text
+    if (style) $element.setAttribute('style', style);
+
     Object.keys(attributes).forEach(key => $element.setAttribute(key, attributes[key]))
     return $element;
 };
 
 module.exports = {createElement};
-},{}],19:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 const {WorkItem} = require('./worker');
 
 function generateWorkItems(work, numberOfWorkItems = 100) {
@@ -15033,7 +15068,7 @@ function poisson(value) {
 
 module.exports = {generateWorkItems, randomBetween, averageOf, average: averageOf, poisson};
 
-},{"./worker":29}],20:[function(require,module,exports){
+},{"./worker":30}],21:[function(require,module,exports){
 const {average, poisson} = require("./generator");
 
 function parseInput(rawInput) {
@@ -15089,14 +15124,14 @@ module.exports = {
     parseWorkers
 };
 
-},{"./generator":19}],21:[function(require,module,exports){
+},{"./generator":20}],22:[function(require,module,exports){
 function Range(from, to) {
   let length = to - from + 1;
   return Array.from(Array(length).keys()).map(value => value + from);
 }
 
 module.exports = Range
-},{}],22:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 const Board = require("./board");
 const {generateWorkItems} = require("./generator");
 const {Worker} = require('./worker')
@@ -15136,7 +15171,7 @@ const Scenario = scenario => {
 };
 
 module.exports = Scenario
-},{"./board":14,"./generator":19,"./worker":29}],23:[function(require,module,exports){
+},{"./board":15,"./generator":20,"./worker":30}],24:[function(require,module,exports){
 const {average} = require('./generator');
 
 module.exports = [
@@ -15250,7 +15285,7 @@ module.exports = [
     speed: 20
   },
 ];
-},{"./generator":19}],24:[function(require,module,exports){
+},{"./generator":20}],25:[function(require,module,exports){
 const PubSub = require('pubsub-js');
 const scenarios = require('./scenarios')
 const Animation = require('./animation');
@@ -15269,7 +15304,7 @@ const seedrandom = require('seedrandom');
 function createScenarioContainer(scenario) {
     const template = document.querySelector('#scenario-template');
 
-    const clone = template.content.cloneNode(true).querySelector('div');
+    const clone = template.content.cloneNode(true).querySelector('ul');
     clone.setAttribute('id', `scenario-${scenario.id}`);
     clone.querySelector('.scenario-title').textContent = scenario.title;
     return clone
@@ -15292,23 +15327,15 @@ function parseScenario(event) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    scenarios.forEach(input => {
-        // const scenario = Scenario(input);
-        //
-        // let $scenario = createScenarioContainer(scenario);
-        // $scenario.addEventListener('click', () => run(scenario))
-        // document.getElementById('scenarios').append($scenario)
-    })
     document.getElementById('new-scenario')
       .addEventListener('submit', event => {
         event.preventDefault()
         const scenario = parseScenario(event);
-          const container = createScenarioContainer(scenario);
+        const $container = createScenarioContainer(scenario);
         const $scenarios = document.getElementById('scenarios');
-        // $scenarios.append(container)
 
         const $lastScenario = document.getElementsByClassName('scenario instance')[0];
-        $scenarios.insertBefore(container, $lastScenario);
+        $scenarios.insertBefore($container, $lastScenario);
 
         run(scenario);
       })
@@ -15323,10 +15350,10 @@ let cfd = undefined;
 function run(scenario) {
     PubSub.clearAllSubscriptions();
 
-    // force predicatable randomness
+    // force predicatable randomness across each simulationr
     seedrandom('limit work in progress', {global: true});
 
-  Animation.initialize(`#scenario-${scenario.id}`);
+    Animation.initialize(`#scenario-${scenario.id}`);
     Stats.initialize();
 
     new WorkerStats();
@@ -15344,7 +15371,7 @@ function run(scenario) {
 }
 
 
-},{"../src/strategies":26,"./CumulativeFlowDiagram":12,"./animation":13,"./charts":17,"./parsing":20,"./scenario":22,"./scenarios":23,"./stats":25,"./timeAdjustments":27,"./worker-stats":28,"pubsub-js":3,"seedrandom":4}],25:[function(require,module,exports){
+},{"../src/strategies":27,"./CumulativeFlowDiagram":13,"./animation":14,"./charts":18,"./parsing":21,"./scenario":23,"./scenarios":24,"./stats":26,"./timeAdjustments":28,"./worker-stats":29,"pubsub-js":3,"seedrandom":4}],26:[function(require,module,exports){
 const TimeAdjustments = require('./timeAdjustments');
 const PubSub = require('pubsub-js');
 
@@ -15448,7 +15475,7 @@ module.exports = {
   initialize
 };
 
-},{"./timeAdjustments":27,"pubsub-js":3}],26:[function(require,module,exports){
+},{"./timeAdjustments":28,"pubsub-js":3}],27:[function(require,module,exports){
 const PubSub = require('pubsub-js');
 
 function LimitBoardWip() {
@@ -15533,7 +15560,7 @@ function WipUp(step = 10) {
 
 module.exports = {LimitBoardWip, DynamicLimitBoardWip, WipUp}
 
-},{"pubsub-js":3}],27:[function(require,module,exports){
+},{"pubsub-js":3}],28:[function(require,module,exports){
 (function(){
   factor = 1;
 
@@ -15542,7 +15569,7 @@ module.exports = {LimitBoardWip, DynamicLimitBoardWip, WipUp}
     speedUpBy: (f) => { factor = 1.0/f; }
   }
 })();
-},{}],28:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 const PubSub = require('pubsub-js');
 
 function WorkerStats() {
@@ -15594,9 +15621,10 @@ function WorkerStats() {
 
 module.exports = WorkerStats;
 
-},{"pubsub-js":3}],29:[function(require,module,exports){
+},{"pubsub-js":3}],30:[function(require,module,exports){
 const PubSub = require('pubsub-js');
 const TimeAdjustments = require('./timeAdjustments');
+const {anyCardColor} = require("./Colors");
 
 let workerCounter = 1;
 
@@ -15657,7 +15685,8 @@ let workItemCounter = 1;
 function WorkItem(work) {
   return {
     id: workItemCounter++,
-    work
+    work,
+    color: anyCardColor()
   };
 }
 
@@ -15706,4 +15735,4 @@ function WorkList(skill = "dev") {
 
 module.exports = {Worker, WorkItem, WorkList};
 
-},{"./timeAdjustments":27,"pubsub-js":3}]},{},[12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29]);
+},{"./Colors":12,"./timeAdjustments":28,"pubsub-js":3}]},{},[12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30]);
