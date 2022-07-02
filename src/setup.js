@@ -70,7 +70,7 @@ let cfd = undefined;
 function run(scenario) {
     PubSub.clearAllSubscriptions();
 
-    // force predicatable randomness
+    // force predicatable randomness across each simulationr
     seedrandom('limit work in progress', {global: true});
 
   Animation.initialize(`#scenario-${scenario.id}`);

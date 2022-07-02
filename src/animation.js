@@ -11,14 +11,15 @@ const initialize = (currentSenarioId) => {
 
     columns.forEach(column => {
       const $column = createElement({
-        type: 'li',
-        className: `column ${column.type}`,
+        type: 'div',
+        className: `col ${column.type}`,
         attributes: {'data-column-id': column.id}
       })
 
-      const $header = createElement({type: 'h2', text: column.name });
+      const $header = createElement({type: 'h5', text: column.name });
       $header.append(createElement({type : 'span', className: 'amount', text: '0' }));
 
+      $column.append($header);
       $column.append($header);
       $column.append(createElement({type: 'ul', className: 'cards'}))
 
@@ -29,9 +30,10 @@ const initialize = (currentSenarioId) => {
   PubSub.subscribe('workitem.added', (topic, {column, item}) => {
     let $card = createElement({
       type: 'li',
-      className: 'card',
-      text: item.id,
-      attributes:{'data-card-id': item.id}})
+      className: 'post-it',
+      attributes:{'data-card-id': item.id},
+      style: `background: ${item.color};`
+    })
 
     let $column = document.querySelector(`[data-column-id="${column.id}"] .cards`);
     if ($column) $column.append($card); // FIXME: this check should not happen

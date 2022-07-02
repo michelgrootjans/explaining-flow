@@ -1,23 +1,41 @@
-#board, #board ul {
+.amount {
+    color: darkgray;
+    padding-left: 3px;
+}
+.amount:before {
+    content: '('
+}
+.amount:after {
+    content: ')'
+}
+
+#board ul {
     list-style: none;
+    padding: 0px;
 }
 
-#board li h2 {
-    text-align: center;
+
+.post-it {
+    /*position: relative;*/
+    background: #feff9c;
+    box-shadow: 1px 1px 2px 1px rgba(9, 30, 66, .25);
+    border-radius: 3px;
+    width: 40px;
+    height: 40px;
+    padding: 10px;
+    margin: 10px;
+
+    /* undo bootstrap reboot */
+    box-sizing: content-box;
+}
+.queue .post-it{
+    margin-top: -45px;
+}
+.queue .post-it:nth-child(1000n+1){
+    margin-top: 0;
 }
 
-li.column {
-    float: left;
-    width: 120px;
-}
 
-ul.cards li {
-    width: 100%;
-    text-align: center;
-    padding: 5px;
-    margin: 5px 0px;
-    background-color: yellow;
-}
 
 #scenarios {
     overflow: auto;
@@ -48,10 +66,6 @@ ul.cards li {
     font-weight: bold;
 }
 
-#numbers {
-    /*width: 300px;*/
-}
-
 .throughput {
     background-color: rgba(54, 162, 235, 0.1);
     border: rgb(54, 162, 235) solid 1px;
@@ -76,20 +90,6 @@ ul.cards li {
     height: 1em;
 }
 
-.amount {
-    color: darkgray;
-    padding-left: 3px;
-}
-.amount:before {
-    content: '('
-}
-.amount:after {
-    content: ')'
-}
-
-#board_container {
-
-}
 
 .lineChart, .cfd {
     height: 350px;

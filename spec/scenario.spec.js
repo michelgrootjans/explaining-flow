@@ -21,8 +21,8 @@ describe('scenario', () => {
     animation.initialize("#stats-container");
   });
 
-  const numberOfCardsInColumn = (columnNumber) => document.querySelectorAll(`#board ${(`.column:nth-child(${columnNumber})`)} .card`).length;
-  const numberOfColumns = () => document.querySelectorAll('.column').length;
+  const numberOfCardsInColumn = (columnNumber) => document.querySelectorAll(`#board ${(`.col:nth-child(${columnNumber})`)} .post-it`).length;
+  const numberOfColumns = () => document.querySelectorAll('.col').length;
   const cardsInColumns = () => Range(1, numberOfColumns()).map(numberOfCardsInColumn);
   const run = scenario => Scenario(scenario).run();
 

@@ -1,5 +1,6 @@
 const PubSub = require('pubsub-js');
 const TimeAdjustments = require('./timeAdjustments');
+const {anyCardColor} = require("./Colors");
 
 let workerCounter = 1;
 
@@ -60,7 +61,8 @@ let workItemCounter = 1;
 function WorkItem(work) {
   return {
     id: workItemCounter++,
-    work
+    work,
+    color: anyCardColor()
   };
 }
 
