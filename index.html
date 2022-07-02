@@ -54,17 +54,17 @@
 
 
 <div class="container-fluid">
-    <div class="row">
-        <div id="stats">
-            <div id="scenarios">
-                <div class="scenario legend">
-                    <div class="scenario-title">&nbsp;</div>
-                    <div class="throughput">Throughput</div>
-                    <div class="cycletime">Cycle Time</div>
-                    <div class="wip">WIP</div>
-                    <div class="timeWorked">Time worked</div>
-                    <div class="workers">Workers</div>
-                </div>
+    <div id="stats">
+        <div id="scenarios" class="row justify-content-start">
+            <div class="col scenario legend">
+                <ul>
+                    <li class="scenario-title">&nbsp;</li>
+                    <li class="throughput">Throughput</li>
+                    <li class="cycletime">Cycle Time</li>
+                    <li class="wip">WIP</li>
+                    <li class="timeWorked">Time worked</li>
+                    <li class="workers">Workers</li>
+                </ul>
             </div>
         </div>
     </div>
@@ -89,13 +89,15 @@
 </div>
 
 <template id="scenario-template">
-    <div class="scenario instance">
-        <div class="scenario-title"></div>
-        <div class="throughput"></div>
-        <div class="cycletime"></div>
-        <div class="wip"></div>
-        <div class="timeWorked"></div>
-        <div class="workers"></div>
+    <div class="col scenario instance">
+        <ul>
+            <li class="scenario-title"></li>
+            <li class="throughput"></li>
+            <li class="cycletime"></li>
+            <li class="wip"></li>
+            <li class="timeWorked"></li>
+            <li class="workers"></li>
+        </ul>
     </div>
 </template>
 </body>

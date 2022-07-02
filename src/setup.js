@@ -39,23 +39,15 @@ function parseScenario(event) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    scenarios.forEach(input => {
-        // const scenario = Scenario(input);
-        //
-        // let $scenario = createScenarioContainer(scenario);
-        // $scenario.addEventListener('click', () => run(scenario))
-        // document.getElementById('scenarios').append($scenario)
-    })
     document.getElementById('new-scenario')
       .addEventListener('submit', event => {
         event.preventDefault()
         const scenario = parseScenario(event);
-          const container = createScenarioContainer(scenario);
+        const $container = createScenarioContainer(scenario);
         const $scenarios = document.getElementById('scenarios');
-        // $scenarios.append(container)
 
         const $lastScenario = document.getElementsByClassName('scenario instance')[0];
-        $scenarios.insertBefore(container, $lastScenario);
+        $scenarios.insertBefore($container, $lastScenario);
 
         run(scenario);
       })
@@ -73,7 +65,7 @@ function run(scenario) {
     // force predicatable randomness across each simulationr
     seedrandom('limit work in progress', {global: true});
 
-  Animation.initialize(`#scenario-${scenario.id}`);
+    Animation.initialize(`#scenario-${scenario.id}`);
     Stats.initialize();
 
     new WorkerStats();

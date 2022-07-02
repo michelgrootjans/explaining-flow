@@ -37,29 +37,21 @@
 
 
 
-#scenarios {
-    overflow: auto;
-    white-space: nowrap;
+#scenarios ul {
+    list-style: none;
+    padding: 0px;
+    max-width: 100px;
 }
 
 .legend {
-    display: inline-block;
-    vertical-align: top;
+    /*display: inline-block;*/
+    /*vertical-align: top;*/
 }
 
 .scenario {
-    display: inline-block;
-    margin: 1em;
-    vertical-align: top;
-}
-
-.scenario div {
-    padding: 3px;
-}
-
-.scenario-title {
-    overflow-x: visible;
-    overflow-y: visible;
+    /*display: inline-block;*/
+    /*margin: 1em;*/
+    /*vertical-align: top;*/
 }
 
 #throughput, #cycletime, #wip {
@@ -69,29 +61,19 @@
 .throughput {
     background-color: rgba(54, 162, 235, 0.1);
     border: rgb(54, 162, 235) solid 1px;
-    height: 1em;
 }
 
 .cycletime {
     background-color: rgba(255, 99, 132, 0.1);
     border: rgb(255, 99, 132) solid 1px;
-    height: 1em;
 }
 
 .wip {
     background-color: rgba(255, 206, 86, 0.1);
     border: rgb(255, 206, 86) solid 1px;
-    height: 1em;
 }
 
 .timeWorked {
     background-color: rgba(211, 211, 211, 0.1);
     border: rgb(211, 211, 211) solid 1px;
-    height: 1em;
 }
-
-
-.lineChart, .cfd {
-    height: 350px;
-}
-
