@@ -54,28 +54,37 @@
 
 
 <div class="container-fluid">
-    <div id="charts">
-        <div class="chart">
-            <canvas id="lineChart" class="lineChart"></canvas>
-        </div>
-        <div class="chart">
-            <canvas id="cfd" class="cfd"></canvas>
-        </div>
-    </div>
-    <div id="stats">
-        <div id="scenarios">
-            <div class="scenario legend">
-                <div class="scenario-title">&nbsp;</div>
-                <div class="throughput">Throughput</div>
-                <div class="cycletime">Cycle Time</div>
-                <div class="wip">WIP</div>
-                <div class="timeWorked">Time worked</div>
-                <div class="workers">Workers</div>
+    <div class="row">
+        <div id="stats">
+            <div id="scenarios">
+                <div class="scenario legend">
+                    <div class="scenario-title">&nbsp;</div>
+                    <div class="throughput">Throughput</div>
+                    <div class="cycletime">Cycle Time</div>
+                    <div class="wip">WIP</div>
+                    <div class="timeWorked">Time worked</div>
+                    <div class="workers">Workers</div>
+                </div>
             </div>
         </div>
     </div>
-    <div id="board_container">
-        <ul id="board"></ul>
+    <div class="row">
+        <div class="col">
+            <div id="board_container">
+                <ul id="board"></ul>
+            </div>
+        </div>
+
+        <div class="col">
+            <div id="charts">
+                <div class="row chart">
+                    <canvas id="lineChart" class="lineChart"></canvas>
+                </div>
+                <div class="row chart">
+                    <canvas id="cfd" class="cfd"></canvas>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 

@@ -6,6 +6,19 @@
     text-align: center;
 }
 
+li.column {
+    float: left;
+    width: 120px;
+}
+
+ul.cards li {
+    width: 100%;
+    text-align: center;
+    padding: 5px;
+    margin: 5px 0px;
+    background-color: yellow;
+}
+
 #scenarios {
     overflow: auto;
     white-space: nowrap;
@@ -29,19 +42,6 @@
 .scenario-title {
     overflow-x: visible;
     overflow-y: visible;
-}
-
-li.column {
-    float: left;
-    width: 120px;
-}
-
-ul.cards li {
-    width: 100%;
-    text-align: center;
-    padding: 5px;
-    margin: 5px 0px;
-    background-color: yellow;
 }
 
 #throughput, #cycletime, #wip {
@@ -95,12 +95,3 @@ ul.cards li {
     height: 350px;
 }
 
-#charts {
-    /*display: flex;*/
-    float: right;
-}
-
-.chart {
-    padding: 2em;
-    /*float: left;*/
-}
