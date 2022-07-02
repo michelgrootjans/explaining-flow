@@ -37,21 +37,14 @@
 
 
 
-#scenarios ul {
-    list-style: none;
-    padding: 0px;
-    max-width: 100px;
-}
-
-.legend {
-    /*display: inline-block;*/
-    /*vertical-align: top;*/
-}
-
+/*#scenarios {*/
+/*    overflow-x: scroll;*/
+/*    white-space: nowrap;*/
+/*}*/
 .scenario {
+    list-style: none;
+    padding: 0;
     /*display: inline-block;*/
-    /*margin: 1em;*/
-    /*vertical-align: top;*/
 }
 
 #throughput, #cycletime, #wip {

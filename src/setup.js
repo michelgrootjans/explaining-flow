@@ -16,7 +16,7 @@ const seedrandom = require('seedrandom');
 function createScenarioContainer(scenario) {
     const template = document.querySelector('#scenario-template');
 
-    const clone = template.content.cloneNode(true).querySelector('div');
+    const clone = template.content.cloneNode(true).querySelector('ul');
     clone.setAttribute('id', `scenario-${scenario.id}`);
     clone.querySelector('.scenario-title').textContent = scenario.title;
     return clone
