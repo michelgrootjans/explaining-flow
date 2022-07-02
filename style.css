@@ -37,10 +37,6 @@
 
 
 
-/*#scenarios {*/
-/*    overflow-x: scroll;*/
-/*    white-space: nowrap;*/
-/*}*/
 .scenario {
     list-style: none;
     padding: 0;
@@ -69,4 +65,10 @@
 .timeWorked {
     background-color: rgba(211, 211, 211, 0.1);
     border: rgb(211, 211, 211) solid 1px;
+}
+
+.chart {
+    border: 1px solid lightgray;
+    height: 350px;
+    width: 700px;
 }
