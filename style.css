@@ -34,6 +34,19 @@
 .queue .post-it:nth-child(1000n+1){
     margin-top: 0;
 }
+.queue .post-it:nth-child(4n+1){
+    transform: rotate(0deg);
+}
+.queue .post-it:nth-child(4n+2){
+    transform: rotate(2deg);
+}
+.queue .post-it:nth-child(4n+3){
+    transform: rotate(-2deg);
+}
+.queue .post-it:nth-child(4n+4){
+    transform: rotate(4deg);
+}
+
 
 
 
