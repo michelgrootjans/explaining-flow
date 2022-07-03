@@ -14872,7 +14872,7 @@ function BoardFactory() {
 }
 
 module.exports = BoardFactory
-},{"./worker":30}],17:[function(require,module,exports){
+},{"./worker":31}],17:[function(require,module,exports){
 const CurrentStats = columns => {
 
   const needsAStatistic = column => column.name !== '-';
@@ -15033,6 +15033,61 @@ const createElement = ({type='div', id, className, attributes=[], text, style}) 
 
 module.exports = {createElement};
 },{}],20:[function(require,module,exports){
+const validateWork = ({workload}) => /^(\s*\w+\s*:\s*\d+\s*)(,\s*\w+\s*:\s*\d+\s*)*$/.test(workload);
+
+const validateWorkers = ({workload, workers}) => {
+  const validateWorkersFormat = () => /^(\s*(\w+)(\+\w+)*\s*)(,\s*(\w+)(\+\w+)*\s*)*$/gm.test(workers);
+
+  const validateWorkLoadCanBeExecuted = () => {
+    if (workers.includes('fullstack')) return workers;
+    if (workers.includes('fs')) return workers;
+
+    const expectedWorkers = workload.split(',')
+      .map(worker => worker.split(':')[0].trim());
+
+    return expectedWorkers.every(w => workers.includes(w))
+  };
+
+  return validateWorkersFormat() && validateWorkLoadCanBeExecuted();
+};
+
+const initialize = () => {
+  const $workload = document.getElementById('workload');
+  const $workers = document.getElementById('workers');
+  if (!($workload && $workers)) return;
+
+  const values = () => ({workload: $workload.value, workers: $workers.value});
+
+  $workload.addEventListener('blur', () => {
+    const input = values();
+
+    if (validateWork(input)) {
+      $workload.classList.remove('bg-warning');
+    } else {
+      $workload.classList.add('bg-warning');
+    }
+  });
+
+  $workers.addEventListener('blur', () => {
+    const input = values();
+
+    if (validateWorkers(input)) {
+      $workers.classList.remove('bg-warning');
+    } else {
+      $workers.classList.add('bg-warning');
+    }
+  });
+
+  return {
+    isValid: () => {
+      const input = values();
+      return validateWork(input) && validateWorkers(input);
+    },
+  }
+};
+
+module.exports = {initialize, validateWork, validateWorkers}
+},{}],21:[function(require,module,exports){
 const {WorkItem} = require('./worker');
 
 function generateWorkItems(work, numberOfWorkItems = 100) {
@@ -15068,7 +15123,7 @@ function poisson(value) {
 
 module.exports = {generateWorkItems, randomBetween, averageOf, average: averageOf, poisson};
 
-},{"./worker":30}],21:[function(require,module,exports){
+},{"./worker":31}],22:[function(require,module,exports){
 const {average, poisson} = require("./generator");
 
 function parseInput(rawInput) {
@@ -15124,14 +15179,14 @@ module.exports = {
     parseWorkers
 };
 
-},{"./generator":20}],22:[function(require,module,exports){
+},{"./generator":21}],23:[function(require,module,exports){
 function Range(from, to) {
   let length = to - from + 1;
   return Array.from(Array(length).keys()).map(value => value + from);
 }
 
 module.exports = Range
-},{}],23:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 const Board = require("./board");
 const {generateWorkItems} = require("./generator");
 const {Worker} = require('./worker')
@@ -15171,7 +15226,7 @@ const Scenario = scenario => {
 };
 
 module.exports = Scenario
-},{"./board":15,"./generator":20,"./worker":30}],24:[function(require,module,exports){
+},{"./board":15,"./generator":21,"./worker":31}],25:[function(require,module,exports){
 const {average} = require('./generator');
 
 module.exports = [
@@ -15285,7 +15340,7 @@ module.exports = [
     speed: 20
   },
 ];
-},{"./generator":20}],25:[function(require,module,exports){
+},{"./generator":21}],26:[function(require,module,exports){
 const PubSub = require('pubsub-js');
 const scenarios = require('./scenarios')
 const Animation = require('./animation');
@@ -15300,6 +15355,7 @@ const {parseInput} = require("./parsing");
 
 // force repeatable randomness
 const seedrandom = require('seedrandom');
+const FormHelper = require("./form-helper");
 
 function createScenarioContainer(scenario) {
     const template = document.querySelector('#scenario-template');
@@ -15327,9 +15383,13 @@ function parseScenario(event) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    const form = FormHelper.initialize();
+
     document.getElementById('new-scenario')
       .addEventListener('submit', event => {
         event.preventDefault()
+        if(!form.isValid()) return;
+
         const scenario = parseScenario(event);
         const $container = createScenarioContainer(scenario);
         const $scenarios = document.getElementById('scenarios');
@@ -15371,7 +15431,7 @@ function run(scenario) {
 }
 
 
-},{"../src/strategies":27,"./CumulativeFlowDiagram":13,"./animation":14,"./charts":18,"./parsing":21,"./scenario":23,"./scenarios":24,"./stats":26,"./timeAdjustments":28,"./worker-stats":29,"pubsub-js":3,"seedrandom":4}],26:[function(require,module,exports){
+},{"../src/strategies":28,"./CumulativeFlowDiagram":13,"./animation":14,"./charts":18,"./form-helper":20,"./parsing":22,"./scenario":24,"./scenarios":25,"./stats":27,"./timeAdjustments":29,"./worker-stats":30,"pubsub-js":3,"seedrandom":4}],27:[function(require,module,exports){
 const TimeAdjustments = require('./timeAdjustments');
 const PubSub = require('pubsub-js');
 
@@ -15475,7 +15535,7 @@ module.exports = {
   initialize
 };
 
-},{"./timeAdjustments":28,"pubsub-js":3}],27:[function(require,module,exports){
+},{"./timeAdjustments":29,"pubsub-js":3}],28:[function(require,module,exports){
 const PubSub = require('pubsub-js');
 
 function LimitBoardWip() {
@@ -15560,7 +15620,7 @@ function WipUp(step = 10) {
 
 module.exports = {LimitBoardWip, DynamicLimitBoardWip, WipUp}
 
-},{"pubsub-js":3}],28:[function(require,module,exports){
+},{"pubsub-js":3}],29:[function(require,module,exports){
 (function(){
   factor = 1;
 
@@ -15569,7 +15629,7 @@ module.exports = {LimitBoardWip, DynamicLimitBoardWip, WipUp}
     speedUpBy: (f) => { factor = 1.0/f; }
   }
 })();
-},{}],29:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 const PubSub = require('pubsub-js');
 
 function WorkerStats() {
@@ -15621,7 +15681,7 @@ function WorkerStats() {
 
 module.exports = WorkerStats;
 
-},{"pubsub-js":3}],30:[function(require,module,exports){
+},{"pubsub-js":3}],31:[function(require,module,exports){
 const PubSub = require('pubsub-js');
 const TimeAdjustments = require('./timeAdjustments');
 const {anyCardColor} = require("./Colors");
@@ -15735,4 +15795,4 @@ function WorkList(skill = "dev") {
 
 module.exports = {Worker, WorkItem, WorkList};
 
-},{"./Colors":12,"./timeAdjustments":28,"pubsub-js":3}]},{},[12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30]);
+},{"./Colors":12,"./timeAdjustments":29,"pubsub-js":3}]},{},[12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31]);
