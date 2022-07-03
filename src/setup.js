@@ -12,6 +12,7 @@ const {parseInput} = require("./parsing");
 
 // force repeatable randomness
 const seedrandom = require('seedrandom');
+const FormHelper = require("./form-helper");
 
 function createScenarioContainer(scenario) {
     const template = document.querySelector('#scenario-template');
@@ -39,9 +40,13 @@ function parseScenario(event) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    const form = FormHelper.initialize();
+
     document.getElementById('new-scenario')
       .addEventListener('submit', event => {
         event.preventDefault()
+        if(!form.isValid()) return;
+
         const scenario = parseScenario(event);
         const $container = createScenarioContainer(scenario);
         const $scenarios = document.getElementById('scenarios');
