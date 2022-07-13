@@ -55,11 +55,12 @@ const initialize = (currentSenarioId) => {
   PubSub.subscribe('workitem.added', updateAmount);
   PubSub.subscribe('workitem.removed', updateAmount);
 
-  const renderWip = ({workInProgress, maxWorkInProgress}) => {
-    if (workInProgress === maxWorkInProgress) {
-      return workInProgress;
+  const renderWip = ({averageWip, maxWorkInProgress}) => {
+    const wip = round(averageWip, 1);
+    if (wip === maxWorkInProgress) {
+      return wip;
     }
-    return `${workInProgress} (max ${maxWorkInProgress})`;
+    return `${wip} (max ${maxWorkInProgress})`;
   };
 
   const renderCycleTime = ({cycleTime, minCycleTime, maxCycleTime}) => {

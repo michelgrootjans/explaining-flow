@@ -1,9 +1,32 @@
 const TimeAdjustments = require('./timeAdjustments');
 const PubSub = require('pubsub-js');
 
+function RunningWip() {
+  const startTick = Date.now();
+
+  let surface = 0;
+  let latestTick = Date.now();
+
+  const delta = () => (Date.now() - latestTick) / 1000;
+  const totalTime = () => (Date.now() - startTick) / 1000;
+
+  return {
+    update: (wip) => {
+      surface += wip * delta();
+      latestTick = Date.now();
+    },
+    average: () => {
+      const time = totalTime();
+      if (time < 1) return 0;
+      return surface / time;
+    }
+  };
+}
+
 function initialState() {
   return {
     wip: 0,
+    runningWip: RunningWip(),
     maxWip: 0,
     maxEndtime: 0,
     maxCycletime: 0,
@@ -66,7 +89,8 @@ function initialize() {
         throughput: throughputForLast,
         cycleTime: cycleTimeForLast,
       },
-      timeWorked: state.timeWorked
+      timeWorked: state.timeWorked,
+      averageWip: state.runningWip.average()
     });
   }
 
@@ -75,6 +99,7 @@ function initialize() {
   });
 
   PubSub.subscribe('workitem.started', () => {
+    state.runningWip.update(state.wip);
     state.wip++;
     state.maxWip = Math.max(state.wip, state.maxWip)
     publishStats();
@@ -85,6 +110,7 @@ function initialize() {
   }
 
   PubSub.subscribe('workitem.finished', (topic, item) => {
+    state.runningWip.update(state.wip);
     state.wip--;
     state.maxEndtime = Math.max(state.maxEndtime, item.endTime);
     state.minStarttime = Math.min(state.minStarttime, item.startTime);

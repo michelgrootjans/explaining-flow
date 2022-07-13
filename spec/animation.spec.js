@@ -104,7 +104,7 @@ describe('animation', () => {
       PubSub.publish('stats.calculated', {
         throughput: 1,
         cycleTime: 2,
-        workInProgress: 3,
+        averageWip: 3,
         maxWorkInProgress: 4,
         timeWorked: 5
       });
@@ -120,7 +120,7 @@ describe('animation', () => {
       PubSub.publish('stats.calculated', {
         throughput: 1,
         cycleTime: 2,
-        workInProgress: 3,
+        averageWip: 3,
         maxWorkInProgress: 3,
         timeWorked: 5
       });
