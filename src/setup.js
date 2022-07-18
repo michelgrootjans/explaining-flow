@@ -79,10 +79,10 @@ function run(scenario) {
 
     wipLimiter.initialize(scenario.wipLimit)
     if(lineChart) lineChart.destroy()
-    lineChart = LineChart(document.getElementById('lineChart'), 2000, scenario.speed)
+    lineChart = LineChart(document.getElementById('lineChart'), 1000, scenario.speed)
 
     if(cfd) cfd.destroy()
-    cfd = Cfd(document.getElementById('cfd'), 2000, scenario.speed)
+    cfd = Cfd(document.getElementById('cfd'), undefined, scenario.speed)
 
     const board = scenario.run();
 }

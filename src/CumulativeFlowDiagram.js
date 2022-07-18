@@ -111,12 +111,19 @@ function Cfd($chart, updateInterval, speed) {
       .map((column, index) => createDataset(column, colors[index]))
       .reverse()
 
-    const timerId = setInterval(() => chart.update(), updateInterval);
+    if (updateInterval) {
+      const timerId = setInterval(() => chart.update(), updateInterval);
 
-    PubSub.subscribe('board.done', () => {
-      clearInterval(timerId);
-      chart.update()
-    });
+      PubSub.subscribe('board.done', () => {
+        clearInterval(timerId);
+        chart.update()
+      });
+    } else {
+      PubSub.subscribe('board.done', () => {
+        chart.update()
+      });
+    }
+
     PubSub.subscribe('workitem.added', (topic, data) => {
       const x = currentDate();
 
