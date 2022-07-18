@@ -14606,12 +14606,19 @@ function Cfd($chart, updateInterval, speed) {
       .map((column, index) => createDataset(column, colors[index]))
       .reverse()
 
-    const timerId = setInterval(() => chart.update(), updateInterval);
+    if (updateInterval) {
+      const timerId = setInterval(() => chart.update(), updateInterval);
 
-    PubSub.subscribe('board.done', () => {
-      clearInterval(timerId);
-      chart.update()
-    });
+      PubSub.subscribe('board.done', () => {
+        clearInterval(timerId);
+        chart.update()
+      });
+    } else {
+      PubSub.subscribe('board.done', () => {
+        chart.update()
+      });
+    }
+
     PubSub.subscribe('workitem.added', (topic, data) => {
       const x = currentDate();
 
@@ -15423,10 +15430,10 @@ function run(scenario) {
 
     wipLimiter.initialize(scenario.wipLimit)
     if(lineChart) lineChart.destroy()
-    lineChart = LineChart(document.getElementById('lineChart'), 2000, scenario.speed)
+    lineChart = LineChart(document.getElementById('lineChart'), 1000, scenario.speed)
 
     if(cfd) cfd.destroy()
-    cfd = Cfd(document.getElementById('cfd'), 2000, scenario.speed)
+    cfd = Cfd(document.getElementById('cfd'), undefined, scenario.speed)
 
     const board = scenario.run();
 }
