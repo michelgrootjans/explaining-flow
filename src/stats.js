@@ -47,12 +47,12 @@ function initialize() {
     return state.doneItems.slice(state.doneItems.length - numberOfItems);
   }
 
-  function throughputForLast(numberOfItems) {
-    return calculateThroughput(lastNumberOfItems(numberOfItems)) * TimeAdjustments.multiplicator();
-  }
-
   function cycleTimeForLast(numberOfItems) {
     return calculateCycleTime(lastNumberOfItems(numberOfItems)) / TimeAdjustments.multiplicator();
+  }
+
+  function throughputForLast(numberOfItems) {
+    return calculateThroughput(lastNumberOfItems(numberOfItems)) * TimeAdjustments.multiplicator();
   }
 
   function publishStats() {
@@ -80,7 +80,7 @@ function initialize() {
     publishStats();
   });
 
-  
+
   function calculateDaysWorked() {
     return (state.maxEndtime - state.minStarttime)/(TimeAdjustments.multiplicator() * 1000);
   }
