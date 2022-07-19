@@ -31,6 +31,7 @@ function parse(form) {
       workers: field('workers'),
       workload: field('workload'),
       wipLimit: field('wip-limit'),
+      numberOfStories: field('numberOfStories'),
       random: form.querySelector('[name="random"]').checked
   });
 }

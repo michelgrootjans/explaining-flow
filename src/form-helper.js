@@ -16,9 +16,13 @@ const validateWorkers = ({workload, workers}) => {
   return validateWorkersFormat() && validateWorkLoadCanBeExecuted();
 };
 
+const suggestNumberOfStories = ({workers}) => workers?.split(',').length > 2 ? 200 : 50;
+
 const initialize = () => {
   const $workload = document.getElementById('workload');
   const $workers = document.getElementById('workers');
+  const $numberOfStories = document.getElementById('numberOfStories');
+
   if (!($workload && $workers)) return;
 
   const values = () => ({workload: $workload.value, workers: $workers.value});
@@ -38,6 +42,7 @@ const initialize = () => {
 
     if (validateWorkers(input)) {
       $workers.classList.remove('bg-warning');
+      $numberOfStories.setAttribute('placeholder', suggestNumberOfStories(input))
     } else {
       $workers.classList.add('bg-warning');
     }
@@ -51,4 +56,4 @@ const initialize = () => {
   }
 };
 
-module.exports = {initialize, validateWork, validateWorkers}
+module.exports = {initialize, validateWork, validateWorkers, suggestNumberOfStories}

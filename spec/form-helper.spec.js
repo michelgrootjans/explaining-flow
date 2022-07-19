@@ -1,4 +1,4 @@
-const {validateWork, validateWorkers} = require("../src/form-helper");
+const {validateWork, validateWorkers, suggestNumberOfStories} = require("../src/form-helper");
 
 describe('validate workload', () => {
   it.each([
@@ -67,4 +67,15 @@ describe('validate work and workers', () => {
     ['ux: 1, dev: 1, qa: 1', 'ux, qa'],
     ['ux: 1, dev: 1, qa: 1', 'ux, dev'],
   ])('should not validate [%s -> %s]', (workload, workers) => expect(validateWorkers({workload, workers})).toBeFalsy());
+});
+
+describe('number of stories', () => {
+  it.each([
+    [null, 50],
+    [undefined, 50],
+    ['', 50],
+    ['dev', 50],
+    ['dev, dev', 50],
+    ['dev, dev, dev', 200],
+  ])('should suggest [%s -> %s]', (workers, numberOfStories) => expect(suggestNumberOfStories({workers})).toEqual(numberOfStories));
 });

@@ -76,4 +76,28 @@ describe('parseInput', () => {
     });
   });
 
+  describe('20 stories requested', function() {
+    let rawInputWith2Workers = {...exampleRawInput, numberOfStories: 20};
+
+    it('sets speed to 1', () => {
+      expect(parseInput(rawInputWith2Workers).speed).toEqual(1);
+    });
+
+    it('sets the number of stories to 20', () => {
+      expect(parseInput(rawInputWith2Workers).stories.amount).toEqual(20);
+    });
+  });
+
+  describe('100 stories requested', function() {
+    let rawInputWith2Workers = {...exampleRawInput, numberOfStories: 100};
+
+    it('sets speed to 1', () => {
+      expect(parseInput(rawInputWith2Workers).speed).toEqual(20);
+    });
+
+    it('sets the number of stories to 100', () => {
+      expect(parseInput(rawInputWith2Workers).stories.amount).toEqual(100);
+    });
+  });
+
 });
