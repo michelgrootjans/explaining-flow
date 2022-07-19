@@ -3,105 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <title>Flow simulation</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2"
-            crossorigin="anonymous"></script>
     <link rel="stylesheet" href="style.css">
     <script src="index.js"></script>
 </head>
 <body>
-<header class="navbar sticky-top flex-md-nowrap p-0 shadow">
-    <div class="navbar-nav">
-        <form id="new-scenario" class="row gy-2 gx-3 align-items-center">
-            <div class="col-auto">
-                <div class="input-group">
-                    <div class="input-group-text">Work per story</div>
-                    <input class="form-control" type="text" id="workload" name="workload" value="dev: 1" placeholder="ux: 1, dev: 3, qa: 2">
-                </div>
-            </div>
-
-            <div class="col-auto">
-                <div class="input-group">
-                    <div class="input-group-text">Workers</div>
-                    <input class="form-control" type="text" id="workers" name="workers" value="dev" placeholder="ux, dev, qa">
-                </div>
-            </div>
-
-            <div class="col-auto">
-                <div class="input-group">
-                    <div class="input-group-text">WIP-limit</div>
-                    <input class="form-control" type="text" id="wip-limit" name="wip-limit" placeholder="none">
-                </div>
-            </div>
-
-            <div class="col-auto">
-                <div class="input-group">
-                    <div class="input-group-text">#stories</div>
-                    <input class="form-control" type="text" id="numberOfStories" name="numberOfStories" placeholder="50">
-                </div>
-            </div>
-
-            <div class="col-auto">
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="random" name="random">
-                    <label class="form-check-label" for="random">Variable work</label>
-                </div>
-            </div>
-
-            <div class="col-auto">
-                <button id="create-scenario" class="btn btn-primary">Run</button>
-            </div>
-        </form>
-    </div>
-</header>
-
-
-
-<div class="container-fluid">
     <div id="stats">
-        <div id="scenarios" class="d-flex flex-nowrap overflow-auto">
-            <ul class="scenario legend col col-1">
-                <li class="scenario-title">&nbsp;</li>
-                <li class="throughput">Throughput</li>
-                <li class="cycletime">Cycle Time</li>
-                <li class="wip">WIP</li>
-                <li class="timeWorked">Time worked</li>
-                <li class="workers">Workers</li>
-            </ul>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col">
-            <div id="board_container">
-                <div id="board" class="row"></div>
+        <form id="new-scenario">
+            <label>
+                Work per story
+                <input type="text" name="workload" value="dev: 1" placeholder="ux: 1, dev: 3, qa: 2">
+            </label>
+            <label>
+                Workers
+                <input type="text" name="workers" value="dev" placeholder="ux, dev, qa">
+            </label>
+            <label>
+                WIP-limit
+                <input type="text" name="wip-limit" placeholder="none">
+            </label>
+            <label>
+                Variable work
+                <input type="checkbox" name="random">
+            </label>
+            <button id="create-scenario">run</button>
+        </form>
+        <div id="scenarios">
+            <div class="scenario legend">
+                <div class="scenario-title">&nbsp;</div>
+                <div class="throughput">Throughput</div>
+                <div class="cycletime">Cycle Time</div>
+                <div class="wip">WIP</div>
+                <div class="timeWorked">Time worked</div>
+                <div class="workers">Workers</div>
             </div>
         </div>
-
-        <div class="col">
-            <div id="charts">
-                <div class="row chart">
-                    <canvas id="lineChart" class="lineChart"></canvas>
-                </div>
-                <div class="row chart">
-                    <canvas id="cfd" class="cfd"></canvas>
-                </div>
-            </div>
-        </div>
+        <canvas id="myChart" class="chart" width="500px" height="100px"></canvas>
     </div>
-</div>
+    <ul id="board"></ul>
 
-<template id="scenario-template">
-    <ul class="scenario instance col col-1">
-        <li class="scenario-title"></li>
-        <li class="throughput"></li>
-        <li class="cycletime"></li>
-        <li class="wip"></li>
-        <li class="timeWorked"></li>
-        <li class="workers"></li>
-    </ul>
-</template>
+    <template id="scenario-template">
+        <div class="scenario instance">
+            <div class="scenario-title"></div>
+            <div class="throughput"></div>
+            <div class="cycletime"></div>
+            <div class="wip"></div>
+            <div class="timeWorked"></div>
+            <div class="workers"></div>
+        </div>
+    </template>
 </body>
 </html>

@@ -14462,188 +14462,90 @@ if ((typeof module) == 'object' && module.exports) {
 );
 
 },{"crypto":1}],12:[function(require,module,exports){
-// from https://www.color-hex.com/color-palette/29241
-// and http://writersbrick.org/css/post-it-note-colors.html
-const cardColors = [
-  '#FF7EB9',
-  '#F59DB9',
-  '#FF65A3',
-  '#EE5E9F',
-  '#7AFCFF',
-  '#7AFCFF',
-  '#7AFCFF',
-  '#7AFCFF',
-  '#FEFF9C',
-  '#FEFF9C',
-  '#FFF740',
-  '#FFF740',
-  '#FCF0AD',
-  '#E9E74A',
-  '#FFDD2A',
-  '#F9A55B',
-]
+const Chart = require('chart.js');
 
-function any(array) {
-  return array[Math.floor(Math.random() * array.length)];
+const colors = {
+  Backlog: {border: 'rgba(255, 99, 132, 1)', background: 'rgba(255, 99, 132, 0.2)'},
+  ux: {border: 'rgba(255, 159, 64, 1)', background: 'rgba(255, 159, 64, 0.2)'},
+  dev: {border: 'rgba(255, 206, 86, 1)', background: 'rgba(255, 206, 86, 0.2)'},
+  qa: {border: 'rgba(54, 162, 235, 1)', background: 'rgba(54, 162, 235, 0.2)'},
+  Done: {border: 'rgba(75, 192, 192, 1)', background: 'rgba(75, 192, 192, 0.2)'}
 }
 
-function anyCardColor() {
-  return any(cardColors);
+function getColorFor(stat) {
+  return colors[stat.name] || {border: 'rgba(128, 128, 128, 1)', background: 'rgba(128, 128, 128, 0.2)'};
 }
 
-module.exports = {anyCardColor};
-},{}],13:[function(require,module,exports){
-const {
-  Chart,
-  ArcElement,
-  LineElement,
-  BarElement,
-  PointElement,
-  BarController,
-  BubbleController,
-  DoughnutController,
-  LineController,
-  PieController,
-  PolarAreaController,
-  RadarController,
-  ScatterController,
-  CategoryScale,
-  LinearScale,
-  LogarithmicScale,
-  RadialLinearScale,
-  TimeScale,
-  TimeSeriesScale,
-  Decimation,
-  Filler,
-  Legend,
-  Title,
-  Tooltip,
-  SubTitle
-} = require('chart.js');
-Chart.register(ArcElement, LineElement, BarElement, PointElement, BarController, BubbleController, DoughnutController, LineController, PieController, PolarAreaController, RadarController, ScatterController, CategoryScale, LinearScale, LogarithmicScale, RadialLinearScale, TimeScale, TimeSeriesScale, Decimation, Filler, Legend, Title, Tooltip, SubTitle);
-const PubSub = require("pubsub-js");
-
-const distinct = (value, index, self) => self.indexOf(value) === index;
-
-const createDataset = (label, color) =>
-  ({
-    label: label,
-    type: 'line',
-    data: [],
-    fill: true,
-    stepped: true,
-    pointRadius: 0,
-    backgroundColor: `rgba(${color}, 0.1)`,
-    borderColor: `rgba(${color}, 1)`,
-    borderWidth: 1,
-  });
-
-const colors = [
-  '101, 103, 107',
-  '153, 102, 255',
-  '54, 162, 235',
-  '75, 192, 192',
-  '255, 205, 86',
-  '255, 159, 64',
-  '255, 99, 132',
-]
-
-function nameOfColumn(column) {
-  return column.name === '-'
-    ? column.inbox.name
-    : column.name;
-}
-
-function Cfd($chart, updateInterval, speed) {
+function CumulativeFlowDiagram($chart, stats) {
   const ctx = $chart.getContext('2d');
 
-  const config = {
-    type: 'line',
-    data: {
-      datasets: []
-    },
-    options: {
-      animation: false,
-      scales: {
-        x: {
-          type: 'linear',
-        },
-        y: {
-          type: 'linear',
-          ticks: {stepSize: 50, mirror: true},
-          stacked: true,
-        },
-      },
-      plugins: {
-        legend: {display: true, position: 'bottom', align: 'start', reverse: true},
-        title: {
-          display: true,
-          text: 'Cumulative flow diagram'
-        }
-      }
-    },
+  const labels = [];
+
+  function createDataSet(stat) {
+    return {
+      label: stat.name,
+      type: 'line',
+      lineTension: 0,
+      data: [],
+      borderColor: getColorFor(stat).border,
+      backgroundColor: getColorFor(stat).background,
+      borderWidth: 1,
+      pointRadius: 0.5,
+      yAxisID: 'left-y-axis',
+    };
+  }
+
+  const data = {
+    labels,
+    datasets: [...stats.current()].reverse().map(createDataSet)
   };
 
-  const chart = new Chart(ctx, config);
-
-  PubSub.subscribe('board.ready', (t, board) => {
-    const start = new Date();
-
-    function currentDate() {
-      return (new Date() - start) * speed / 1000;
+  const chart = new Chart(ctx, {
+    data: data,
+    options: {
+      animation: false,
+      title: {
+        text: 'team flow'
+      },
+      scales: {
+        xAxes: [{
+          type: 'time',
+        }],
+        yAxes: [{
+          id: 'left-y-axis',
+          type: 'linear',
+          position: 'left',
+          ticks: {
+            beginAtZero: true
+          },
+          stacked: true
+        }]
+      },
+      plugins:{
+        filler: {
+          propagate: false
+        },
+      }
     }
-
-    const columns = {}
-    board.columns
-      .map(nameOfColumn)
-      .filter(distinct)
-      .forEach(name => columns[name] = 0)
-
-    chart.data.datasets = board.columns
-      .map(nameOfColumn)
-      .filter(distinct)
-      .filter(c => c !== 'Backlog')
-      .map((column, index) => createDataset(column, colors[index]))
-      .reverse()
-
-    if (updateInterval) {
-      const timerId = setInterval(() => chart.update(), updateInterval);
-
-      PubSub.subscribe('board.done', () => {
-        clearInterval(timerId);
-        chart.update()
-      });
-    } else {
-      PubSub.subscribe('board.done', () => {
-        chart.update()
-      });
-    }
-
-    PubSub.subscribe('workitem.added', (topic, data) => {
-      const x = currentDate();
-
-      const execute = () => {
-        const columnName = nameOfColumn(data.column)
-        if (columnName === 'Backlog') {
-          columns[columnName]++
-        } else {
-          columns[columnName]++;
-
-          const inboxName = nameOfColumn(data.column.inbox);
-          columns[inboxName]--;
-        }
-        chart.data.datasets.forEach(ds => ds.data.push({x, y: columns[ds.label]}))
-      };
-      if (['Done'].includes(data.column.name)) execute()
-      if (data.column.type === 'work') execute();
-    });
   });
+  const dataSetFor = name => data.datasets.find(dataset => dataset.label === name);
 
-  return chart
+  const pollStats = () => {
+    data.labels.push(new Date())
+    stats.current()
+      .forEach(stat => dataSetFor(stat.name).data.push(stat.value))
+    chart.update()
+    if (stats.done()) {
+      clearInterval(timerId);
+      chart.update();
+    }
+  };
+
+  let timerId = setInterval(pollStats, 1000);
 }
 
-module.exports = Cfd
-},{"chart.js":2,"pubsub-js":3}],14:[function(require,module,exports){
+module.exports = CumulativeFlowDiagram
+},{"chart.js":2}],13:[function(require,module,exports){
 const PubSub = require('pubsub-js');
 const {createElement} = require('./dom-manipulation')
 
@@ -14657,15 +14559,14 @@ const initialize = (currentSenarioId) => {
 
     columns.forEach(column => {
       const $column = createElement({
-        type: 'div',
-        className: `col ${column.type}`,
+        type: 'li',
+        className: `column ${column.type}`,
         attributes: {'data-column-id': column.id}
       })
 
-      const $header = createElement({type: 'h5', text: column.name });
+      const $header = createElement({type: 'h2', text: column.name });
       $header.append(createElement({type : 'span', className: 'amount', text: '0' }));
 
-      $column.append($header);
       $column.append($header);
       $column.append(createElement({type: 'ul', className: 'cards'}))
 
@@ -14676,10 +14577,9 @@ const initialize = (currentSenarioId) => {
   PubSub.subscribe('workitem.added', (topic, {column, item}) => {
     let $card = createElement({
       type: 'li',
-      className: 'post-it',
-      attributes:{'data-card-id': item.id},
-      style: `background: ${item.color};`
-    })
+      className: 'card',
+      text: item.id,
+      attributes:{'data-card-id': item.id}})
 
     let $column = document.querySelector(`[data-column-id="${column.id}"] .cards`);
     if ($column) $column.append($card); // FIXME: this check should not happen
@@ -14701,12 +14601,11 @@ const initialize = (currentSenarioId) => {
   PubSub.subscribe('workitem.added', updateAmount);
   PubSub.subscribe('workitem.removed', updateAmount);
 
-  const renderWip = ({averageWip, maxWorkInProgress}) => {
-    const wip = round(averageWip, 1);
-    if (wip === maxWorkInProgress) {
-      return wip;
+  const renderWip = ({workInProgress, maxWorkInProgress}) => {
+    if (workInProgress === maxWorkInProgress) {
+      return workInProgress;
     }
-    return `${wip} (max ${maxWorkInProgress})`;
+    return `${workInProgress} (max ${maxWorkInProgress})`;
   };
 
   const renderCycleTime = ({cycleTime, minCycleTime, maxCycleTime}) => {
@@ -14745,7 +14644,7 @@ const initialize = (currentSenarioId) => {
 
 module.exports = {initialize};
 
-},{"./dom-manipulation":19,"pubsub-js":3}],15:[function(require,module,exports){
+},{"./dom-manipulation":18,"pubsub-js":3}],14:[function(require,module,exports){
 const BoardFactory = require("./boardFactory");
 const PubSub = require("pubsub-js");
 
@@ -14841,7 +14740,7 @@ let Board = function (workColumnNames) {
 
 module.exports = Board
 
-},{"./boardFactory":16,"pubsub-js":3}],16:[function(require,module,exports){
+},{"./boardFactory":15,"pubsub-js":3}],15:[function(require,module,exports){
 const {WorkList} = require("./worker");
 
 function BoardFactory() {
@@ -14880,7 +14779,7 @@ function BoardFactory() {
 }
 
 module.exports = BoardFactory
-},{"./worker":31}],17:[function(require,module,exports){
+},{"./worker":29}],16:[function(require,module,exports){
 const CurrentStats = columns => {
 
   const needsAStatistic = column => column.name !== '-';
@@ -14919,7 +14818,7 @@ const CurrentStats = columns => {
 };
 
 module.exports = CurrentStats
-},{}],18:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 const Chart = require('chart.js');
 const PubSub = require("pubsub-js");
 
@@ -14934,7 +14833,7 @@ function createChart(ctx,speed) {
     labels,
     datasets: [
       {
-        label: 'throughput',
+        label: 'throughput (a.k.a. velocity)',
         type: 'line',
         lineTension: 0,
         data: throughput,
@@ -14971,31 +14870,24 @@ function createChart(ctx,speed) {
     ]
   };
 
-  const config = {
+  const chart = new Chart(ctx, {
     type: 'line',
     data: data,
     options: {
       animation: false,
       scales: {
         x: {
-          type: 'linear'
+          type: 'linear',
+          ticks: {stepSize: 5 * speed}
         },
         y: {
           type: 'linear',
-          ticks: {mirror: true},
-          position: 'left'
+          position: 'left',
+          ticks: {stepSize: 1}
         },
-      },
-      plugins: {
-        legend: {display: true, position: 'bottom', align: 'start'},
-        title: {
-          display: true,
-          text: 'Flow metrics'
-        }
       }
     }
-  };
-  const chart = new Chart(ctx, config);
+  });
   return {cycleTime, throughput, wip, data, chart, labels, startTime};
 }
 
@@ -15027,80 +14919,18 @@ function LineChart($chart, updateInterval, speed) {
 }
 
 module.exports = LineChart
-},{"chart.js":2,"pubsub-js":3}],19:[function(require,module,exports){
-const createElement = ({type='div', id, className, attributes=[], text, style}) => {
+},{"chart.js":2,"pubsub-js":3}],18:[function(require,module,exports){
+const createElement = ({type='div', id, className, attributes=[], text}) => {
     const $element = document.createElement(type);
     if (id) $element.setAttribute('id', id)
     if (className) $element.className = className
     if (text) $element.innerHTML = text
-    if (style) $element.setAttribute('style', style);
-
     Object.keys(attributes).forEach(key => $element.setAttribute(key, attributes[key]))
     return $element;
 };
 
 module.exports = {createElement};
-},{}],20:[function(require,module,exports){
-const validateWork = ({workload}) => /^(\s*\w+\s*:\s*\d+\s*)(,\s*\w+\s*:\s*\d+\s*)*$/.test(workload);
-
-const validateWorkers = ({workload, workers}) => {
-  const validateWorkersFormat = () => /^(\s*(\w+)(\+\w+)*\s*)(,\s*(\w+)(\+\w+)*\s*)*$/gm.test(workers);
-
-  const validateWorkLoadCanBeExecuted = () => {
-    if (workers.includes('fullstack')) return workers;
-    if (workers.includes('fs')) return workers;
-
-    const expectedWorkers = workload.split(',')
-      .map(worker => worker.split(':')[0].trim());
-
-    return expectedWorkers.every(w => workers.includes(w))
-  };
-
-  return validateWorkersFormat() && validateWorkLoadCanBeExecuted();
-};
-
-const suggestNumberOfStories = ({workers}) => workers?.split(',').length > 2 ? 200 : 50;
-
-const initialize = () => {
-  const $workload = document.getElementById('workload');
-  const $workers = document.getElementById('workers');
-  const $numberOfStories = document.getElementById('numberOfStories');
-
-  if (!($workload && $workers)) return;
-
-  const values = () => ({workload: $workload.value, workers: $workers.value});
-
-  $workload.addEventListener('blur', () => {
-    const input = values();
-
-    if (validateWork(input)) {
-      $workload.classList.remove('bg-warning');
-    } else {
-      $workload.classList.add('bg-warning');
-    }
-  });
-
-  $workers.addEventListener('blur', () => {
-    const input = values();
-
-    if (validateWorkers(input)) {
-      $workers.classList.remove('bg-warning');
-      $numberOfStories.setAttribute('placeholder', suggestNumberOfStories(input))
-    } else {
-      $workers.classList.add('bg-warning');
-    }
-  });
-
-  return {
-    isValid: () => {
-      const input = values();
-      return validateWork(input) && validateWorkers(input);
-    },
-  }
-};
-
-module.exports = {initialize, validateWork, validateWorkers, suggestNumberOfStories}
-},{}],21:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 const {WorkItem} = require('./worker');
 
 function generateWorkItems(work, numberOfWorkItems = 100) {
@@ -15118,34 +14948,18 @@ function averageOf(value) {
   return randomBetween(value - distance, value + distance);
 }
 
-function poisson(value) {
-  const multiplier = 10;
-  const mean = value * multiplier;
+module.exports = {generateWorkItems, randomBetween, averageOf, average: averageOf};
 
-  const L = Math.exp(-mean);
-  let p = 1.0;
-  let k = 0;
-
-  do {
-    k++;
-    p *= Math.random();
-  } while (p > L);
-
-  return (k-1)/multiplier;
-}
-
-module.exports = {generateWorkItems, randomBetween, averageOf, average: averageOf, poisson};
-
-},{"./worker":31}],22:[function(require,module,exports){
-const {average, poisson} = require("./generator");
+},{"./worker":29}],20:[function(require,module,exports){
+const {average} = require("./generator");
 
 function parseInput(rawInput) {
     const title = rawInput.title;
     const workers = parseWorkers(rawInput.workers);
     const work = parseWorkload(rawInput.workload);
     const wipLimit = rawInput.wipLimit;
-    const numberOfStories = parseInt(rawInput.numberOfStories || ((workers.length > 2) ? 200 : 50));
-    const speed = (numberOfStories >= 100) ? 20 : 1;
+    const speed = (workers.length > 2) ? 20 : 1;
+    const numberOfStories = (workers.length > 2) ? 200 : 50;
     let input = {
         title,
         workers,
@@ -15156,7 +14970,7 @@ function parseInput(rawInput) {
         wipLimit,
         speed
     };
-    if (rawInput.random) input.distribution = poisson
+    if (rawInput.random) input.distribution = average
     return input;
 }
 
@@ -15192,14 +15006,14 @@ module.exports = {
     parseWorkers
 };
 
-},{"./generator":21}],23:[function(require,module,exports){
+},{"./generator":19}],21:[function(require,module,exports){
 function Range(from, to) {
   let length = to - from + 1;
   return Array.from(Array(length).keys()).map(value => value + from);
 }
 
 module.exports = Range
-},{}],24:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 const Board = require("./board");
 const {generateWorkItems} = require("./generator");
 const {Worker} = require('./worker')
@@ -15239,7 +15053,7 @@ const Scenario = scenario => {
 };
 
 module.exports = Scenario
-},{"./board":15,"./generator":21,"./worker":31}],25:[function(require,module,exports){
+},{"./board":14,"./generator":19,"./worker":29}],23:[function(require,module,exports){
 const {average} = require('./generator');
 
 module.exports = [
@@ -15353,7 +15167,7 @@ module.exports = [
     speed: 20
   },
 ];
-},{"./generator":21}],26:[function(require,module,exports){
+},{"./generator":19}],24:[function(require,module,exports){
 const PubSub = require('pubsub-js');
 const scenarios = require('./scenarios')
 const Animation = require('./animation');
@@ -15363,17 +15177,15 @@ const Stats = require('./stats');
 const WorkerStats = require('./worker-stats');
 const Scenario = require("./scenario");
 const LineChart = require("./charts");
-const Cfd = require("./CumulativeFlowDiagram");
 const {parseInput} = require("./parsing");
 
 // force repeatable randomness
 const seedrandom = require('seedrandom');
-const FormHelper = require("./form-helper");
 
 function createScenarioContainer(scenario) {
     const template = document.querySelector('#scenario-template');
 
-    const clone = template.content.cloneNode(true).querySelector('ul');
+    const clone = template.content.cloneNode(true).querySelector('div');
     clone.setAttribute('id', `scenario-${scenario.id}`);
     clone.querySelector('.scenario-title').textContent = scenario.title;
     return clone
@@ -15387,7 +15199,6 @@ function parse(form) {
       workers: field('workers'),
       workload: field('workload'),
       wipLimit: field('wip-limit'),
-      numberOfStories: field('numberOfStories'),
       random: form.querySelector('[name="random"]').checked
   });
 }
@@ -15397,19 +15208,23 @@ function parseScenario(event) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    const form = FormHelper.initialize();
-
+    scenarios.forEach(input => {
+        // const scenario = Scenario(input);
+        //
+        // let $scenario = createScenarioContainer(scenario);
+        // $scenario.addEventListener('click', () => run(scenario))
+        // document.getElementById('scenarios').append($scenario)
+    })
     document.getElementById('new-scenario')
       .addEventListener('submit', event => {
         event.preventDefault()
-        if(!form.isValid()) return;
-
         const scenario = parseScenario(event);
-        const $container = createScenarioContainer(scenario);
+          const container = createScenarioContainer(scenario);
         const $scenarios = document.getElementById('scenarios');
+        // $scenarios.append(container)
 
         const $lastScenario = document.getElementsByClassName('scenario instance')[0];
-        $scenarios.insertBefore($container, $lastScenario);
+        $scenarios.insertBefore(container, $lastScenario);
 
         run(scenario);
       })
@@ -15418,16 +15233,15 @@ document.addEventListener('DOMContentLoaded', () => {
 const wipLimiter = LimitBoardWip();
 
 
-let lineChart = undefined;
-let cfd = undefined;
+let currentChart = undefined;
 
 function run(scenario) {
     PubSub.clearAllSubscriptions();
 
-    // force predicatable randomness across each simulationr
+    // force predicatable randomness
     seedrandom('limit work in progress', {global: true});
 
-    Animation.initialize(`#scenario-${scenario.id}`);
+  Animation.initialize(`#scenario-${scenario.id}`);
     Stats.initialize();
 
     new WorkerStats();
@@ -15435,46 +15249,20 @@ function run(scenario) {
     TimeAdjustments.speedUpBy(scenario.speed || 1);
 
     wipLimiter.initialize(scenario.wipLimit)
-    if(lineChart) lineChart.destroy()
-    lineChart = LineChart(document.getElementById('lineChart'), 1000, scenario.speed)
-
-    if(cfd) cfd.destroy()
-    cfd = Cfd(document.getElementById('cfd'), undefined, scenario.speed)
+    if(currentChart) currentChart.destroy()
+    currentChart = LineChart(document.getElementById('myChart'), 2000, scenario.speed)
 
     const board = scenario.run();
 }
 
 
-},{"../src/strategies":28,"./CumulativeFlowDiagram":13,"./animation":14,"./charts":18,"./form-helper":20,"./parsing":22,"./scenario":24,"./scenarios":25,"./stats":27,"./timeAdjustments":29,"./worker-stats":30,"pubsub-js":3,"seedrandom":4}],27:[function(require,module,exports){
+},{"../src/strategies":26,"./animation":13,"./charts":17,"./parsing":20,"./scenario":22,"./scenarios":23,"./stats":25,"./timeAdjustments":27,"./worker-stats":28,"pubsub-js":3,"seedrandom":4}],25:[function(require,module,exports){
 const TimeAdjustments = require('./timeAdjustments');
 const PubSub = require('pubsub-js');
-
-function RunningWip() {
-  const startTick = Date.now();
-
-  let surface = 0;
-  let latestTick = Date.now();
-
-  const delta = () => (Date.now() - latestTick) / 1000;
-  const totalTime = () => (Date.now() - startTick) / 1000;
-
-  return {
-    update: (wip) => {
-      surface += wip * delta();
-      latestTick = Date.now();
-    },
-    average: () => {
-      const time = totalTime();
-      if (time < 1) return 0;
-      return surface / time;
-    }
-  };
-}
 
 function initialState() {
   return {
     wip: 0,
-    runningWip: RunningWip(),
     maxWip: 0,
     maxEndtime: 0,
     maxCycletime: 0,
@@ -15518,12 +15306,12 @@ function initialize() {
     return state.doneItems.slice(state.doneItems.length - numberOfItems);
   }
 
-  function throughputForLast(numberOfItems) {
-    return calculateThroughput(lastNumberOfItems(numberOfItems)) * TimeAdjustments.multiplicator();
-  }
-
   function cycleTimeForLast(numberOfItems) {
     return calculateCycleTime(lastNumberOfItems(numberOfItems)) / TimeAdjustments.multiplicator();
+  }
+
+  function throughputForLast(numberOfItems) {
+    return calculateThroughput(lastNumberOfItems(numberOfItems)) * TimeAdjustments.multiplicator();
   }
 
   function publishStats() {
@@ -15537,8 +15325,7 @@ function initialize() {
         throughput: throughputForLast,
         cycleTime: cycleTimeForLast,
       },
-      timeWorked: state.timeWorked,
-      averageWip: state.runningWip.average()
+      timeWorked: state.timeWorked
     });
   }
 
@@ -15547,18 +15334,17 @@ function initialize() {
   });
 
   PubSub.subscribe('workitem.started', () => {
-    state.runningWip.update(state.wip);
     state.wip++;
     state.maxWip = Math.max(state.wip, state.maxWip)
     publishStats();
   });
+
 
   function calculateDaysWorked() {
     return (state.maxEndtime - state.minStarttime)/(TimeAdjustments.multiplicator() * 1000);
   }
 
   PubSub.subscribe('workitem.finished', (topic, item) => {
-    state.runningWip.update(state.wip);
     state.wip--;
     state.maxEndtime = Math.max(state.maxEndtime, item.endTime);
     state.minStarttime = Math.min(state.minStarttime, item.startTime);
@@ -15575,7 +15361,7 @@ module.exports = {
   initialize
 };
 
-},{"./timeAdjustments":29,"pubsub-js":3}],28:[function(require,module,exports){
+},{"./timeAdjustments":27,"pubsub-js":3}],26:[function(require,module,exports){
 const PubSub = require('pubsub-js');
 
 function LimitBoardWip() {
@@ -15660,7 +15446,7 @@ function WipUp(step = 10) {
 
 module.exports = {LimitBoardWip, DynamicLimitBoardWip, WipUp}
 
-},{"pubsub-js":3}],29:[function(require,module,exports){
+},{"pubsub-js":3}],27:[function(require,module,exports){
 (function(){
   factor = 1;
 
@@ -15669,7 +15455,7 @@ module.exports = {LimitBoardWip, DynamicLimitBoardWip, WipUp}
     speedUpBy: (f) => { factor = 1.0/f; }
   }
 })();
-},{}],30:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 const PubSub = require('pubsub-js');
 
 function WorkerStats() {
@@ -15721,10 +15507,9 @@ function WorkerStats() {
 
 module.exports = WorkerStats;
 
-},{"pubsub-js":3}],31:[function(require,module,exports){
+},{"pubsub-js":3}],29:[function(require,module,exports){
 const PubSub = require('pubsub-js');
 const TimeAdjustments = require('./timeAdjustments');
-const {anyCardColor} = require("./Colors");
 
 let workerCounter = 1;
 
@@ -15785,8 +15570,7 @@ let workItemCounter = 1;
 function WorkItem(work) {
   return {
     id: workItemCounter++,
-    work,
-    color: anyCardColor()
+    work
   };
 }
 
@@ -15835,4 +15619,4 @@ function WorkList(skill = "dev") {
 
 module.exports = {Worker, WorkItem, WorkList};
 
-},{"./Colors":12,"./timeAdjustments":29,"pubsub-js":3}]},{},[12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31]);
+},{"./timeAdjustments":27,"pubsub-js":3}]},{},[12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29]);
