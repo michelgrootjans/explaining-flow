@@ -15059,9 +15059,13 @@ const validateWorkers = ({workload, workers}) => {
   return validateWorkersFormat() && validateWorkLoadCanBeExecuted();
 };
 
+const suggestNumberOfStories = ({workers}) => workers?.split(',').length > 2 ? 200 : 50;
+
 const initialize = () => {
   const $workload = document.getElementById('workload');
   const $workers = document.getElementById('workers');
+  const $numberOfStories = document.getElementById('numberOfStories');
+
   if (!($workload && $workers)) return;
 
   const values = () => ({workload: $workload.value, workers: $workers.value});
@@ -15081,6 +15085,7 @@ const initialize = () => {
 
     if (validateWorkers(input)) {
       $workers.classList.remove('bg-warning');
+      $numberOfStories.setAttribute('placeholder', suggestNumberOfStories(input))
     } else {
       $workers.classList.add('bg-warning');
     }
@@ -15094,7 +15099,7 @@ const initialize = () => {
   }
 };
 
-module.exports = {initialize, validateWork, validateWorkers}
+module.exports = {initialize, validateWork, validateWorkers, suggestNumberOfStories}
 },{}],21:[function(require,module,exports){
 const {WorkItem} = require('./worker');
 
@@ -15139,8 +15144,8 @@ function parseInput(rawInput) {
     const workers = parseWorkers(rawInput.workers);
     const work = parseWorkload(rawInput.workload);
     const wipLimit = rawInput.wipLimit;
-    const speed = (workers.length > 2) ? 20 : 1;
-    const numberOfStories = (workers.length > 2) ? 200 : 50;
+    const numberOfStories = parseInt(rawInput.numberOfStories || ((workers.length > 2) ? 200 : 50));
+    const speed = (numberOfStories >= 100) ? 20 : 1;
     let input = {
         title,
         workers,
@@ -15382,6 +15387,7 @@ function parse(form) {
       workers: field('workers'),
       workload: field('workload'),
       wipLimit: field('wip-limit'),
+      numberOfStories: field('numberOfStories'),
       random: form.querySelector('[name="random"]').checked
   });
 }
