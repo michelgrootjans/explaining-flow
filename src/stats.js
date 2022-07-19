@@ -80,6 +80,7 @@ function initialize() {
     publishStats();
   });
 
+  
   function calculateDaysWorked() {
     return (state.maxEndtime - state.minStarttime)/(TimeAdjustments.multiplicator() * 1000);
   }
