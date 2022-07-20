@@ -79,8 +79,12 @@
     border: rgb(211, 211, 211) solid 1px;
 }
 
+canvas{
+    height: 80%;
+}
+
 .chart {
     border: 1px solid lightgray;
-    height: 350px;
-    width: 700px;
+    /*height: 430px;*/
+    /*width: 600px;*/
 }

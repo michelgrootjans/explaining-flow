@@ -59,7 +59,6 @@
 </header>
 
 
-
 <div class="container-fluid">
     <div id="stats">
         <div id="scenarios" class="d-flex flex-nowrap overflow-auto">
@@ -73,6 +72,16 @@
             </ul>
         </div>
     </div>
+
+    <div id="charts" class="row">
+        <div class="chart col">
+            <canvas id="lineChart" class="lineChart"></canvas>
+        </div>
+        <div class="chart col">
+            <canvas id="cfd" class="cfd"></canvas>
+        </div>
+    </div>
+
     <div class="row">
         <div class="col">
             <div id="board_container">
@@ -80,16 +89,6 @@
             </div>
         </div>
 
-        <div class="col">
-            <div id="charts">
-                <div class="row chart">
-                    <canvas id="lineChart" class="lineChart"></canvas>
-                </div>
-                <div class="row chart">
-                    <canvas id="cfd" class="cfd"></canvas>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
 
