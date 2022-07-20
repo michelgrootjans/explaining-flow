@@ -13,14 +13,14 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "browserify": "^16.2.3",
+    "browserify": "^17.0.0",
     "jest": "^24.8.0",
-    "node-notifier": ">=8.0.1",
-    "open": "^7.4.2"
+    "node-notifier": "^10.0.1",
+    "open": "^8.4.0"
   },
   "dependencies": {
-    "chart.js": "^3.5.0",
-    "pubsub-js": "^1.7.0",
+    "chart.js": "^3.8.0",
+    "pubsub-js": "^1.9.4",
     "seedrandom": "^3.0.5"
   }
 }
