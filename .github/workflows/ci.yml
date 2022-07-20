@@ -2,6 +2,7 @@ name: GitHub Actions Build and Deploy Demo
 on:
   push:
     branches:
+      - original
       - main
       - bootstrap
       - multi-version
@@ -26,10 +27,12 @@ jobs:
       - name: Bundle
         run: |
           npm run-script bundle
-          cat index.html | sed 's#dist/index.js#index.js#' > dist/index.html
           cp style.css dist/style.css
+          cat index.html | sed 's#dist/index.js#index.js#' > dist/index.html
 
-          cat index.html | sed 's#dist/${{ steps.extract_branch.outputs.branch }}.js#index.js#' > dist/${{ steps.extract_branch.outputs.branch }}.html
+          cp dist/index.js dist/${{ steps.extract_branch.outputs.branch }}.js
+          cp dist/style.css dist/${{ steps.extract_branch.outputs.branch }}.css
+          cat index.html | sed 's#dist/index.js#${{ steps.extract_branch.outputs.branch }}.js#' | sed 's#style.css#${{ steps.extract_branch.outputs.branch }}.css#' > dist/${{ steps.extract_branch.outputs.branch }}.html
       - name: debug
         run: |
           pwd
@@ -37,6 +40,7 @@ jobs:
           ls -hal dist
           git status
           cat dist/index.html
+          cat dist/${{ steps.extract_branch.outputs.branch }}.html
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@4.1.4
         with:
