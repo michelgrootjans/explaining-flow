@@ -2,10 +2,7 @@ name: GitHub Actions Build and Deploy Demo
 on:
   push:
     branches:
-      - original
       - main
-      - bootstrap
-      - multi-version
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -14,10 +11,6 @@ jobs:
         uses: actions/checkout@v2 # If you're using actions/checkout@v2 you must set persist-credentials to false in most cases for the deployment to work correctly.
         with:
           persist-credentials: false
-      - name: Extract branch name
-        shell: bash
-        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-        id: extract_branch
       - name: Install
         run: |
           npm install
@@ -29,10 +22,6 @@ jobs:
           npm run-script bundle
           cp style.css dist/style.css
           cat index.html | sed 's#dist/index.js#index.js#' > dist/index.html
-
-          cp dist/index.js dist/${{ steps.extract_branch.outputs.branch }}.js
-          cp dist/style.css dist/${{ steps.extract_branch.outputs.branch }}.css
-          cat index.html | sed 's#dist/index.js#${{ steps.extract_branch.outputs.branch }}.js#' | sed 's#style.css#${{ steps.extract_branch.outputs.branch }}.css#' > dist/${{ steps.extract_branch.outputs.branch }}.html
       - name: debug
         run: |
           pwd
@@ -40,7 +29,6 @@ jobs:
           ls -hal dist
           git status
           cat dist/index.html
-          cat dist/${{ steps.extract_branch.outputs.branch }}.html
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@4.1.4
         with:
