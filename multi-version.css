@@ -1,0 +1,86 @@
+.amount {
+    color: darkgray;
+    padding-left: 3px;
+}
+.amount:before {
+    content: '('
+}
+.amount:after {
+    content: ')'
+}
+
+#board ul {
+    list-style: none;
+    padding: 0px;
+}
+
+
+.post-it {
+    /*position: relative;*/
+    background: #feff9c;
+    box-shadow: 1px 1px 2px 1px rgba(9, 30, 66, .25);
+    border-radius: 3px;
+    width: 40px;
+    height: 40px;
+    padding: 10px;
+    margin: 10px;
+
+    /* undo bootstrap reboot */
+    box-sizing: content-box;
+}
+.queue .post-it{
+    margin-top: -45px;
+}
+.queue .post-it:nth-child(1000n+1){
+    margin-top: 0;
+}
+.queue .post-it:nth-child(4n+1){
+    transform: rotate(0deg);
+}
+.queue .post-it:nth-child(4n+2){
+    transform: rotate(2deg);
+}
+.queue .post-it:nth-child(4n+3){
+    transform: rotate(-2deg);
+}
+.queue .post-it:nth-child(4n+4){
+    transform: rotate(4deg);
+}
+
+
+
+
+.scenario {
+    list-style: none;
+    padding: 0;
+}
+
+#throughput, #cycletime, #wip {
+    font-weight: bold;
+}
+
+.throughput {
+    background-color: rgba(54, 162, 235, 0.1);
+    border: rgb(54, 162, 235) solid 1px;
+}
+
+.cycletime {
+    background-color: rgba(255, 99, 132, 0.1);
+    border: rgb(255, 99, 132) solid 1px;
+}
+
+.wip {
+    background-color: rgba(255, 206, 86, 0.1);
+    border: rgb(255, 206, 86) solid 1px;
+}
+
+.timeWorked {
+    background-color: rgba(211, 211, 211, 0.1);
+    border: rgb(211, 211, 211) solid 1px;
+}
+
+.chart {
+    border: 1px solid lightgray;
+    height: 350px;
+    width: 700px;
+}
