@@ -37,28 +37,52 @@ function initialState() {
   };
 }
 
+function calculateCycleTime(items) {
+  if (items.length === 0) return 0;
+  let sumOfDurations = items.map(item => (item.endTime - item.startTime) / 1000)
+    .reduce((sum, duration) => sum + duration, 0);
+  return sumOfDurations / items.length;
+}
+
+function calculateThroughput(items) {
+  if (items.length === 0) return 0;
+  if (items.length === 1) {
+    const [item] = items;
+    const elapsedTime = item.endTime - item.startTime;
+    return 1000 * items.length / elapsedTime;
+  }
+
+  const minTime = items.map(item => item.endTime)
+    .reduce((oldest, current) => oldest < current ? oldest : current);
+  const maxTime = items.map(item => item.endTime)
+    .reduce((newest, current) => newest > current ? newest : current);
+  let elapsedTime = maxTime - minTime;
+
+  if (elapsedTime < 100) {
+    const minStartTime = items.map(item => item.startTime)
+      .reduce((oldest, current) => oldest < current ? oldest : current);
+    elapsedTime = maxTime - minStartTime
+    return 1000 * items.length / elapsedTime;
+  }
+
+  return 1000 * (items.length - 1) / elapsedTime;
+}
+
+function performance(items) {
+  const cycleTime = calculateCycleTime(items) / TimeAdjustments.multiplicator();
+  const throughput = calculateThroughput(items) * TimeAdjustments.multiplicator();
+  return {cycleTime, throughput};
+}
+
 function initialize() {
+
   let state = undefined;
 
-  function calculateThroughput(items) {
-    if (items.length === 0) return 0;
-    const minTime = items.map(item => item.startTime)
-      .reduce((oldest, current) => oldest < current ? oldest : current);
-    const maxTime = items.map(item => item.endTime)
-      .reduce((newest, current) => newest > current ? newest : current);
-    return items.length / ((maxTime - minTime) / 1000);
-  }
+  const lastNumberOfItems = numberOfItems => state.doneItems.slice(-numberOfItems);
 
   function calculateAllThroughput() {
     if (state.doneItems.length === 0) return 0;
-    return state.doneItems.length / ((state.maxEndtime - state.minStarttime) / 1000);
-  }
-
-  function calculateCycleTime(items) {
-    if (items.length === 0) return 0;
-    let averageDuration = items.map(item => (item.endTime - item.startTime) / 1000)
-      .reduce((sum, duration) => sum + duration, 0);
-    return averageDuration / items.length;
+    return state.doneItems.length * 1000 / ((state.maxEndtime - state.minStarttime));
   }
 
   function calculateAllCycleTime() {
@@ -66,16 +90,8 @@ function initialize() {
     return state.sumOfDurations / (state.doneItems.length * 1000);
   }
 
-  function lastNumberOfItems(numberOfItems) {
-    return state.doneItems.slice(state.doneItems.length - numberOfItems);
-  }
-
-  function throughputForLast(numberOfItems) {
-    return calculateThroughput(lastNumberOfItems(numberOfItems)) * TimeAdjustments.multiplicator();
-  }
-
-  function cycleTimeForLast(numberOfItems) {
-    return calculateCycleTime(lastNumberOfItems(numberOfItems)) / TimeAdjustments.multiplicator();
+  function calculatePerformance() {
+    return (secondsToLookBack) => performance(lastNumberOfItems(secondsToLookBack))
   }
 
   function publishStats() {
@@ -85,10 +101,7 @@ function initialize() {
       maxCycleTime: state.maxCycletime / TimeAdjustments.multiplicator(),
       workInProgress: state.wip,
       maxWorkInProgress: state.maxWip,
-      sliding: {
-        throughput: throughputForLast,
-        cycleTime: cycleTimeForLast,
-      },
+      sliding: {performance: calculatePerformance()},
       timeWorked: state.timeWorked,
       averageWip: state.runningWip.average()
     });
@@ -106,7 +119,7 @@ function initialize() {
   });
 
   function calculateDaysWorked() {
-    return (state.maxEndtime - state.minStarttime)/(TimeAdjustments.multiplicator() * 1000);
+    return (state.maxEndtime - state.minStarttime) / (TimeAdjustments.multiplicator() * 1000);
   }
 
   PubSub.subscribe('workitem.finished', (topic, item) => {
@@ -124,5 +137,7 @@ function initialize() {
 }
 
 module.exports = {
-  initialize
+  initialize,
+  calculateThroughput,
+  performance,
 };

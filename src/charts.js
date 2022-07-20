@@ -94,9 +94,11 @@ function LineChart($chart, updateInterval, speed) {
     });
 
     PubSub.subscribe('stats.calculated', (topic, stats) => {
+      const {cycleTime, throughput} = stats.sliding.performance(10);
+
       state.labels.push(xValue(state.startTime, speed));
-      state.cycleTime.push(stats.sliding.cycleTime(5));
-      state.throughput.push(stats.sliding.throughput(5));
+      state.cycleTime.push(cycleTime);
+      state.throughput.push(throughput);
       state.wip.push(stats.workInProgress);
     });
   });
