@@ -1,16 +1,13 @@
 const fs = require('fs').promises;
 const browserify = require('browserify');
 const path = require('path');
-const open = require('open');
 const promisify = require('util').promisify;
 
 async function bundle() {
-  await fs.rm('dist', { recursive: true, force:true });
-  await fs.mkdir('dist');
+  await fs.mkdir('dist', { recursive: true, force:true });
   const sourceFiles = await getSourceFiles();
   const bundle = await createBundle(sourceFiles);
   await fs.writeFile(path.join('dist', 'index.js'), bundle, 'utf8');
-  // await open('index.html', { wait: true });
 }
 
 async function createBundle(files) {

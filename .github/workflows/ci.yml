@@ -28,6 +28,8 @@ jobs:
           npm run-script bundle
           cat index.html | sed 's#dist/index.js#index.js#' > dist/index.html
           cp style.css dist/style.css
+
+          cat index.html | sed 's#dist/${{ steps.extract_branch.outputs.branch }}.js#index.js#' > dist/${{ steps.extract_branch.outputs.branch }}.html
       - name: debug
         run: |
           pwd
