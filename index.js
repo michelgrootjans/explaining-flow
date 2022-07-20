@@ -15540,13 +15540,7 @@ function initialize() {
     return state.sumOfDurations / (state.doneItems.length * 1000);
   }
 
-  function calculatePerformance() {
-    return (secondsToLookBack) => performance(lastNumberOfItems(secondsToLookBack))
-  }
-
-  function throughputForLast(numberOfItems) {
-    return calculateThroughput(lastNumberOfItems(numberOfItems)) * TimeAdjustments.multiplicator();
-  }
+  const calculatePerformance = () => (numberOfItems) => performance(lastNumberOfItems(numberOfItems));
 
   function publishStats() {
     PubSub.publish('stats.calculated', {
