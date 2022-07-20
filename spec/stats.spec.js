@@ -1,5 +1,5 @@
 const Stats = require('../src/stats');
-const {calculateThroughput, performance} = require("../src/stats");
+const {performance} = require("../src/stats");
 
 const {publish, subscribe, clearAllSubscriptions} = require('pubsub-js');
 
