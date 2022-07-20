@@ -1,5 +1,5 @@
 const {parseWorkload, parseWorkers, parseInput} = require('../src/parsing')
-const {average} = require("../src/generator");
+const {average, poisson} = require("../src/generator");
 
 describe('parseWorkload', () => {
   it('parses a single workload', () => {
@@ -44,7 +44,7 @@ describe('parseInput', () => {
     title: 'dev: 3, qa: 1',
     workers: [{skills: ['dev']}, {skills: ['qa']}, {skills: ['qa']}],
     wipLimit: "3",
-    distribution: average,
+    distribution: poisson,
     speed: 20,
     stories: {
       amount: 200,
@@ -73,6 +73,30 @@ describe('parseInput', () => {
 
     it('sets the number of stories to 50', () => {
       expect(parseInput(rawInputWith2Workers).stories.amount).toEqual(50);
+    });
+  });
+
+  describe('20 stories requested', function() {
+    let rawInputWith2Workers = {...exampleRawInput, numberOfStories: 20};
+
+    it('sets speed to 1', () => {
+      expect(parseInput(rawInputWith2Workers).speed).toEqual(1);
+    });
+
+    it('sets the number of stories to 20', () => {
+      expect(parseInput(rawInputWith2Workers).stories.amount).toEqual(20);
+    });
+  });
+
+  describe('100 stories requested', function() {
+    let rawInputWith2Workers = {...exampleRawInput, numberOfStories: 100};
+
+    it('sets speed to 1', () => {
+      expect(parseInput(rawInputWith2Workers).speed).toEqual(20);
+    });
+
+    it('sets the number of stories to 100', () => {
+      expect(parseInput(rawInputWith2Workers).stories.amount).toEqual(100);
     });
   });
 

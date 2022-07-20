@@ -12,7 +12,7 @@ function createChart(ctx,speed) {
     labels,
     datasets: [
       {
-        label: 'throughput (a.k.a. velocity)',
+        label: 'throughput',
         type: 'line',
         lineTension: 0,
         data: throughput,
@@ -49,24 +49,31 @@ function createChart(ctx,speed) {
     ]
   };
 
-  const chart = new Chart(ctx, {
+  const config = {
     type: 'line',
     data: data,
     options: {
       animation: false,
       scales: {
         x: {
-          type: 'linear',
-          ticks: {stepSize: 5 * speed}
+          type: 'linear'
         },
         y: {
           type: 'linear',
-          position: 'left',
-          ticks: {stepSize: 1}
+          ticks: {mirror: true},
+          position: 'left'
         },
+      },
+      plugins: {
+        legend: {display: true, position: 'bottom', align: 'start'},
+        title: {
+          display: true,
+          text: 'Flow metrics'
+        }
       }
     }
-  });
+  };
+  const chart = new Chart(ctx, config);
   return {cycleTime, throughput, wip, data, chart, labels, startTime};
 }
 
@@ -87,9 +94,11 @@ function LineChart($chart, updateInterval, speed) {
     });
 
     PubSub.subscribe('stats.calculated', (topic, stats) => {
+      const {cycleTime, throughput} = stats.sliding.performance(10);
+
       state.labels.push(xValue(state.startTime, speed));
-      state.cycleTime.push(stats.sliding.cycleTime(5));
-      state.throughput.push(stats.sliding.throughput(5));
+      state.cycleTime.push(cycleTime);
+      state.throughput.push(throughput);
       state.wip.push(stats.workInProgress);
     });
   });

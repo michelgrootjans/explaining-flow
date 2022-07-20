@@ -1,4 +1,6 @@
 const Stats = require('../src/stats');
+const {calculateThroughput, performance} = require("../src/stats");
+
 const {publish, subscribe, clearAllSubscriptions} = require('pubsub-js');
 
 describe('calculate basic stats', () => {
@@ -135,3 +137,93 @@ describe('calculate basic stats', () => {
   }
 });
 
+describe('calculate performance', () => {
+  it('without items', () => {
+    expect(performance([])).toMatchObject({throughput: 0, cycleTime: 0})
+  });
+
+  it('with one item', () => {
+    expect(performance([
+      {startTime: 0, endTime: 1000},
+    ])).toMatchObject({throughput: 1, cycleTime: 1})
+    expect(performance([
+      {startTime: 0, endTime: 500},
+    ])).toMatchObject({throughput: 2, cycleTime: 0.5})
+    expect(performance([
+      {startTime: 0, endTime: 2000},
+    ])).toMatchObject({throughput: 0.5, cycleTime: 2})
+  });
+
+  it('with 2 consecutive items', () => {
+    expect(performance([
+      {startTime: 0, endTime: 1000},
+      {startTime: 1000, endTime: 2000},
+    ])).toMatchObject({throughput: 1, cycleTime: 1})
+    expect(performance([
+      {startTime: 0, endTime: 500},
+      {startTime: 500, endTime: 1000},
+    ])).toMatchObject({throughput: 2, cycleTime: 0.5})
+  });
+  it('with 3 consecutive items', () => {
+    expect(performance([
+      {startTime: 0, endTime: 1000},
+      {startTime: 1000, endTime: 2000},
+      {startTime: 2000, endTime: 3000},
+    ])).toMatchObject({throughput: 1, cycleTime: 1})
+    expect(performance([
+      {startTime: 0, endTime: 500},
+      {startTime: 500, endTime: 1000},
+      {startTime: 1000, endTime: 1500},
+    ])).toMatchObject({throughput: 2, cycleTime: 0.5})
+  });
+
+  it('with 2 parallel items', () => {
+    expect(performance([
+      {startTime: 0, endTime: 1000},
+      {startTime: 0, endTime: 1000},
+    ])).toMatchObject({throughput: 2, cycleTime: 1})
+    expect(performance([
+      {startTime: 0, endTime: 500},
+      {startTime: 0, endTime: 500},
+    ])).toMatchObject({throughput: 4, cycleTime: 0.5})
+  });
+  it('with 3 parallel items', () => {
+    expect(performance([
+      {startTime: 0, endTime: 1000},
+      {startTime: 0, endTime: 1000},
+      {startTime: 0, endTime: 1000},
+    ])).toMatchObject({throughput: 3, cycleTime: 1})
+    expect(performance([
+      {startTime: 0, endTime: 500},
+      {startTime: 0, endTime: 500},
+      {startTime: 0, endTime: 500},
+    ])).toMatchObject({throughput: 6, cycleTime: 0.5})
+  });
+
+  it('with five consecutive items', () => {
+    expect(performance([
+      {startTime: 2000, endTime: 3000},
+      {startTime: 3000, endTime: 4000},
+      {startTime: 4000, endTime: 5000},
+      {startTime: 5000, endTime: 6000},
+      {startTime: 6000, endTime: 7000},
+    ])).toMatchObject({throughput: 1, cycleTime: 1})
+  });
+
+  it('with five parallel items', () => {
+    expect(performance([
+      {startTime: 0, endTime: 1000},
+      {startTime: 0, endTime: 1000},
+      {startTime: 0, endTime: 1000},
+      {startTime: 0, endTime: 1000},
+      {startTime: 0, endTime: 1000},
+    ])).toMatchObject({throughput: 5, cycleTime: 1})
+    expect(performance([
+      {startTime: 0, endTime: 5000},
+      {startTime: 0, endTime: 5000},
+      {startTime: 0, endTime: 5000},
+      {startTime: 0, endTime: 5000},
+      {startTime: 0, endTime: 5000},
+    ])).toMatchObject({throughput: 1, cycleTime: 5})
+  });
+})

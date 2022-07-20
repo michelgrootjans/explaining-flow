@@ -24,6 +24,8 @@ open index.html
 I'd like to share a few simulations showing the effects of team flow.
 These simulations show the different scenarios I run to illustrate the need to understand team flow.
 
+During this lightning talk, I will leave the _#stories_ on automatic.
+
 The stats we're interested in are:
 - **Throughput**: this is what is typically measured under the name _velocity_. It's the number of user stories finished per unit of time.
 - **Cycle time**: the time taken for each story from the moment it has been taken out of the _todo_ column until it reaches the _done_ column.

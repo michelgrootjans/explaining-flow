@@ -7,15 +7,17 @@ const Stats = require('./stats');
 const WorkerStats = require('./worker-stats');
 const Scenario = require("./scenario");
 const LineChart = require("./charts");
+const Cfd = require("./CumulativeFlowDiagram");
 const {parseInput} = require("./parsing");
 
 // force repeatable randomness
 const seedrandom = require('seedrandom');
+const FormHelper = require("./form-helper");
 
 function createScenarioContainer(scenario) {
     const template = document.querySelector('#scenario-template');
 
-    const clone = template.content.cloneNode(true).querySelector('div');
+    const clone = template.content.cloneNode(true).querySelector('ul');
     clone.setAttribute('id', `scenario-${scenario.id}`);
     clone.querySelector('.scenario-title').textContent = scenario.title;
     return clone
@@ -29,6 +31,7 @@ function parse(form) {
       workers: field('workers'),
       workload: field('workload'),
       wipLimit: field('wip-limit'),
+      numberOfStories: field('numberOfStories'),
       random: form.querySelector('[name="random"]').checked
   });
 }
@@ -38,23 +41,19 @@ function parseScenario(event) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    scenarios.forEach(input => {
-        // const scenario = Scenario(input);
-        //
-        // let $scenario = createScenarioContainer(scenario);
-        // $scenario.addEventListener('click', () => run(scenario))
-        // document.getElementById('scenarios').append($scenario)
-    })
+    const form = FormHelper.initialize();
+
     document.getElementById('new-scenario')
       .addEventListener('submit', event => {
         event.preventDefault()
+        if(!form.isValid()) return;
+
         const scenario = parseScenario(event);
-          const container = createScenarioContainer(scenario);
+        const $container = createScenarioContainer(scenario);
         const $scenarios = document.getElementById('scenarios');
-        // $scenarios.append(container)
 
         const $lastScenario = document.getElementsByClassName('scenario instance')[0];
-        $scenarios.insertBefore(container, $lastScenario);
+        $scenarios.insertBefore($container, $lastScenario);
 
         run(scenario);
       })
@@ -63,15 +62,16 @@ document.addEventListener('DOMContentLoaded', () => {
 const wipLimiter = LimitBoardWip();
 
 
-let currentChart = undefined;
+let lineChart = undefined;
+let cfd = undefined;
 
 function run(scenario) {
     PubSub.clearAllSubscriptions();
 
-    // force predicatable randomness
+    // force predictable randomness across each simulationr
     seedrandom('limit work in progress', {global: true});
 
-  Animation.initialize(`#scenario-${scenario.id}`);
+    Animation.initialize(`#scenario-${scenario.id}`);
     Stats.initialize();
 
     new WorkerStats();
@@ -79,8 +79,11 @@ function run(scenario) {
     TimeAdjustments.speedUpBy(scenario.speed || 1);
 
     wipLimiter.initialize(scenario.wipLimit)
-    if(currentChart) currentChart.destroy()
-    currentChart = LineChart(document.getElementById('myChart'), 2000, scenario.speed)
+    if(lineChart) lineChart.destroy()
+    lineChart = LineChart(document.getElementById('lineChart'), 1000, scenario.speed)
+
+    if(cfd) cfd.destroy()
+    cfd = Cfd(document.getElementById('cfd'), undefined, scenario.speed)
 
     const board = scenario.run();
 }

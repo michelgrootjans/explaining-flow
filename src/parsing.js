@@ -1,12 +1,12 @@
-const {average} = require("./generator");
+const {average, poisson} = require("./generator");
 
 function parseInput(rawInput) {
     const title = rawInput.title;
     const workers = parseWorkers(rawInput.workers);
     const work = parseWorkload(rawInput.workload);
     const wipLimit = rawInput.wipLimit;
-    const speed = (workers.length > 2) ? 20 : 1;
-    const numberOfStories = (workers.length > 2) ? 200 : 50;
+    const numberOfStories = parseInt(rawInput.numberOfStories || ((workers.length > 2) ? 200 : 50));
+    const speed = (numberOfStories >= 100) ? 20 : 1;
     let input = {
         title,
         workers,
@@ -17,7 +17,7 @@ function parseInput(rawInput) {
         wipLimit,
         speed
     };
-    if (rawInput.random) input.distribution = average
+    if (rawInput.random) input.distribution = poisson
     return input;
 }
 

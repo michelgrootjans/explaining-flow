@@ -24,27 +24,27 @@ describe('animation', () => {
       it('should have a backlog column', () => {
         jest.runAllTimers();
 
-        let $backlog = find('#board li:nth-child(1)');
-        expect($backlog.getAttribute('class')).toBe('column queue');
-        expect($backlog.querySelector('h2').firstChild.textContent).toBe('Backlog');
+        let $backlog = find('#board div:nth-child(1)');
+        expect($backlog.getAttribute('class')).toBe('col queue');
+        expect($backlog.querySelector('h5').firstChild.textContent).toBe('Backlog');
         expect($backlog.querySelector('ul').getAttribute('class')).toBe('cards');
       });
 
       it('should have a dev column', () => {
         jest.runAllTimers();
 
-        let $dev = find('#board li:nth-child(2)');
-        expect($dev.getAttribute('class')).toBe('column work');
-        expect($dev.querySelector('h2').firstChild.textContent).toBe('dev');
+        let $dev = find('#board div:nth-child(2)');
+        expect($dev.getAttribute('class')).toBe('col work');
+        expect($dev.querySelector('h5').firstChild.textContent).toBe('dev');
         expect($dev.querySelector('ul').getAttribute('class')).toBe('cards');
       });
 
       it('should have a done column', () => {
         jest.runAllTimers();
 
-        let $done = find('#board li:nth-child(3)');
-        expect($done.getAttribute('class')).toBe('column queue');
-        expect($done.querySelector('h2').firstChild.textContent).toBe('Done');
+        let $done = find('#board div:nth-child(3)');
+        expect($done.getAttribute('class')).toBe('col queue');
+        expect($done.querySelector('h5').firstChild.textContent).toBe('Done');
         expect($done.querySelector('ul').getAttribute('class')).toBe('cards');
       });
     });
@@ -54,12 +54,12 @@ describe('animation', () => {
       board.addWorkItems(workItem);
       jest.advanceTimersByTime(0);
 
-      const $card = find('#board li:nth-child(1) .cards li');
+      const $card = find('#board div:nth-child(1) .cards li');
       expect($card.getAttribute('data-card-id')).toBe(`${workItem.id}`);
-      expect($card.getAttribute('class')).toBe('card');
+      expect($card.getAttribute('class')).toBe('post-it');
 
-      expect(find('#board li:nth-child(2) .cards').innerHTML).toBe('');
-      expect(find('#board li:nth-child(3) .cards').innerHTML).toBe('');
+      expect(find('#board div:nth-child(2) .cards').innerHTML).toBe('');
+      expect(find('#board div:nth-child(3) .cards').innerHTML).toBe('');
     });
 
     it('a worker picks up an item', () => {
@@ -68,13 +68,13 @@ describe('animation', () => {
       board.addWorkItems(workItem);
       jest.advanceTimersByTime(1);
 
-      expect(find('#board li:nth-child(1) .cards').innerHTML).toBe('');
+      expect(find('#board div:nth-child(1) .cards').innerHTML).toBe('');
 
-      const $card = find('#board li:nth-child(2) .cards li');
+      const $card = find('#board div:nth-child(2) .cards li');
       expect($card.getAttribute('data-card-id')).toBe(`${workItem.id}`);
-      expect($card.getAttribute('class')).toBe('card');
+      expect($card.getAttribute('class')).toBe('post-it');
 
-      expect(find('#board li:nth-child(3) .cards').innerHTML).toBe('');
+      expect(find('#board div:nth-child(3) .cards').innerHTML).toBe('');
     })
 
     it('shows card amount', () => {
@@ -82,9 +82,9 @@ describe('animation', () => {
       board.addWorkItems(new WorkItem({dev: 1}));
       jest.advanceTimersByTime(1);
 
-      expect(find('#board li:nth-child(1) h2 .amount').innerHTML).toBe('0');
-      expect(find('#board li:nth-child(2) h2 .amount').innerHTML).toBe('1');
-      expect(find('#board li:nth-child(3) h2 .amount').innerHTML).toBe('0');
+      expect(find('#board div:nth-child(1) h5 .amount').innerHTML).toBe('0');
+      expect(find('#board div:nth-child(2) h5 .amount').innerHTML).toBe('1');
+      expect(find('#board div:nth-child(3) h5 .amount').innerHTML).toBe('0');
     })
 
   });
@@ -104,7 +104,7 @@ describe('animation', () => {
       PubSub.publish('stats.calculated', {
         throughput: 1,
         cycleTime: 2,
-        workInProgress: 3,
+        averageWip: 3,
         maxWorkInProgress: 4,
         timeWorked: 5
       });
@@ -120,7 +120,7 @@ describe('animation', () => {
       PubSub.publish('stats.calculated', {
         throughput: 1,
         cycleTime: 2,
-        workInProgress: 3,
+        averageWip: 3,
         maxWorkInProgress: 3,
         timeWorked: 5
       });
