@@ -15544,6 +15544,10 @@ function initialize() {
     return (secondsToLookBack) => performance(lastNumberOfItems(secondsToLookBack))
   }
 
+  function throughputForLast(numberOfItems) {
+    return calculateThroughput(lastNumberOfItems(numberOfItems)) * TimeAdjustments.multiplicator();
+  }
+
   function publishStats() {
     PubSub.publish('stats.calculated', {
       throughput: calculateAllThroughput(state.doneItems) * TimeAdjustments.multiplicator(),
@@ -15567,6 +15571,7 @@ function initialize() {
     state.maxWip = Math.max(state.wip, state.maxWip)
     publishStats();
   });
+
 
   function calculateDaysWorked() {
     return (state.maxEndtime - state.minStarttime) / (TimeAdjustments.multiplicator() * 1000);
