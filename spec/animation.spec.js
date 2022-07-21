@@ -25,7 +25,7 @@ describe('animation', () => {
         jest.runAllTimers();
 
         let $backlog = find('#board div:nth-child(1)');
-        expect($backlog.getAttribute('class')).toBe('col queue');
+        expect($backlog.getAttribute('class')).toBe('col col-1 todo');
         expect($backlog.querySelector('h5').firstChild.textContent).toBe('Backlog');
         expect($backlog.querySelector('ul').getAttribute('class')).toBe('cards');
       });
@@ -34,7 +34,7 @@ describe('animation', () => {
         jest.runAllTimers();
 
         let $dev = find('#board div:nth-child(2)');
-        expect($dev.getAttribute('class')).toBe('col work');
+        expect($dev.getAttribute('class')).toBe('col col-1 work');
         expect($dev.querySelector('h5').firstChild.textContent).toBe('dev');
         expect($dev.querySelector('ul').getAttribute('class')).toBe('cards');
       });
@@ -43,7 +43,7 @@ describe('animation', () => {
         jest.runAllTimers();
 
         let $done = find('#board div:nth-child(3)');
-        expect($done.getAttribute('class')).toBe('col queue');
+        expect($done.getAttribute('class')).toBe('col col-1 done');
         expect($done.querySelector('h5').firstChild.textContent).toBe('Done');
         expect($done.querySelector('ul').getAttribute('class')).toBe('cards');
       });
