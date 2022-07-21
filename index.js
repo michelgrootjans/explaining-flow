@@ -14900,7 +14900,7 @@ const initialize = (currentSenarioId) => {
     columns.forEach(column => {
       const $column = createElement({
         type: 'div',
-        className: `col ${column.type}`,
+        className: `col col-1 ${column.type}`,
         attributes: {'data-column-id': column.id}
       })
 
@@ -15089,7 +15089,6 @@ const {WorkList} = require("./worker");
 function BoardFactory() {
   const createColumns = workColumnNames => {
     const columns = []
-    const doneColumn = () => columns[columns.length - 1];
 
     const workColumns = workColumnNames.map(name => new WorkList(name));
     columns.push(new WorkList('Backlog'));
@@ -15097,7 +15096,10 @@ function BoardFactory() {
       columns.push(workColumns[i]);
       columns.push(new WorkList('-'));
     }
-    doneColumn().name = 'Done';
+
+    const todoColumn = () => columns[0];
+    const doneColumn = () => columns[columns.length - 1];
+
 
     for (let i = 0; i < columns.length; i++) {
       if (i % 2 === 0) {
@@ -15112,6 +15114,10 @@ function BoardFactory() {
         workColumn.outbox = columns[i + 1];
       }
     }
+
+    todoColumn().type = 'todo'
+    doneColumn().name = 'Done';
+    doneColumn().type = 'done';
 
     return columns;
   };
