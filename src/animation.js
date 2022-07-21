@@ -12,7 +12,7 @@ const initialize = (currentSenarioId) => {
     columns.forEach(column => {
       const $column = createElement({
         type: 'div',
-        className: `col ${column.type}`,
+        className: `col col-1 ${column.type}`,
         attributes: {'data-column-id': column.id}
       })
 
