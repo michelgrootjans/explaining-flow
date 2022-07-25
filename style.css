@@ -67,28 +67,23 @@
     /* undo bootstrap reboot */
     box-sizing: content-box;
 }
-.todo .post-it,
-.done .post-it,
+/*.todo .post-it,*/
+/*.done .post-it,*/
 .queue .post-it{
     margin-top: -45px;
 }
-.todo .post-it:nth-child(1000n+1),
-.done .post-it:nth-child(1000n+1),
 .queue .post-it:nth-child(1000n+1){
     margin-top: 0;
 }
 .todo .post-it:nth-child(4n+1),
-.done .post-it:nth-child(4n+1),
 .queue .post-it:nth-child(4n+1){
     transform: rotate(0deg);
 }
 .todo .post-it:nth-child(4n+2),
-.done .post-it:nth-child(4n+2),
 .queue .post-it:nth-child(4n+2){
     transform: rotate(2deg);
 }
 .todo .post-it:nth-child(4n+3),
-.done .post-it:nth-child(4n+3),
 .queue .post-it:nth-child(4n+3){
     transform: rotate(-2deg);
 }
@@ -97,6 +92,32 @@
 .queue .post-it:nth-child(4n+4){
     transform: rotate(4deg);
 }
+
+.done .post-it:nth-child(5n+1){
+    z-index: 10;
+}
+.done .post-it:nth-child(5n+2){
+    transform: rotate(2deg);
+    margin-top: -65px;
+    z-index: 9;
+}
+.done .post-it:nth-child(5n+3){
+    transform: rotate(-2deg);
+    margin-top: -65px;
+    z-index: 8;
+}
+.done .post-it:nth-child(5n+4){
+    transform: rotate(4deg);
+    margin-top: -65px;
+    z-index: 7;
+}
+
+.done .post-it:nth-child(5n+5){
+    transform: rotate(-4deg);
+    margin-top: -65px;
+    z-index: 6;
+}
+
 
 
 

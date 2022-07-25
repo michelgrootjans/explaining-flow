@@ -15689,7 +15689,7 @@ function run(scenario) {
     lineChart = LineChart(document.getElementById('lineChart'), 1000, scenario.speed)
 
     if(cfd) cfd.destroy()
-    cfd = Cfd(document.getElementById('cfd'), undefined, scenario.speed)
+    cfd = Cfd(document.getElementById('cfd'), 2000, scenario.speed)
 
     const board = scenario.run();
 }
