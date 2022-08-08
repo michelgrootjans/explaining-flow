@@ -8,4 +8,4 @@
 - add labels to scenario
 - fix cumulative flow diagram
 - ~~x-axis in days (1, 2, 3, ...)~~
-- ~~rename to cycle time~~
+- ~~rename to lead time~~

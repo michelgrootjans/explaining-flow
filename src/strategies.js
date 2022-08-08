@@ -34,7 +34,7 @@ function DynamicLimitBoardWip() {
       counter++;
     if (counter >= 50) {
       counter = 0;
-      key = stats.sliding.cycleTime(10) / stats.sliding.throughput(10);
+      key = stats.sliding.leadTime(10) / stats.sliding.throughput(10);
       const newMeasurement = {limit: limiter.limit(), key};
       measurements.push(newMeasurement);
 

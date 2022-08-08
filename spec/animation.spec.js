@@ -94,7 +94,7 @@ describe('animation', () => {
       document.body.innerHTML =
         '<div id="stats-container">' +
         '    <span class="throughput"></span>' +
-        '    <span class="cycletime"></span>' +
+        '    <span class="leadtime"></span>' +
         '    <span class="wip"></span>' +
         '    <span class="timeWorked"></span>' +
         '</div>';
@@ -103,7 +103,7 @@ describe('animation', () => {
     it('shows on workitem done', () => {
       PubSub.publish('stats.calculated', {
         throughput: 1,
-        cycleTime: 2,
+        leadTime: 2,
         averageWip: 3,
         maxWorkInProgress: 4,
         timeWorked: 5
@@ -111,7 +111,7 @@ describe('animation', () => {
       jest.runAllTimers();
 
       expect(find('.throughput').innerHTML).toBe("1");
-      expect(find('.cycletime').innerHTML).toBe("2");
+      expect(find('.leadtime').innerHTML).toBe("2");
       expect(find('.wip').innerHTML).toBe("3 (max 4)");
       expect(find('.timeWorked').innerHTML).toBe("5");
     });
@@ -119,7 +119,7 @@ describe('animation', () => {
     it('excludes max WIP when equal to current WIP', () => {
       PubSub.publish('stats.calculated', {
         throughput: 1,
-        cycleTime: 2,
+        leadTime: 2,
         averageWip: 3,
         maxWorkInProgress: 3,
         timeWorked: 5
@@ -127,7 +127,7 @@ describe('animation', () => {
       jest.runAllTimers();
 
       expect(find('.throughput').innerHTML).toBe("1");
-      expect(find('.cycletime').innerHTML).toBe("2");
+      expect(find('.leadtime').innerHTML).toBe("2");
       expect(find('.wip').innerHTML).toBe("3");
       expect(find('.timeWorked').innerHTML).toBe("5");
     });

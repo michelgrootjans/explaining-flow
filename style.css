@@ -127,7 +127,7 @@
     padding: 0;
 }
 
-#throughput, #cycletime, #wip {
+#throughput, #leadtime, #wip {
     font-weight: bold;
 }
 
@@ -136,7 +136,7 @@
     border: rgb(54, 162, 235) solid 1px;
 }
 
-.cycletime {
+.leadtime {
     background-color: rgba(255, 99, 132, 0.1);
     border: rgb(255, 99, 132) solid 1px;
 }

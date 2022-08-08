@@ -29,7 +29,7 @@ function initialState() {
     runningWip: RunningWip(),
     maxWip: 0,
     maxEndtime: 0,
-    maxCycletime: 0,
+    maxLeadtime: 0,
     minStarttime: Math.min(),
     doneItems: [],
     sumOfDurations: 0,
@@ -37,7 +37,7 @@ function initialState() {
   };
 }
 
-function calculateCycleTime(items) {
+function calculateLeadTime(items) {
   if (items.length === 0) return 0;
   let sumOfDurations = items.map(item => (item.endTime - item.startTime) / 1000)
     .reduce((sum, duration) => sum + duration, 0);
@@ -69,9 +69,9 @@ function calculateThroughput(items) {
 }
 
 function performance(items) {
-  const cycleTime = calculateCycleTime(items) / TimeAdjustments.multiplicator();
+  const leadTime = calculateLeadTime(items) / TimeAdjustments.multiplicator();
   const throughput = calculateThroughput(items) * TimeAdjustments.multiplicator();
-  return {cycleTime, throughput};
+  return {leadTime, throughput};
 }
 
 function initialize() {
@@ -85,7 +85,7 @@ function initialize() {
     return state.doneItems.length * 1000 / ((state.maxEndtime - state.minStarttime));
   }
 
-  function calculateAllCycleTime() {
+  function calculateAllLeadTime() {
     if (state.doneItems.length === 0) return 0;
     return state.sumOfDurations / (state.doneItems.length * 1000);
   }
@@ -95,8 +95,8 @@ function initialize() {
   function publishStats() {
     PubSub.publish('stats.calculated', {
       throughput: calculateAllThroughput(state.doneItems) * TimeAdjustments.multiplicator(),
-      cycleTime: calculateAllCycleTime(state.doneItems) / TimeAdjustments.multiplicator(),
-      maxCycleTime: state.maxCycletime / TimeAdjustments.multiplicator(),
+      leadTime: calculateAllLeadTime(state.doneItems) / TimeAdjustments.multiplicator(),
+      maxLeadTime: state.maxLeadtime / TimeAdjustments.multiplicator(),
       workInProgress: state.wip,
       maxWorkInProgress: state.maxWip,
       sliding: {performance: calculatePerformance()},
@@ -126,7 +126,7 @@ function initialize() {
     state.wip--;
     state.maxEndtime = Math.max(state.maxEndtime, item.endTime);
     state.minStarttime = Math.min(state.minStarttime, item.startTime);
-    state.maxCycletime = Math.max(state.maxCycletime, item.duration / 1000)
+    state.maxLeadtime = Math.max(state.maxLeadtime, item.duration / 1000)
     state.timeWorked = calculateDaysWorked()
     state.sumOfDurations += (item.endTime - item.startTime)
     state.doneItems.push(item);

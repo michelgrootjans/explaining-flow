@@ -63,9 +63,9 @@ const initialize = (currentSenarioId) => {
     return `${wip} (max ${maxWorkInProgress})`;
   };
 
-  const renderCycleTime = ({cycleTime, minCycleTime, maxCycleTime}) => {
-    const value = round(cycleTime, 1);
-    const max = round(maxCycleTime || cycleTime, 1);
+  const renderLeadTime = ({leadTime, minLeadTime, maxLeadTime}) => {
+    const value = round(leadTime, 1);
+    const max = round(maxLeadTime || leadTime, 1);
 
     if (!max) return value;
     if (value === max) return value;
@@ -74,7 +74,7 @@ const initialize = (currentSenarioId) => {
 
   PubSub.subscribe('stats.calculated', (topic, stats) => {
     document.querySelector(`${currentSenarioId} .throughput`).innerHTML = round(stats.throughput);
-    document.querySelector(`${currentSenarioId} .cycletime`).innerHTML = renderCycleTime(stats)
+    document.querySelector(`${currentSenarioId} .leadtime`).innerHTML = renderLeadTime(stats)
     document.querySelector(`${currentSenarioId} .wip`).innerHTML = renderWip(stats)
     document.querySelector(`${currentSenarioId} .timeWorked`).innerHTML = round(stats.timeWorked, 0);
   });
