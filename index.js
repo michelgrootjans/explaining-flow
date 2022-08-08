@@ -14951,9 +14951,9 @@ const initialize = (currentSenarioId) => {
     return `${wip} (max ${maxWorkInProgress})`;
   };
 
-  const renderCycleTime = ({cycleTime, minCycleTime, maxCycleTime}) => {
-    const value = round(cycleTime, 1);
-    const max = round(maxCycleTime || cycleTime, 1);
+  const renderLeadTime = ({leadTime, minLeadTime, maxLeadTime}) => {
+    const value = round(leadTime, 1);
+    const max = round(maxLeadTime || leadTime, 1);
 
     if (!max) return value;
     if (value === max) return value;
@@ -14962,7 +14962,7 @@ const initialize = (currentSenarioId) => {
 
   PubSub.subscribe('stats.calculated', (topic, stats) => {
     document.querySelector(`${currentSenarioId} .throughput`).innerHTML = round(stats.throughput);
-    document.querySelector(`${currentSenarioId} .cycletime`).innerHTML = renderCycleTime(stats)
+    document.querySelector(`${currentSenarioId} .leadtime`).innerHTML = renderLeadTime(stats)
     document.querySelector(`${currentSenarioId} .wip`).innerHTML = renderWip(stats)
     document.querySelector(`${currentSenarioId} .timeWorked`).innerHTML = round(stats.timeWorked, 0);
   });
@@ -15172,7 +15172,7 @@ const Chart = require('chart.js');
 const PubSub = require("pubsub-js");
 
 function createChart(ctx,speed) {
-  const cycleTime = [];
+  const leadTime = [];
   const throughput = [];
   const wip = [];
   const labels = [];
@@ -15193,10 +15193,10 @@ function createChart(ctx,speed) {
         pointRadius: 0,
       },
       {
-        label: 'cycletime',
+        label: 'leadtime',
         type: 'line',
         lineTension: 0,
-        data: cycleTime,
+        data: leadTime,
         backgroundColor: 'rgba(255, 99, 132, 0.1)',
         borderColor: 'rgba(255, 99, 132, 1)',
         fill: true,
@@ -15244,7 +15244,7 @@ function createChart(ctx,speed) {
     }
   };
   const chart = new Chart(ctx, config);
-  return {cycleTime, throughput, wip, data, chart, labels, startTime};
+  return {leadTime, throughput, wip, data, chart, labels, startTime};
 }
 
 function xValue(startTime, speed) {
@@ -15264,10 +15264,10 @@ function LineChart($chart, updateInterval, speed) {
     });
 
     PubSub.subscribe('stats.calculated', (topic, stats) => {
-      const {cycleTime, throughput} = stats.sliding.performance(10);
+      const {leadTime, throughput} = stats.sliding.performance(10);
 
       state.labels.push(xValue(state.startTime, speed));
-      state.cycleTime.push(cycleTime);
+      state.leadTime.push(leadTime);
       state.throughput.push(throughput);
       state.wip.push(stats.workInProgress);
     });
@@ -15727,7 +15727,7 @@ function initialState() {
     runningWip: RunningWip(),
     maxWip: 0,
     maxEndtime: 0,
-    maxCycletime: 0,
+    maxLeadtime: 0,
     minStarttime: Math.min(),
     doneItems: [],
     sumOfDurations: 0,
@@ -15735,7 +15735,7 @@ function initialState() {
   };
 }
 
-function calculateCycleTime(items) {
+function calculateLeadTime(items) {
   if (items.length === 0) return 0;
   let sumOfDurations = items.map(item => (item.endTime - item.startTime) / 1000)
     .reduce((sum, duration) => sum + duration, 0);
@@ -15767,9 +15767,9 @@ function calculateThroughput(items) {
 }
 
 function performance(items) {
-  const cycleTime = calculateCycleTime(items) / TimeAdjustments.multiplicator();
+  const leadTime = calculateLeadTime(items) / TimeAdjustments.multiplicator();
   const throughput = calculateThroughput(items) * TimeAdjustments.multiplicator();
-  return {cycleTime, throughput};
+  return {leadTime, throughput};
 }
 
 function initialize() {
@@ -15783,7 +15783,7 @@ function initialize() {
     return state.doneItems.length * 1000 / ((state.maxEndtime - state.minStarttime));
   }
 
-  function calculateAllCycleTime() {
+  function calculateAllLeadTime() {
     if (state.doneItems.length === 0) return 0;
     return state.sumOfDurations / (state.doneItems.length * 1000);
   }
@@ -15793,8 +15793,8 @@ function initialize() {
   function publishStats() {
     PubSub.publish('stats.calculated', {
       throughput: calculateAllThroughput(state.doneItems) * TimeAdjustments.multiplicator(),
-      cycleTime: calculateAllCycleTime(state.doneItems) / TimeAdjustments.multiplicator(),
-      maxCycleTime: state.maxCycletime / TimeAdjustments.multiplicator(),
+      leadTime: calculateAllLeadTime(state.doneItems) / TimeAdjustments.multiplicator(),
+      maxLeadTime: state.maxLeadtime / TimeAdjustments.multiplicator(),
       workInProgress: state.wip,
       maxWorkInProgress: state.maxWip,
       sliding: {performance: calculatePerformance()},
@@ -15824,7 +15824,7 @@ function initialize() {
     state.wip--;
     state.maxEndtime = Math.max(state.maxEndtime, item.endTime);
     state.minStarttime = Math.min(state.minStarttime, item.startTime);
-    state.maxCycletime = Math.max(state.maxCycletime, item.duration / 1000)
+    state.maxLeadtime = Math.max(state.maxLeadtime, item.duration / 1000)
     state.timeWorked = calculateDaysWorked()
     state.sumOfDurations += (item.endTime - item.startTime)
     state.doneItems.push(item);
@@ -15876,7 +15876,7 @@ function DynamicLimitBoardWip() {
       counter++;
     if (counter >= 50) {
       counter = 0;
-      key = stats.sliding.cycleTime(10) / stats.sliding.throughput(10);
+      key = stats.sliding.leadTime(10) / stats.sliding.throughput(10);
       const newMeasurement = {limit: limiter.limit(), key};
       measurements.push(newMeasurement);
 
