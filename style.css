@@ -125,6 +125,7 @@
 .scenario {
     list-style: none;
     padding: 0;
+    width: 12%
 }
 
 #throughput, #leadtime, #wip {
