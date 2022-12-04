@@ -1,4 +1,5 @@
 const PubSub = require('pubsub-js');
+const {publish, subscribe} = require('./publish-subscribe')
 const TimeAdjustments = require('./timeAdjustments');
 const {anyCardColor} = require("./Colors");
 
@@ -40,19 +41,19 @@ function Worker(skills = {dev: 1}) {
     let item = inbox.peek();
     if (item) {
       idle = false;
-      PubSub.publish('worker.working', worker);
+      publish('worker.working', worker);
       let skill = inProgress.necessarySkill;
       inbox.move(inProgress, item);
       let timeout = calculateTimeoutFor(item, skill);
       setTimeout(() => {
         idle = true;
         inProgress.move(outbox, item);
-        PubSub.publish('worker.idle', worker);
+        publish('worker.idle', worker);
       }, timeout)
     }
   }
 
-  PubSub.publish('worker.created', worker);
+  publish('worker.created', worker);
   return worker
 }
 
@@ -88,7 +89,7 @@ function WorkList(skill = "dev") {
 
   function add(item) {
     work.push(item);
-    PubSub.publish('workitem.added', {item, column});
+    publish('workitem.added', {item, column});
   }
 
   function _remove(item) {
@@ -97,7 +98,7 @@ function WorkList(skill = "dev") {
         work.splice(i, 1);
       }
     }
-    PubSub.publish('workitem.removed', {item, column});
+    publish('workitem.removed', {item, column});
   }
 
   function move(to, item) {
