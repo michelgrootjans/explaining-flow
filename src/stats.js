@@ -10,10 +10,12 @@ function RunningWip(startTick) {
 
   return {
     update: (wip, now) => {
+      if (!now) debugger
       surface += wip * delta(now);
       latestTick = now;
     },
     average: (now) => {
+      if (!now) debugger
       const time = totalTime(now);
       if (time < 1) return 0;
       return surface / time;
@@ -105,11 +107,11 @@ function initialize() {
       }});
   }
 
-  subscribe('board.ready', ({timestamp}) => {
+  subscribe('board.ready', (topic, {timestamp}) => {
     state = initialState(timestamp)
   });
 
-  subscribe('workitem.started', ({timestamp}) => {
+  subscribe('workitem.started', (topic, {timestamp}) => {
     state.runningWip.update(state.wip, timestamp);
     state.wip++;
     state.maxWip = Math.max(state.wip, state.maxWip)

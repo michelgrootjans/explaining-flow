@@ -50,8 +50,6 @@ function DynamicLimitBoardWip() {
       if (bestMeasurement !== newMeasurement) {
         optimized = true;
         limiter.updateLimit(bestMeasurement.limit);
-        console.log({bestMeasurement})
-        console.log({measurements})
       } else {
         limiter.updateLimit(limiter.limit() + 1);
       }

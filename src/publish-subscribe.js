@@ -2,5 +2,8 @@ const PubSub = require("pubsub-js");
 
 module.exports = {
     ...PubSub,
-    publish: (topic, message) => PubSub.publish(topic, {timestamp: Date.now(), ...message}),
+    publish: (topic, message) => {
+        message.timestamp = message.timestamp || Date.now();
+        PubSub.publish(topic, message);
+    },
 }

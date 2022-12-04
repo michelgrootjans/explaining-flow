@@ -57,7 +57,6 @@ const initialize = (currentSenarioId) => {
 
   const renderWip = ({averageWip, maxWorkInProgress}) => {
     const wip = round(averageWip, 1);
-    console.log({averageWip, maxWorkInProgress, wip})
     if (wip === maxWorkInProgress) {
       return wip;
     }
