@@ -6,12 +6,7 @@ const cardColors = [
   '#FF65A3',
   '#EE5E9F',
   '#7AFCFF',
-  '#7AFCFF',
-  '#7AFCFF',
-  '#7AFCFF',
   '#FEFF9C',
-  '#FEFF9C',
-  '#FFF740',
   '#FFF740',
   '#FCF0AD',
   '#E9E74A',
@@ -19,12 +14,6 @@ const cardColors = [
   '#F9A55B',
 ]
 
-function any(array) {
-  return array[Math.floor(Math.random() * array.length)];
-}
+const any = array => array[Math.floor(Math.random() * array.length)];
 
-function anyCardColor() {
-  return any(cardColors);
-}
-
-module.exports = {anyCardColor};
+module.exports = {anyCardColor: () => any(cardColors)};
