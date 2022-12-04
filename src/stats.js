@@ -1,5 +1,5 @@
 const TimeAdjustments = require('./timeAdjustments');
-const PubSub = require('pubsub-js');
+const {publish, subscribe} = require('./publish-subscribe')
 
 function RunningWip() {
   const startTick = Date.now();
@@ -93,7 +93,7 @@ function initialize() {
   const calculatePerformance = () => (numberOfItems) => performance(lastNumberOfItems(numberOfItems));
 
   function publishStats() {
-    PubSub.publish('stats.calculated', {
+    publish('stats.calculated', {
       throughput: calculateAllThroughput(state.doneItems) * TimeAdjustments.multiplicator(),
       leadTime: calculateAllLeadTime(state.doneItems) / TimeAdjustments.multiplicator(),
       maxLeadTime: state.maxLeadtime / TimeAdjustments.multiplicator(),
@@ -105,11 +105,11 @@ function initialize() {
     });
   }
 
-  PubSub.subscribe('board.ready', () => {
+  subscribe('board.ready', () => {
     state = initialState()
   });
 
-  PubSub.subscribe('workitem.started', () => {
+  subscribe('workitem.started', () => {
     state.runningWip.update(state.wip);
     state.wip++;
     state.maxWip = Math.max(state.wip, state.maxWip)
@@ -121,7 +121,7 @@ function initialize() {
     return (state.maxEndtime - state.minStarttime) / (TimeAdjustments.multiplicator() * 1000);
   }
 
-  PubSub.subscribe('workitem.finished', (topic, item) => {
+  subscribe('workitem.finished', (topic, item) => {
     state.runningWip.update(state.wip);
     state.wip--;
     state.maxEndtime = Math.max(state.maxEndtime, item.endTime);
