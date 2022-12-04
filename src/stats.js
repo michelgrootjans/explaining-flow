@@ -1,32 +1,30 @@
 const TimeAdjustments = require('./timeAdjustments');
 const {publish, subscribe} = require('./publish-subscribe')
 
-function RunningWip() {
-  const startTick = Date.now();
-
+function RunningWip(startTick) {
   let surface = 0;
-  let latestTick = Date.now();
+  let latestTick = startTick;
 
-  const delta = () => (Date.now() - latestTick) / 1000;
-  const totalTime = () => (Date.now() - startTick) / 1000;
+  const delta = (now) => (now - latestTick) / 1000;
+  const totalTime = (now) => (now - startTick) / 1000;
 
   return {
-    update: (wip) => {
-      surface += wip * delta();
-      latestTick = Date.now();
+    update: (wip, now) => {
+      surface += wip * delta(now);
+      latestTick = now;
     },
-    average: () => {
-      const time = totalTime();
+    average: (now) => {
+      const time = totalTime(now);
       if (time < 1) return 0;
       return surface / time;
     }
   };
 }
 
-function initialState() {
+function initialState(startTick) {
   return {
     wip: 0,
-    runningWip: RunningWip(),
+    runningWip: RunningWip(startTick),
     maxWip: 0,
     maxEndtime: 0,
     maxLeadtime: 0,
@@ -92,7 +90,7 @@ function initialize() {
 
   const calculatePerformance = () => (numberOfItems) => performance(lastNumberOfItems(numberOfItems));
 
-  function publishStats() {
+  function publishStats(now) {
     publish('stats.calculated', {
       throughput: calculateAllThroughput(state.doneItems) * TimeAdjustments.multiplicator(),
       leadTime: calculateAllLeadTime(state.doneItems) / TimeAdjustments.multiplicator(),
@@ -101,19 +99,19 @@ function initialize() {
       maxWorkInProgress: state.maxWip,
       sliding: {performance: calculatePerformance()},
       timeWorked: state.timeWorked,
-      averageWip: state.runningWip.average()
+      averageWip: state.runningWip.average(now)
     });
   }
 
-  subscribe('board.ready', () => {
-    state = initialState()
+  subscribe('board.ready', ({timestamp}) => {
+    state = initialState(timestamp)
   });
 
-  subscribe('workitem.started', () => {
-    state.runningWip.update(state.wip);
+  subscribe('workitem.started', ({timestamp}) => {
+    state.runningWip.update(state.wip, timestamp);
     state.wip++;
     state.maxWip = Math.max(state.wip, state.maxWip)
-    publishStats();
+    publishStats(timestamp);
   });
 
 
@@ -121,8 +119,8 @@ function initialize() {
     return (state.maxEndtime - state.minStarttime) / (TimeAdjustments.multiplicator() * 1000);
   }
 
-  subscribe('workitem.finished', (topic, {item}) => {
-    state.runningWip.update(state.wip);
+  subscribe('workitem.finished', (topic, {item, timestamp}) => {
+    state.runningWip.update(state.wip, timestamp);
     state.wip--;
     state.maxEndtime = Math.max(state.maxEndtime, item.endTime);
     state.minStarttime = Math.min(state.minStarttime, item.startTime);
@@ -130,7 +128,7 @@ function initialize() {
     state.timeWorked = calculateDaysWorked()
     state.sumOfDurations += (item.endTime - item.startTime)
     state.doneItems.push(item);
-    publishStats();
+    publishStats(timestamp);
   });
 
 }
