@@ -38,16 +38,16 @@ let Board = function (workColumnNames) {
 
   initialize(workColumnNames);
 
-  subscribe('workitem.added', (topic, subject) => {
-    assignNewWorkIfPossible();
+  subscribe('workitem.added', (topic, {timestamp}) => {
+    assignNewWorkIfPossible(timestamp);
   });
 
-  subscribe('board.allowNewWork', (topic, subject) => {
+  subscribe('board.allowNewWork', (topic, {timestamp}) => {
     allowNewWork = true;
-    assignNewWorkIfPossible();
+    assignNewWorkIfPossible(timestamp);
   });
 
-  function assignNewWorkIfPossible() {
+  function assignNewWorkIfPossible(timestamp) {
     const columnWithWork = workColumns()
       .reverse()
       .filter(column => column.inbox.hasWork())
@@ -67,7 +67,7 @@ let Board = function (workColumnNames) {
         });
 
       if (availableWorker) {
-        availableWorker.startWorkingOn(columnWithWork.inbox, columnWithWork, columnWithWork.outbox);
+        availableWorker.startWorkingOn(columnWithWork.inbox, columnWithWork, columnWithWork.outbox, timestamp);
       }
     }
   }
@@ -77,14 +77,14 @@ let Board = function (workColumnNames) {
   subscribe('workitem.added', (topic, {item, column, timestamp}) => {
     if (column.id === firstWorkColumn().id) {
       item.startTime = timestamp;
-      publish('workitem.started', {item});
+      publish('workitem.started', {item, timestamp});
     }
     if (column.id === doneColumn().id) {
       item.endTime = timestamp;
       item.duration = item.endTime - item.startTime;
-      publish('workitem.finished', {item});
+      publish('workitem.finished', {item, timestamp});
       if (done())
-        publish('board.done', {board});
+        publish('board.done', {board, timestamp});
     }
   });
 

@@ -36,18 +36,18 @@ function Worker(skills = {dev: 1}) {
     return 1000 * TimeAdjustments.multiplicator() * workItem.work[skill] / workSpeedFor(skill);
   }
 
-  function startWorkingOn(inbox, inProgress, outbox) {
+  function startWorkingOn(inbox, inProgress, outbox, timestamp) {
     let item = inbox.peek();
     if (item) {
       idle = false;
-      publish('worker.working', {worker});
+      publish('worker.working', {worker, timestamp});
       let skill = inProgress.necessarySkill;
       inbox.move(inProgress, item);
       let timeout = calculateTimeoutFor(item, skill);
       setTimeout(() => {
         idle = true;
         inProgress.move(outbox, item);
-        publish('worker.idle', {worker});
+        publish('worker.idle', {worker, timestamp});
       }, timeout)
     }
   }
