@@ -50,10 +50,10 @@ describe('a worker', () => {
     });
 
     it('finishes the item', () => {
-      jest.advanceTimersByTime(1001);
+      jest.advanceTimersByTime(1000);
       expect(board.items()).toEqual([[], [], [workItem]]);
       expect(workItem.startTime).toBe(now);
-      expect(workItem.endTime).toBe(now);
+      expect(workItem.endTime).toBe(now + 1000);
     });
 
     it('publishes a board.done event when finished', done => {
@@ -94,11 +94,11 @@ describe('a worker', () => {
     });
 
     it('finishes the first item and starts on the second', () => {
-      jest.advanceTimersByTime(1003);
+      jest.advanceTimersByTime(1000);
       expect(board.items()).toEqual([[], [workItem2],[workItem1]])
       expect(workItem1.startTime).toBe(now);
-      expect(workItem1.endTime).toBe(now);
-      expect(workItem2.startTime).toBe(now);
+      expect(workItem1.endTime).toBe(now + 1000);
+      expect(workItem2.startTime).toBe(now + 1000);
       expect(workItem2.endTime).toBeUndefined();
     });
 
@@ -106,18 +106,18 @@ describe('a worker', () => {
       jest.advanceTimersByTime(1999);
       expect(board.items()).toEqual([[], [workItem2],[workItem1]])
       expect(workItem1.startTime).toBe(now);
-      expect(workItem1.endTime).toBe(now);
-      expect(workItem2.startTime).toBe(now);
+      expect(workItem1.endTime).toBe(now + 1000);
+      expect(workItem2.startTime).toBe(now + 1000);
       expect(workItem2.endTime).toBeUndefined();
     });
 
     it('finishes the second item', () => {
-      jest.advanceTimersByTime(2002);
+      jest.advanceTimersByTime(2000);
       expect(board.items()).toEqual([[], [],[workItem1, workItem2]])
       expect(workItem1.startTime).toBe(now);
-      expect(workItem1.endTime).toBe(now);
-      expect(workItem2.startTime).toBe(now);
-      expect(workItem2.endTime).toBe(now);
+      expect(workItem1.endTime).toBe(now + 1000);
+      expect(workItem2.startTime).toBe(now + 1000);
+      expect(workItem2.endTime).toBe(now + 2000);
     });
   });
 });

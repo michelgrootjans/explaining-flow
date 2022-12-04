@@ -36,18 +36,19 @@ function Worker(skills = {dev: 1}) {
     return 1000 * TimeAdjustments.multiplicator() * workItem.work[skill] / workSpeedFor(skill);
   }
 
-  function startWorkingOn(inbox, inProgress, outbox, timestamp) {
+  function startWorkingOn(inbox, inProgress, outbox, startTimestamp) {
     let item = inbox.peek();
     if (item) {
       idle = false;
-      publish('worker.working', {worker, timestamp});
+      publish('worker.working', {worker, timestamp: startTimestamp});
       let skill = inProgress.necessarySkill;
-      inbox.move(inProgress, item);
+      inbox.move(inProgress, item, startTimestamp);
       let timeout = calculateTimeoutFor(item, skill);
       setTimeout(() => {
         idle = true;
-        inProgress.move(outbox, item);
-        publish('worker.idle', {worker, timestamp});
+        const endTimestamp = startTimestamp + timeout;
+        inProgress.move(outbox, item, endTimestamp);
+        publish('worker.idle', {worker, timestamp: endTimestamp});
       }, timeout)
     }
   }
@@ -86,23 +87,23 @@ function WorkList(skill = "dev") {
     necessarySkill: skill
   };
 
-  function add(item) {
+  function add(item, timestamp = Date.now()) {
     work.push(item);
-    publish('workitem.added', {item, column});
+    publish('workitem.added', {item, column, timestamp});
   }
 
-  function _remove(item) {
+  function _remove(item, timestamp) {
     for (let i = 0; i < size(); i++) {
       if (work[i] === item) {
         work.splice(i, 1);
       }
     }
-    publish('workitem.removed', {item, column});
+    publish('workitem.removed', {item, column, timestamp});
   }
 
-  function move(to, item) {
-    _remove(item);
-    to.add(item);
+  function move(to, item, timestamp) {
+    _remove(item, timestamp);
+    to.add(item, timestamp);
     return item;
   }
 
