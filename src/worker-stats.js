@@ -1,4 +1,3 @@
-const PubSub = require('pubsub-js');
 const {publish, subscribe} = require('./publish-subscribe')
 
 function WorkerStats() {
