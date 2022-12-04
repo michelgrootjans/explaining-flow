@@ -1,11 +1,11 @@
-const PubSub = require('pubsub-js');
+const {clearAllSubscriptions} = require('../src/publish-subscribe')
 const Board = require('../src/board');
 const {WorkList, Worker, WorkItem} = require('../src/worker');
 const {LimitBoardWip} = require('../src/strategies');
 
 describe('limiting overall wip', () => {
 
-  beforeEach(PubSub.clearAllSubscriptions);
+  beforeEach(clearAllSubscriptions);
   beforeEach(jest.useFakeTimers);
   afterEach(jest.runAllTimers);
 

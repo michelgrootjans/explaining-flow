@@ -1,4 +1,4 @@
-const PubSub = require('pubsub-js');
+const {publish, clearAllSubscriptions} = require('../src/publish-subscribe')
 const animation = require('../src/animation');
 
 const {Worker, WorkItem} = require('../src/worker');
@@ -9,7 +9,7 @@ const find = selector => document.querySelector(selector);
 describe('animation', () => {
   beforeAll(() => {
     jest.useFakeTimers();
-    PubSub.clearAllSubscriptions();
+    clearAllSubscriptions();
     animation.initialize("#stats-container");
   });
 
@@ -117,7 +117,7 @@ describe('animation', () => {
     });
 
     it('excludes max WIP when equal to current WIP', () => {
-      PubSub.publish('stats.calculated', {
+      publish('stats.calculated', {
         throughput: 1,
         leadTime: 2,
         averageWip: 3,
@@ -150,7 +150,7 @@ describe('animation', () => {
     it('stat update', () => {
       const worker = new Worker({dev: 0});
       const newStats = {workerId: worker.id, stats: {efficiency: 0.9500111}};
-      PubSub.publish('worker.stats.updated', newStats);
+      publish('worker.stats.updated', newStats);
       jest.runAllTimers();
       let $worker = find(`.workers [data-worker-id="${worker.id}"]`);
       expect($worker.querySelector('.name').innerHTML).toEqual(`${worker.name()}: `);

@@ -1,9 +1,9 @@
 const {Worker, WorkItem, WorkList} = require('../src/worker');
 const Board = require('../src/board');
-const PubSub = require('pubsub-js');
+const {publish, subscribe, clearAllSubscriptions} = require('../src/publish-subscribe')
 
 describe('a worker', () => {
-  beforeEach(PubSub.clearAllSubscriptions);
+  beforeEach(clearAllSubscriptions);
   beforeEach(jest.useFakeTimers);
   afterEach(jest.runAllTimers);
 
@@ -57,7 +57,7 @@ describe('a worker', () => {
     });
 
     it('publishes a board.done event when finished', done => {
-      PubSub.subscribe('board.done', () => done())
+      subscribe('board.done', () => done())
       jest.runAllTimers();
       expect(board.items()).toEqual([[], [], [workItem]]);
     });
@@ -123,7 +123,7 @@ describe('a worker', () => {
 });
 
 describe('workers work at their own speed', () => {
-  beforeEach(PubSub.clearAllSubscriptions);
+  beforeEach(clearAllSubscriptions);
   beforeEach(jest.useFakeTimers);
   afterEach(jest.runAllTimers);
 
@@ -173,7 +173,7 @@ describe('workers work at their own speed', () => {
 });
 
 describe('a typical workflow', () => {
-  beforeEach(PubSub.clearAllSubscriptions);
+  beforeEach(clearAllSubscriptions);
   beforeEach(jest.useFakeTimers);
   afterEach(jest.runAllTimers);
 
