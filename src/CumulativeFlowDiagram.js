@@ -93,10 +93,10 @@ function Cfd($chart, updateInterval, speed) {
   const chart = new Chart(ctx, config);
 
   subscribe('board.ready', (t, board) => {
-    const start = new Date();
+    const start = board.timestamp;
 
-    function currentDate() {
-      return (new Date() - start) * speed / 1000;
+    function currentDate(now) {
+      return (now - start) * speed / 1000;
     }
 
     const columns = {}
@@ -126,7 +126,7 @@ function Cfd($chart, updateInterval, speed) {
     }
 
     subscribe('workitem.added', (topic, data) => {
-      const x = currentDate();
+      const x = currentDate(data.timestamp);
 
       const execute = () => {
         const columnName = nameOfColumn(data.column)

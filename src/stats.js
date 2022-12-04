@@ -121,7 +121,7 @@ function initialize() {
     return (state.maxEndtime - state.minStarttime) / (TimeAdjustments.multiplicator() * 1000);
   }
 
-  subscribe('workitem.finished', (topic, item) => {
+  subscribe('workitem.finished', (topic, {item}) => {
     state.runningWip.update(state.wip);
     state.wip--;
     state.maxEndtime = Math.max(state.maxEndtime, item.endTime);

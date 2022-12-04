@@ -44,7 +44,7 @@ describe('calculate basic stats', () => {
   it('start-finish(1)', done => {
     given(() => [
       publish('workitem.started', {}),
-      publish('workitem.finished', {startTime: time(0), endTime: time(1),})
+      publish('workitem.finished', {item: {startTime: time(0), endTime: time(1),}})
     ])
       .then('stats.calculated', (topic, stats) => {
         expect(stats).toMatchObject({
@@ -61,7 +61,7 @@ describe('calculate basic stats', () => {
     given(() => [
       publish('workitem.started', {}),
       publish('workitem.started', {}),
-      publish('workitem.finished', {startTime: time(0), endTime: time(1),}),
+      publish('workitem.finished', {item: {startTime: time(0), endTime: time(1),}}),
     ])
       .then('stats.calculated', (topic, stats) => {
         expect(stats).toMatchObject({
@@ -76,7 +76,7 @@ describe('calculate basic stats', () => {
   it('start-start-finish(2)', done => {
     given(() => [
       publish('workitem.started', {}),
-      publish('workitem.finished', {startTime: time(0), endTime: time(2),}),
+      publish('workitem.finished', {item: {startTime: time(0), endTime: time(2),}}),
     ])
       .then('stats.calculated', (topic, stats) => {
         expect(stats).toMatchObject({
@@ -92,13 +92,13 @@ describe('calculate basic stats', () => {
     given(() => [
       publish('workitem.started', {}),
       publish('workitem.started', {}),
-      publish('workitem.finished', {startTime: time(0), endTime: time(1),}),
+      publish('workitem.finished', {item: {startTime: time(0), endTime: time(1),}}),
       publish('workitem.started', {}),
-      publish('workitem.finished', {startTime: time(0), endTime: time(3),}),
+      publish('workitem.finished', {item: {startTime: time(0), endTime: time(3),}}),
       publish('workitem.started', {}),
-      publish('workitem.finished', {startTime: time(1), endTime: time(5),}),
+      publish('workitem.finished', {item: {startTime: time(1), endTime: time(5),}}),
       publish('workitem.started', {}),
-      publish('workitem.finished', {startTime: time(3), endTime: time(4),}),
+      publish('workitem.finished', {item: {startTime: time(3), endTime: time(4),}}),
       publish('workitem.started', {}),
     ])
       .then('stats.calculated', (topic, stats) => {
