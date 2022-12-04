@@ -1,17 +1,17 @@
-const PubSub = require('pubsub-js');
+const {publish, subscribe} = require('./publish-subscribe')
 
 function LimitBoardWip() {
   const initialize = (limit = 1) => {
     let wip = 0;
-    PubSub.publish('board.allowNewWork', {wip, limit});
+    publish('board.allowNewWork', {wip, limit});
 
-    PubSub.subscribe('workitem.started', () => {
+    subscribe('workitem.started', () => {
       wip++;
-      if (wip >= limit) PubSub.publish('board.denyNewWork', {wip, limit});
+      if (wip >= limit) publish('board.denyNewWork', {wip, limit});
     });
-    PubSub.subscribe('workitem.finished', () => {
+    subscribe('workitem.finished', () => {
       wip--;
-      if (wip < limit) PubSub.publish('board.allowNewWork', {wip, limit});
+      if (wip < limit) publish('board.allowNewWork', {wip, limit});
     });
   }
 
@@ -27,7 +27,7 @@ function DynamicLimitBoardWip() {
   let limiter = new LimitBoardWip(1);
 
 
-  PubSub.subscribe('stats.calculated', (topic, stats) => {
+  subscribe('stats.calculated', (topic, stats) => {
     if (optimized)
       return;
     if (stats.workInProgress === limiter.limit())
@@ -68,7 +68,7 @@ function WipUp(step = 10) {
   let limiter = new LimitBoardWip(wipLimit);
 
 
-  PubSub.subscribe('workitem.finished', () => {
+  subscribe('workitem.finished', () => {
     counter++;
     if (counter % step === 0) {
       wipLimit++;
