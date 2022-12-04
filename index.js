@@ -14712,12 +14712,7 @@ const cardColors = [
   '#FF65A3',
   '#EE5E9F',
   '#7AFCFF',
-  '#7AFCFF',
-  '#7AFCFF',
-  '#7AFCFF',
   '#FEFF9C',
-  '#FEFF9C',
-  '#FFF740',
   '#FFF740',
   '#FCF0AD',
   '#E9E74A',
@@ -14725,16 +14720,12 @@ const cardColors = [
   '#F9A55B',
 ]
 
-function any(array) {
-  return array[Math.floor(Math.random() * array.length)];
-}
+const any = array => array[Math.floor(Math.random() * array.length)];
 
-function anyCardColor() {
-  return any(cardColors);
-}
-
-module.exports = {anyCardColor};
+module.exports = {anyCardColor: () => any(cardColors)};
 },{}],13:[function(require,module,exports){
+const {publish, subscribe} = require('./publish-subscribe')
+
 const {
   Chart,
   ArcElement,
@@ -14763,7 +14754,6 @@ const {
   SubTitle
 } = require('chart.js');
 Chart.register(ArcElement, LineElement, BarElement, PointElement, BarController, BubbleController, DoughnutController, LineController, PieController, PolarAreaController, RadarController, ScatterController, CategoryScale, LinearScale, LogarithmicScale, RadialLinearScale, TimeScale, TimeSeriesScale, Decimation, Filler, Legend, Title, Tooltip, SubTitle);
-const PubSub = require("pubsub-js");
 
 const distinct = (value, index, self) => self.indexOf(value) === index;
 
@@ -14828,20 +14818,17 @@ function Cfd($chart, updateInterval, speed) {
 
   const chart = new Chart(ctx, config);
 
-  PubSub.subscribe('board.ready', (t, board) => {
-    const start = new Date();
+  subscribe('board.ready', (t, {columns, timestamp: boardStart}) => {
 
-    function currentDate() {
-      return (new Date() - start) * speed / 1000;
-    }
+    const currentDate = now => (now - boardStart) * speed / 1000;
 
-    const columns = {}
-    board.columns
+    const localColumns = {}
+    columns
       .map(nameOfColumn)
       .filter(distinct)
-      .forEach(name => columns[name] = 0)
+      .forEach(name => localColumns[name] = 0)
 
-    chart.data.datasets = board.columns
+    chart.data.datasets = columns
       .map(nameOfColumn)
       .filter(distinct)
       .filter(c => c !== 'Backlog')
@@ -14851,33 +14838,33 @@ function Cfd($chart, updateInterval, speed) {
     if (updateInterval) {
       const timerId = setInterval(() => chart.update(), updateInterval);
 
-      PubSub.subscribe('board.done', () => {
+      subscribe('board.done', () => {
         clearInterval(timerId);
         chart.update()
       });
     } else {
-      PubSub.subscribe('board.done', () => {
+      subscribe('board.done', () => {
         chart.update()
       });
     }
 
-    PubSub.subscribe('workitem.added', (topic, data) => {
-      const x = currentDate();
+    subscribe('workitem.added', (topic, {column, timestamp}) => {
+      const x = currentDate(timestamp);
 
       const execute = () => {
-        const columnName = nameOfColumn(data.column)
+        const columnName = nameOfColumn(column)
         if (columnName === 'Backlog') {
-          columns[columnName]++
+          localColumns[columnName]++
         } else {
-          columns[columnName]++;
+          localColumns[columnName]++;
 
-          const inboxName = nameOfColumn(data.column.inbox);
-          columns[inboxName]--;
+          const inboxName = nameOfColumn(column.inbox);
+          localColumns[inboxName]--;
         }
-        chart.data.datasets.forEach(ds => ds.data.push({x, y: columns[ds.label]}))
+        chart.data.datasets.forEach(ds => ds.data.push({x, y: localColumns[ds.label]}))
       };
-      if (['Done'].includes(data.column.name)) execute()
-      if (data.column.type === 'work') execute();
+      if (['Done'].includes(column.name)) execute()
+      if (column.type === 'work') execute();
     });
   });
 
@@ -14885,14 +14872,14 @@ function Cfd($chart, updateInterval, speed) {
 }
 
 module.exports = Cfd
-},{"chart.js":2,"pubsub-js":3}],14:[function(require,module,exports){
-const PubSub = require('pubsub-js');
+},{"./publish-subscribe":23,"chart.js":2}],14:[function(require,module,exports){
+const {subscribe} = require('./publish-subscribe')
 const {createElement} = require('./dom-manipulation')
 
 const round = (number, positions = 2) => Math.round(number * Math.pow(10, positions)) / Math.pow(10, positions);
 
 const initialize = (currentSenarioId) => {
-  PubSub.subscribe('board.ready', (topic, {columns}) => {
+  subscribe('board.ready', (topic, {columns}) => {
     document.getElementById('board').innerHTML = ''
     let $scenario = document.querySelector(`${currentSenarioId} .workers`);
     if($scenario) $scenario.innerHTML = ''
@@ -14915,7 +14902,7 @@ const initialize = (currentSenarioId) => {
     });
   });
 
-  PubSub.subscribe('workitem.added', (topic, {column, item}) => {
+  subscribe('workitem.added', (topic, {column, item}) => {
     let $card = createElement({
       type: 'li',
       className: 'post-it',
@@ -14927,7 +14914,7 @@ const initialize = (currentSenarioId) => {
     if ($column) $column.append($card); // FIXME: this check should not happen
   });
 
-  PubSub.subscribe('workitem.removed', (topic, {column, item}) => {
+  subscribe('workitem.removed', (topic, {column, item}) => {
     let selector = `[data-column-id="${column.id}"] [data-card-id="${item.id}"]`;
     let $card = document.querySelector(selector);
     if ($card) $card.remove(); // FIXME: this check should not happen
@@ -14940,8 +14927,8 @@ const initialize = (currentSenarioId) => {
       $span.innerHTML = `${$cards ? $cards.childElementCount : 0}`;
     }
   }
-  PubSub.subscribe('workitem.added', updateAmount);
-  PubSub.subscribe('workitem.removed', updateAmount);
+  subscribe('workitem.added', updateAmount);
+  subscribe('workitem.removed', updateAmount);
 
   const renderWip = ({averageWip, maxWorkInProgress}) => {
     const wip = round(averageWip, 1);
@@ -14960,14 +14947,14 @@ const initialize = (currentSenarioId) => {
     return `${value} (max ${max})`;
   };
 
-  PubSub.subscribe('stats.calculated', (topic, stats) => {
+  subscribe('stats.calculated', (topic, {stats}) => {
     document.querySelector(`${currentSenarioId} .throughput`).innerHTML = round(stats.throughput);
     document.querySelector(`${currentSenarioId} .leadtime`).innerHTML = renderLeadTime(stats)
     document.querySelector(`${currentSenarioId} .wip`).innerHTML = renderWip(stats)
     document.querySelector(`${currentSenarioId} .timeWorked`).innerHTML = round(stats.timeWorked, 0);
   });
 
-  PubSub.subscribe('worker.created', (topic, worker) => {
+  subscribe('worker.created', (topic, {worker}) => {
     const $worker = createElement({type: 'li', className: 'worker', attributes: {'data-worker-id': worker.id}})
     $worker.append(createElement({type: 'span', className: 'name', text: `${worker.name()}: `}))
     $worker.append(createElement({type: 'span', className: 'stat', text: '0%'}))
@@ -14976,7 +14963,7 @@ const initialize = (currentSenarioId) => {
     if ($workers) $workers.append($worker)
   });
 
-  PubSub.subscribe('worker.stats.updated', (topic, stats) => {
+  subscribe('worker.stats.updated', (topic, stats) => {
     var efficiency = Math.round(stats.stats.efficiency * 100)
 
     let $workerEfficiency = document.querySelector(`${currentSenarioId} [data-worker-id="${stats.workerId}"] .stat`);
@@ -14987,9 +14974,9 @@ const initialize = (currentSenarioId) => {
 
 module.exports = {initialize};
 
-},{"./dom-manipulation":19,"pubsub-js":3}],15:[function(require,module,exports){
+},{"./dom-manipulation":19,"./publish-subscribe":23}],15:[function(require,module,exports){
 const BoardFactory = require("./boardFactory");
-const PubSub = require("pubsub-js");
+const {publish, subscribe} = require('./publish-subscribe')
 
 const NoLimits = function () {
   return {
@@ -15023,21 +15010,21 @@ let Board = function (workColumnNames) {
   function initialize(workColumnNames) {
     const factory = new BoardFactory();
     columns = factory.createColumns(workColumnNames);
-    PubSub.publish('board.ready', {columns});
+    publish('board.ready', {columns});
   }
 
   initialize(workColumnNames);
 
-  PubSub.subscribe('workitem.added', (topic, subject) => {
-    assignNewWorkIfPossible();
+  subscribe('workitem.added', (topic, {timestamp}) => {
+    assignNewWorkIfPossible(timestamp);
   });
 
-  PubSub.subscribe('board.allowNewWork', (topic, subject) => {
+  subscribe('board.allowNewWork', (topic, {timestamp}) => {
     allowNewWork = true;
-    assignNewWorkIfPossible();
+    assignNewWorkIfPossible(timestamp);
   });
 
-  function assignNewWorkIfPossible() {
+  function assignNewWorkIfPossible(timestamp) {
     const columnWithWork = workColumns()
       .reverse()
       .filter(column => column.inbox.hasWork())
@@ -15057,24 +15044,24 @@ let Board = function (workColumnNames) {
         });
 
       if (availableWorker) {
-        availableWorker.startWorkingOn(columnWithWork.inbox, columnWithWork, columnWithWork.outbox);
+        availableWorker.startWorkingOn(columnWithWork.inbox, columnWithWork, columnWithWork.outbox, timestamp);
       }
     }
   }
 
-  PubSub.subscribe('board.denyNewWork', () => allowNewWork = false);
+  subscribe('board.denyNewWork', () => allowNewWork = false);
 
-  PubSub.subscribe('workitem.added', (topic, {item, column}) => {
+  subscribe('workitem.added', (topic, {item, column, timestamp}) => {
     if (column.id === firstWorkColumn().id) {
-      item.startTime = Date.now();
-      PubSub.publish('workitem.started', item);
+      item.startTime = timestamp;
+      publish('workitem.started', {item, timestamp});
     }
     if (column.id === doneColumn().id) {
-      item.endTime = Date.now();
+      item.endTime = timestamp;
       item.duration = item.endTime - item.startTime;
-      PubSub.publish('workitem.finished', item);
+      publish('workitem.finished', {item, timestamp});
       if (done())
-        PubSub.publish('board.done', {board});
+        publish('board.done', {board, timestamp});
     }
   });
 
@@ -15083,7 +15070,7 @@ let Board = function (workColumnNames) {
 
 module.exports = Board
 
-},{"./boardFactory":16,"pubsub-js":3}],16:[function(require,module,exports){
+},{"./boardFactory":16,"./publish-subscribe":23}],16:[function(require,module,exports){
 const {WorkList} = require("./worker");
 
 function BoardFactory() {
@@ -15128,7 +15115,8 @@ function BoardFactory() {
 }
 
 module.exports = BoardFactory
-},{"./worker":31}],17:[function(require,module,exports){
+},{"./worker":32}],17:[function(require,module,exports){
+const {subscribe} = require('../src/publish-subscribe')
 const CurrentStats = columns => {
 
   const needsAStatistic = column => column.name !== '-';
@@ -15149,8 +15137,8 @@ const CurrentStats = columns => {
   const itemRemoved = (topic, {column, item}) => statFor(column).value--;
 
   const init = () => {
-    PubSub.subscribe('workitem.added', itemAdded)
-    PubSub.subscribe('workitem.removed', itemRemoved)
+    subscribe('workitem.added', itemAdded)
+    subscribe('workitem.removed', itemRemoved)
   };
 
   const done = () => {
@@ -15167,9 +15155,9 @@ const CurrentStats = columns => {
 };
 
 module.exports = CurrentStats
-},{}],18:[function(require,module,exports){
+},{"../src/publish-subscribe":23}],18:[function(require,module,exports){
 const Chart = require('chart.js');
-const PubSub = require("pubsub-js");
+const {subscribe} = require('../src/publish-subscribe')
 
 function createChart(ctx,speed) {
   const leadTime = [];
@@ -15256,14 +15244,14 @@ function LineChart($chart, updateInterval, speed) {
   const ctx = $chart.getContext('2d');
 
   let state = createChart(ctx, speed);
-  PubSub.subscribe('board.ready', () => {
+  subscribe('board.ready', () => {
     const timerId = setInterval(() => state.chart.update(), updateInterval);
-    PubSub.subscribe('board.done', () => {
+    subscribe('board.done', () => {
       clearInterval(timerId);
       state.chart.update()
     });
 
-    PubSub.subscribe('stats.calculated', (topic, stats) => {
+    subscribe('stats.calculated', (topic, {stats}) => {
       const {leadTime, throughput} = stats.sliding.performance(10);
 
       state.labels.push(xValue(state.startTime, speed));
@@ -15277,7 +15265,7 @@ function LineChart($chart, updateInterval, speed) {
 }
 
 module.exports = LineChart
-},{"chart.js":2,"pubsub-js":3}],19:[function(require,module,exports){
+},{"../src/publish-subscribe":23,"chart.js":2}],19:[function(require,module,exports){
 const createElement = ({type='div', id, className, attributes=[], text, style}) => {
     const $element = document.createElement(type);
     if (id) $element.setAttribute('id', id)
@@ -15386,7 +15374,7 @@ function poisson(value) {
 
 module.exports = {generateWorkItems, randomBetween, averageOf, average: averageOf, poisson};
 
-},{"./worker":31}],22:[function(require,module,exports){
+},{"./worker":32}],22:[function(require,module,exports){
 const {average, poisson} = require("./generator");
 
 function parseInput(rawInput) {
@@ -15443,13 +15431,23 @@ module.exports = {
 };
 
 },{"./generator":21}],23:[function(require,module,exports){
+const PubSub = require("pubsub-js");
+
+module.exports = {
+    ...PubSub,
+    publish: (topic, message) => {
+        message.timestamp = message.timestamp || Date.now();
+        PubSub.publish(topic, message);
+    },
+}
+},{"pubsub-js":3}],24:[function(require,module,exports){
 function Range(from, to) {
   let length = to - from + 1;
   return Array.from(Array(length).keys()).map(value => value + from);
 }
 
 module.exports = Range
-},{}],24:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 const Board = require("./board");
 const {generateWorkItems} = require("./generator");
 const {Worker} = require('./worker')
@@ -15489,7 +15487,7 @@ const Scenario = scenario => {
 };
 
 module.exports = Scenario
-},{"./board":15,"./generator":21,"./worker":31}],25:[function(require,module,exports){
+},{"./board":15,"./generator":21,"./worker":32}],26:[function(require,module,exports){
 const {average} = require('./generator');
 
 module.exports = [
@@ -15603,8 +15601,8 @@ module.exports = [
     speed: 20
   },
 ];
-},{"./generator":21}],26:[function(require,module,exports){
-const PubSub = require('pubsub-js');
+},{"./generator":21}],27:[function(require,module,exports){
+const {clearAllSubscriptions, subscribe} = require('./publish-subscribe')
 const scenarios = require('./scenarios')
 const Animation = require('./animation');
 const {LimitBoardWip} = require('../src/strategies');
@@ -15672,7 +15670,8 @@ let lineChart = undefined;
 let cfd = undefined;
 
 function run(scenario) {
-    PubSub.clearAllSubscriptions();
+    clearAllSubscriptions();
+    subscribe('*', (topic, message) => console.log('received', message.timestamp, {topic, message}))
 
     // force predictable randomness across each simulationr
     seedrandom('limit work in progress', {global: true});
@@ -15695,36 +15694,36 @@ function run(scenario) {
 }
 
 
-},{"../src/strategies":28,"./CumulativeFlowDiagram":13,"./animation":14,"./charts":18,"./form-helper":20,"./parsing":22,"./scenario":24,"./scenarios":25,"./stats":27,"./timeAdjustments":29,"./worker-stats":30,"pubsub-js":3,"seedrandom":4}],27:[function(require,module,exports){
+},{"../src/strategies":29,"./CumulativeFlowDiagram":13,"./animation":14,"./charts":18,"./form-helper":20,"./parsing":22,"./publish-subscribe":23,"./scenario":25,"./scenarios":26,"./stats":28,"./timeAdjustments":30,"./worker-stats":31,"seedrandom":4}],28:[function(require,module,exports){
 const TimeAdjustments = require('./timeAdjustments');
-const PubSub = require('pubsub-js');
+const {publish, subscribe} = require('./publish-subscribe')
 
-function RunningWip() {
-  const startTick = Date.now();
-
+function RunningWip(startTick) {
   let surface = 0;
-  let latestTick = Date.now();
+  let latestTick = startTick;
 
-  const delta = () => (Date.now() - latestTick) / 1000;
-  const totalTime = () => (Date.now() - startTick) / 1000;
+  const delta = (now) => (now - latestTick) / 1000;
+  const totalTime = (now) => (now - startTick) / 1000;
 
   return {
-    update: (wip) => {
-      surface += wip * delta();
-      latestTick = Date.now();
+    update: (wip, now) => {
+      if (!now) debugger
+      surface += wip * delta(now);
+      latestTick = now;
     },
-    average: () => {
-      const time = totalTime();
+    average: (now) => {
+      if (!now) debugger
+      const time = totalTime(now);
       if (time < 1) return 0;
       return surface / time;
     }
   };
 }
 
-function initialState() {
+function initialState(startTick) {
   return {
     wip: 0,
-    runningWip: RunningWip(),
+    runningWip: RunningWip(startTick),
     maxWip: 0,
     maxEndtime: 0,
     maxLeadtime: 0,
@@ -15790,28 +15789,30 @@ function initialize() {
 
   const calculatePerformance = () => (numberOfItems) => performance(lastNumberOfItems(numberOfItems));
 
-  function publishStats() {
-    PubSub.publish('stats.calculated', {
-      throughput: calculateAllThroughput(state.doneItems) * TimeAdjustments.multiplicator(),
-      leadTime: calculateAllLeadTime(state.doneItems) / TimeAdjustments.multiplicator(),
-      maxLeadTime: state.maxLeadtime / TimeAdjustments.multiplicator(),
-      workInProgress: state.wip,
-      maxWorkInProgress: state.maxWip,
-      sliding: {performance: calculatePerformance()},
-      timeWorked: state.timeWorked,
-      averageWip: state.runningWip.average()
-    });
+  function publishStats(timestamp) {
+    publish('stats.calculated', {
+      timestamp,
+      stats: {
+        throughput: calculateAllThroughput(state.doneItems) * TimeAdjustments.multiplicator(),
+        leadTime: calculateAllLeadTime(state.doneItems) / TimeAdjustments.multiplicator(),
+        maxLeadTime: state.maxLeadtime / TimeAdjustments.multiplicator(),
+        workInProgress: state.wip,
+        maxWorkInProgress: state.maxWip,
+        sliding: {performance: calculatePerformance()},
+        timeWorked: state.timeWorked,
+        averageWip: state.runningWip.average(timestamp)
+      }});
   }
 
-  PubSub.subscribe('board.ready', () => {
-    state = initialState()
+  subscribe('board.ready', (topic, {timestamp}) => {
+    state = initialState(timestamp)
   });
 
-  PubSub.subscribe('workitem.started', () => {
-    state.runningWip.update(state.wip);
+  subscribe('workitem.started', (topic, {timestamp}) => {
+    state.runningWip.update(state.wip, timestamp);
     state.wip++;
     state.maxWip = Math.max(state.wip, state.maxWip)
-    publishStats();
+    publishStats(timestamp);
   });
 
 
@@ -15819,8 +15820,8 @@ function initialize() {
     return (state.maxEndtime - state.minStarttime) / (TimeAdjustments.multiplicator() * 1000);
   }
 
-  PubSub.subscribe('workitem.finished', (topic, item) => {
-    state.runningWip.update(state.wip);
+  subscribe('workitem.finished', (topic, {item, timestamp}) => {
+    state.runningWip.update(state.wip, timestamp);
     state.wip--;
     state.maxEndtime = Math.max(state.maxEndtime, item.endTime);
     state.minStarttime = Math.min(state.minStarttime, item.startTime);
@@ -15828,7 +15829,7 @@ function initialize() {
     state.timeWorked = calculateDaysWorked()
     state.sumOfDurations += (item.endTime - item.startTime)
     state.doneItems.push(item);
-    publishStats();
+    publishStats(timestamp);
   });
 
 }
@@ -15839,21 +15840,21 @@ module.exports = {
   performance,
 };
 
-},{"./timeAdjustments":29,"pubsub-js":3}],28:[function(require,module,exports){
-const PubSub = require('pubsub-js');
+},{"./publish-subscribe":23,"./timeAdjustments":30}],29:[function(require,module,exports){
+const {publish, subscribe} = require('./publish-subscribe')
 
 function LimitBoardWip() {
   const initialize = (limit = 1) => {
     let wip = 0;
-    PubSub.publish('board.allowNewWork', {wip, limit});
+    publish('board.allowNewWork', {wip, limit});
 
-    PubSub.subscribe('workitem.started', () => {
+    subscribe('workitem.started', () => {
       wip++;
-      if (wip >= limit) PubSub.publish('board.denyNewWork', {wip, limit});
+      if (wip >= limit) publish('board.denyNewWork', {wip, limit});
     });
-    PubSub.subscribe('workitem.finished', () => {
+    subscribe('workitem.finished', () => {
       wip--;
-      if (wip < limit) PubSub.publish('board.allowNewWork', {wip, limit});
+      if (wip < limit) publish('board.allowNewWork', {wip, limit});
     });
   }
 
@@ -15869,7 +15870,7 @@ function DynamicLimitBoardWip() {
   let limiter = new LimitBoardWip(1);
 
 
-  PubSub.subscribe('stats.calculated', (topic, stats) => {
+  subscribe('stats.calculated', (topic, stats) => {
     if (optimized)
       return;
     if (stats.workInProgress === limiter.limit())
@@ -15892,8 +15893,6 @@ function DynamicLimitBoardWip() {
       if (bestMeasurement !== newMeasurement) {
         optimized = true;
         limiter.updateLimit(bestMeasurement.limit);
-        console.log({bestMeasurement})
-        console.log({measurements})
       } else {
         limiter.updateLimit(limiter.limit() + 1);
       }
@@ -15910,7 +15909,7 @@ function WipUp(step = 10) {
   let limiter = new LimitBoardWip(wipLimit);
 
 
-  PubSub.subscribe('workitem.finished', () => {
+  subscribe('workitem.finished', () => {
     counter++;
     if (counter % step === 0) {
       wipLimit++;
@@ -15924,7 +15923,7 @@ function WipUp(step = 10) {
 
 module.exports = {LimitBoardWip, DynamicLimitBoardWip, WipUp}
 
-},{"pubsub-js":3}],29:[function(require,module,exports){
+},{"./publish-subscribe":23}],30:[function(require,module,exports){
 (function(){
   factor = 1;
 
@@ -15933,8 +15932,8 @@ module.exports = {LimitBoardWip, DynamicLimitBoardWip, WipUp}
     speedUpBy: (f) => { factor = 1.0/f; }
   }
 })();
-},{}],30:[function(require,module,exports){
-const PubSub = require('pubsub-js');
+},{}],31:[function(require,module,exports){
+const {publish, subscribe} = require('./publish-subscribe')
 
 function WorkerStats() {
 
@@ -15965,19 +15964,19 @@ function WorkerStats() {
 
   const workersHistory = {};
 
-  PubSub.subscribe('worker.created', (topic, worker) => {
+  subscribe('worker.created', (topic, {worker}) => {
     workersHistory[worker.id] = [];
-    PubSub.publish('worker.stats.updated', calculateStatsFor(worker))
+    publish('worker.stats.updated', calculateStatsFor(worker))
   });
 
-  PubSub.subscribe('worker.idle', (topic, worker) => {
-    workersHistory[worker.id].push({timestamp: Date.now(), state: 'idle'});
-    PubSub.publish('worker.stats.updated', calculateStatsFor(worker))
+  subscribe('worker.idle', (topic, {worker, timestamp }) => {
+    workersHistory[worker.id].push({timestamp, state: 'idle'});
+    publish('worker.stats.updated', calculateStatsFor(worker))
   });
 
-  PubSub.subscribe('worker.working', (topic, worker) => {
-    workersHistory[worker.id].push({timestamp: Date.now(), state: 'working'});
-    PubSub.publish('worker.stats.updated', calculateStatsFor(worker))
+  subscribe('worker.working', (topic, {worker, timestamp}) => {
+    workersHistory[worker.id].push({timestamp, state: 'working'});
+    publish('worker.stats.updated', calculateStatsFor(worker))
   });
 
   return {}
@@ -15985,8 +15984,8 @@ function WorkerStats() {
 
 module.exports = WorkerStats;
 
-},{"pubsub-js":3}],31:[function(require,module,exports){
-const PubSub = require('pubsub-js');
+},{"./publish-subscribe":23}],32:[function(require,module,exports){
+const {publish} = require('./publish-subscribe')
 const TimeAdjustments = require('./timeAdjustments');
 const {anyCardColor} = require("./Colors");
 
@@ -16024,23 +16023,24 @@ function Worker(skills = {dev: 1}) {
     return 1000 * TimeAdjustments.multiplicator() * workItem.work[skill] / workSpeedFor(skill);
   }
 
-  function startWorkingOn(inbox, inProgress, outbox) {
+  function startWorkingOn(inbox, inProgress, outbox, startTimestamp) {
     let item = inbox.peek();
     if (item) {
       idle = false;
-      PubSub.publish('worker.working', worker);
+      publish('worker.working', {worker, timestamp: startTimestamp});
       let skill = inProgress.necessarySkill;
-      inbox.move(inProgress, item);
+      inbox.move(inProgress, item, startTimestamp);
       let timeout = calculateTimeoutFor(item, skill);
       setTimeout(() => {
         idle = true;
-        inProgress.move(outbox, item);
-        PubSub.publish('worker.idle', worker);
+        const endTimestamp = startTimestamp + timeout;
+        inProgress.move(outbox, item, endTimestamp);
+        publish('worker.idle', {worker, timestamp: endTimestamp});
       }, timeout)
     }
   }
 
-  PubSub.publish('worker.created', worker);
+  publish('worker.created', {worker});
   return worker
 }
 
@@ -16074,23 +16074,23 @@ function WorkList(skill = "dev") {
     necessarySkill: skill
   };
 
-  function add(item) {
+  function add(item, timestamp = Date.now()) {
     work.push(item);
-    PubSub.publish('workitem.added', {item, column});
+    publish('workitem.added', {item, column, timestamp});
   }
 
-  function _remove(item) {
+  function _remove(item, timestamp) {
     for (let i = 0; i < size(); i++) {
       if (work[i] === item) {
         work.splice(i, 1);
       }
     }
-    PubSub.publish('workitem.removed', {item, column});
+    publish('workitem.removed', {item, column, timestamp});
   }
 
-  function move(to, item) {
-    _remove(item);
-    to.add(item);
+  function move(to, item, timestamp) {
+    _remove(item, timestamp);
+    to.add(item, timestamp);
     return item;
   }
 
@@ -16099,4 +16099,4 @@ function WorkList(skill = "dev") {
 
 module.exports = {Worker, WorkItem, WorkList};
 
-},{"./Colors":12,"./timeAdjustments":29,"pubsub-js":3}]},{},[12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31]);
+},{"./Colors":12,"./publish-subscribe":23,"./timeAdjustments":30}]},{},[12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32]);
