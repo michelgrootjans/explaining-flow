@@ -79,7 +79,7 @@ const initialize = (currentSenarioId) => {
     document.querySelector(`${currentSenarioId} .timeWorked`).innerHTML = round(stats.timeWorked, 0);
   });
 
-  subscribe('worker.created', (topic, worker) => {
+  subscribe('worker.created', (topic, {worker}) => {
     const $worker = createElement({type: 'li', className: 'worker', attributes: {'data-worker-id': worker.id}})
     $worker.append(createElement({type: 'span', className: 'name', text: `${worker.name()}: `}))
     $worker.append(createElement({type: 'span', className: 'stat', text: '0%'}))

@@ -40,19 +40,19 @@ function Worker(skills = {dev: 1}) {
     let item = inbox.peek();
     if (item) {
       idle = false;
-      publish('worker.working', worker);
+      publish('worker.working', {worker});
       let skill = inProgress.necessarySkill;
       inbox.move(inProgress, item);
       let timeout = calculateTimeoutFor(item, skill);
       setTimeout(() => {
         idle = true;
         inProgress.move(outbox, item);
-        publish('worker.idle', worker);
+        publish('worker.idle', {worker});
       }, timeout)
     }
   }
 
-  publish('worker.created', worker);
+  publish('worker.created', {worker});
   return worker
 }
 

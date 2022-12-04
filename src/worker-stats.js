@@ -29,18 +29,18 @@ function WorkerStats() {
 
   const workersHistory = {};
 
-  subscribe('worker.created', (topic, worker) => {
+  subscribe('worker.created', (topic, {worker}) => {
     workersHistory[worker.id] = [];
     publish('worker.stats.updated', calculateStatsFor(worker))
   });
 
-  subscribe('worker.idle', (topic, worker) => {
-    workersHistory[worker.id].push({timestamp: Date.now(), state: 'idle'});
+  subscribe('worker.idle', (topic, {worker, timestamp }) => {
+    workersHistory[worker.id].push({timestamp, state: 'idle'});
     publish('worker.stats.updated', calculateStatsFor(worker))
   });
 
-  subscribe('worker.working', (topic, worker) => {
-    workersHistory[worker.id].push({timestamp: Date.now(), state: 'working'});
+  subscribe('worker.working', (topic, {worker, timestamp}) => {
+    workersHistory[worker.id].push({timestamp, state: 'working'});
     publish('worker.stats.updated', calculateStatsFor(worker))
   });
 
