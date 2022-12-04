@@ -92,20 +92,17 @@ function Cfd($chart, updateInterval, speed) {
 
   const chart = new Chart(ctx, config);
 
-  subscribe('board.ready', (t, board) => {
-    const start = board.timestamp;
+  subscribe('board.ready', (t, {columns, timestamp: boardStart}) => {
 
-    function currentDate(now) {
-      return (now - start) * speed / 1000;
-    }
+    const currentDate = now => (now - boardStart) * speed / 1000;
 
-    const columns = {}
-    board.columns
+    const localColumns = {}
+    columns
       .map(nameOfColumn)
       .filter(distinct)
-      .forEach(name => columns[name] = 0)
+      .forEach(name => localColumns[name] = 0)
 
-    chart.data.datasets = board.columns
+    chart.data.datasets = columns
       .map(nameOfColumn)
       .filter(distinct)
       .filter(c => c !== 'Backlog')
@@ -125,23 +122,23 @@ function Cfd($chart, updateInterval, speed) {
       });
     }
 
-    subscribe('workitem.added', (topic, data) => {
-      const x = currentDate(data.timestamp);
+    subscribe('workitem.added', (topic, {column, timestamp}) => {
+      const x = currentDate(timestamp);
 
       const execute = () => {
-        const columnName = nameOfColumn(data.column)
+        const columnName = nameOfColumn(column)
         if (columnName === 'Backlog') {
-          columns[columnName]++
+          localColumns[columnName]++
         } else {
-          columns[columnName]++;
+          localColumns[columnName]++;
 
-          const inboxName = nameOfColumn(data.column.inbox);
-          columns[inboxName]--;
+          const inboxName = nameOfColumn(column.inbox);
+          localColumns[inboxName]--;
         }
-        chart.data.datasets.forEach(ds => ds.data.push({x, y: columns[ds.label]}))
+        chart.data.datasets.forEach(ds => ds.data.push({x, y: localColumns[ds.label]}))
       };
-      if (['Done'].includes(data.column.name)) execute()
-      if (data.column.type === 'work') execute();
+      if (['Done'].includes(column.name)) execute()
+      if (column.type === 'work') execute();
     });
   });
 
