@@ -1,4 +1,4 @@
-const PubSub = require('pubsub-js');
+const {publish, subscribe, clearAllSubscriptions} = require('../src/publish-subscribe')
 const {Worker} = require('../src/worker');
 const WorkerStats = require('../src/worker-stats');
 
@@ -8,10 +8,10 @@ describe('worker stats', () => {
 
   let latestStats = undefined;
   beforeEach(() => {
-    PubSub.clearAllSubscriptions();
+    clearAllSubscriptions();
     new WorkerStats();
     latestStats = {};
-    PubSub.subscribe('worker.stats.updated', (topic, stats) => latestStats[stats.workerId] = stats.stats);
+    subscribe('worker.stats.updated', (topic, stats) => latestStats[stats.workerId] = stats.stats);
   });
 
   it('when worker is idle', () => {
@@ -64,7 +64,7 @@ describe('worker stats', () => {
 
   function publishAt(second, topic, worker) {
     jest.spyOn(Date, 'now').mockImplementationOnce(() => new Date(2000, 1, 1, 0, 0, second));
-    PubSub.publish(topic, worker);
+    publish(topic, worker);
     jest.runAllTimers();
   }
 });

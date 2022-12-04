@@ -1,4 +1,4 @@
-const {publish, subscribe} = require('./publish-subscribe')
+const {subscribe} = require('./publish-subscribe')
 const {createElement} = require('./dom-manipulation')
 
 const round = (number, positions = 2) => Math.round(number * Math.pow(10, positions)) / Math.pow(10, positions);

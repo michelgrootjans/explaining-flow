@@ -1,5 +1,4 @@
-const PubSub = require('pubsub-js');
-const {publish, subscribe} = require('./publish-subscribe')
+const {publish} = require('./publish-subscribe')
 const TimeAdjustments = require('./timeAdjustments');
 const {anyCardColor} = require("./Colors");
 
