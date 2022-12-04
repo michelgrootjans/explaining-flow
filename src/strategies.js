@@ -5,13 +5,13 @@ function LimitBoardWip() {
     let wip = 0;
     publish('board.allowNewWork', {wip, limit});
 
-    subscribe('workitem.started', () => {
+    subscribe('workitem.started', (topic, {timestamp}) => {
       wip++;
-      if (wip >= limit) publish('board.denyNewWork', {wip, limit});
+      if (wip >= limit) publish('board.denyNewWork', {wip, limit, timestamp});
     });
-    subscribe('workitem.finished', () => {
+    subscribe('workitem.finished', (topic, {timestamp}) => {
       wip--;
-      if (wip < limit) publish('board.allowNewWork', {wip, limit});
+      if (wip < limit) publish('board.allowNewWork', {wip, limit, timestamp});
     });
   }
 
