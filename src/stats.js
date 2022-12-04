@@ -90,17 +90,19 @@ function initialize() {
 
   const calculatePerformance = () => (numberOfItems) => performance(lastNumberOfItems(numberOfItems));
 
-  function publishStats(now) {
+  function publishStats(timestamp) {
     publish('stats.calculated', {
-      throughput: calculateAllThroughput(state.doneItems) * TimeAdjustments.multiplicator(),
-      leadTime: calculateAllLeadTime(state.doneItems) / TimeAdjustments.multiplicator(),
-      maxLeadTime: state.maxLeadtime / TimeAdjustments.multiplicator(),
-      workInProgress: state.wip,
-      maxWorkInProgress: state.maxWip,
-      sliding: {performance: calculatePerformance()},
-      timeWorked: state.timeWorked,
-      averageWip: state.runningWip.average(now)
-    });
+      timestamp,
+      stats: {
+        throughput: calculateAllThroughput(state.doneItems) * TimeAdjustments.multiplicator(),
+        leadTime: calculateAllLeadTime(state.doneItems) / TimeAdjustments.multiplicator(),
+        maxLeadTime: state.maxLeadtime / TimeAdjustments.multiplicator(),
+        workInProgress: state.wip,
+        maxWorkInProgress: state.maxWip,
+        sliding: {performance: calculatePerformance()},
+        timeWorked: state.timeWorked,
+        averageWip: state.runningWip.average(timestamp)
+      }});
   }
 
   subscribe('board.ready', ({timestamp}) => {

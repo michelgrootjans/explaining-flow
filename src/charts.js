@@ -93,7 +93,7 @@ function LineChart($chart, updateInterval, speed) {
       state.chart.update()
     });
 
-    subscribe('stats.calculated', (topic, stats) => {
+    subscribe('stats.calculated', (topic, {stats}) => {
       const {leadTime, throughput} = stats.sliding.performance(10);
 
       state.labels.push(xValue(state.startTime, speed));

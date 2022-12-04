@@ -57,6 +57,7 @@ const initialize = (currentSenarioId) => {
 
   const renderWip = ({averageWip, maxWorkInProgress}) => {
     const wip = round(averageWip, 1);
+    console.log({averageWip, maxWorkInProgress, wip})
     if (wip === maxWorkInProgress) {
       return wip;
     }
@@ -72,7 +73,7 @@ const initialize = (currentSenarioId) => {
     return `${value} (max ${max})`;
   };
 
-  subscribe('stats.calculated', (topic, stats) => {
+  subscribe('stats.calculated', (topic, {stats}) => {
     document.querySelector(`${currentSenarioId} .throughput`).innerHTML = round(stats.throughput);
     document.querySelector(`${currentSenarioId} .leadtime`).innerHTML = renderLeadTime(stats)
     document.querySelector(`${currentSenarioId} .wip`).innerHTML = renderWip(stats)
