@@ -101,7 +101,7 @@ describe('animation', () => {
     });
 
     it('shows on workitem done', () => {
-      PubSub.publish('stats.calculated', {
+      publish('stats.calculated', {
         throughput: 1,
         leadTime: 2,
         averageWip: 3,

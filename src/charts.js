@@ -1,5 +1,5 @@
 const Chart = require('chart.js');
-const PubSub = require("pubsub-js");
+const {subscribe} = require('../src/publish-subscribe')
 
 function createChart(ctx,speed) {
   const leadTime = [];
@@ -86,14 +86,14 @@ function LineChart($chart, updateInterval, speed) {
   const ctx = $chart.getContext('2d');
 
   let state = createChart(ctx, speed);
-  PubSub.subscribe('board.ready', () => {
+  subscribe('board.ready', () => {
     const timerId = setInterval(() => state.chart.update(), updateInterval);
-    PubSub.subscribe('board.done', () => {
+    subscribe('board.done', () => {
       clearInterval(timerId);
       state.chart.update()
     });
 
-    PubSub.subscribe('stats.calculated', (topic, stats) => {
+    subscribe('stats.calculated', (topic, stats) => {
       const {leadTime, throughput} = stats.sliding.performance(10);
 
       state.labels.push(xValue(state.startTime, speed));

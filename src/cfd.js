@@ -1,3 +1,4 @@
+const {subscribe} = require('../src/publish-subscribe')
 const CurrentStats = columns => {
 
   const needsAStatistic = column => column.name !== '-';
@@ -18,8 +19,8 @@ const CurrentStats = columns => {
   const itemRemoved = (topic, {column, item}) => statFor(column).value--;
 
   const init = () => {
-    PubSub.subscribe('workitem.added', itemAdded)
-    PubSub.subscribe('workitem.removed', itemRemoved)
+    subscribe('workitem.added', itemAdded)
+    subscribe('workitem.removed', itemRemoved)
   };
 
   const done = () => {

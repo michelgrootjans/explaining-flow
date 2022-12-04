@@ -77,14 +77,14 @@ let Board = function (workColumnNames) {
   subscribe('workitem.added', (topic, {item, column}) => {
     if (column.id === firstWorkColumn().id) {
       item.startTime = Date.now();
-      PubSub.publish('workitem.started', item);
+      publish('workitem.started', item);
     }
     if (column.id === doneColumn().id) {
       item.endTime = Date.now();
       item.duration = item.endTime - item.startTime;
-      PubSub.publish('workitem.finished', item);
+      publish('workitem.finished', item);
       if (done())
-        PubSub.publish('board.done', {board});
+        publish('board.done', {board});
     }
   });
 
