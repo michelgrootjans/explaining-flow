@@ -15671,7 +15671,7 @@ let cfd = undefined;
 
 function run(scenario) {
     clearAllSubscriptions();
-    subscribe('*', (topic, message) => console.log('received', message.timestamp, {topic, message}))
+    // subscribe('*', (topic, message) => console.log('received', message.timestamp, {topic, message}))
 
     // force predictable randomness across each simulationr
     seedrandom('limit work in progress', {global: true});
@@ -15848,13 +15848,13 @@ function LimitBoardWip() {
     let wip = 0;
     publish('board.allowNewWork', {wip, limit});
 
-    subscribe('workitem.started', () => {
+    subscribe('workitem.started', (topic, {timestamp}) => {
       wip++;
-      if (wip >= limit) publish('board.denyNewWork', {wip, limit});
+      if (wip >= limit) publish('board.denyNewWork', {wip, limit, timestamp});
     });
-    subscribe('workitem.finished', () => {
+    subscribe('workitem.finished', (topic, {timestamp}) => {
       wip--;
-      if (wip < limit) publish('board.allowNewWork', {wip, limit});
+      if (wip < limit) publish('board.allowNewWork', {wip, limit, timestamp});
     });
   }
 
