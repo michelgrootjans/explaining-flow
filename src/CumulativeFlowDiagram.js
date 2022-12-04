@@ -1,3 +1,5 @@
+const {publish, subscribe} = require('./publish-subscribe')
+
 const {
   Chart,
   ArcElement,
@@ -26,7 +28,6 @@ const {
   SubTitle
 } = require('chart.js');
 Chart.register(ArcElement, LineElement, BarElement, PointElement, BarController, BubbleController, DoughnutController, LineController, PieController, PolarAreaController, RadarController, ScatterController, CategoryScale, LinearScale, LogarithmicScale, RadialLinearScale, TimeScale, TimeSeriesScale, Decimation, Filler, Legend, Title, Tooltip, SubTitle);
-const PubSub = require("pubsub-js");
 
 const distinct = (value, index, self) => self.indexOf(value) === index;
 
@@ -91,7 +92,7 @@ function Cfd($chart, updateInterval, speed) {
 
   const chart = new Chart(ctx, config);
 
-  PubSub.subscribe('board.ready', (t, board) => {
+  subscribe('board.ready', (t, board) => {
     const start = new Date();
 
     function currentDate() {
@@ -114,17 +115,17 @@ function Cfd($chart, updateInterval, speed) {
     if (updateInterval) {
       const timerId = setInterval(() => chart.update(), updateInterval);
 
-      PubSub.subscribe('board.done', () => {
+      subscribe('board.done', () => {
         clearInterval(timerId);
         chart.update()
       });
     } else {
-      PubSub.subscribe('board.done', () => {
+      subscribe('board.done', () => {
         chart.update()
       });
     }
 
-    PubSub.subscribe('workitem.added', (topic, data) => {
+    subscribe('workitem.added', (topic, data) => {
       const x = currentDate();
 
       const execute = () => {
