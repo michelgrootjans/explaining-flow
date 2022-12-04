@@ -1,5 +1,5 @@
 const BoardFactory = require("./boardFactory");
-const PubSub = require("pubsub-js");
+const {publish, subscribe} = require('./publish-subscribe')
 
 const NoLimits = function () {
   return {
@@ -33,16 +33,16 @@ let Board = function (workColumnNames) {
   function initialize(workColumnNames) {
     const factory = new BoardFactory();
     columns = factory.createColumns(workColumnNames);
-    PubSub.publish('board.ready', {columns});
+    publish('board.ready', {columns});
   }
 
   initialize(workColumnNames);
 
-  PubSub.subscribe('workitem.added', (topic, subject) => {
+  subscribe('workitem.added', (topic, subject) => {
     assignNewWorkIfPossible();
   });
 
-  PubSub.subscribe('board.allowNewWork', (topic, subject) => {
+  subscribe('board.allowNewWork', (topic, subject) => {
     allowNewWork = true;
     assignNewWorkIfPossible();
   });
@@ -72,9 +72,9 @@ let Board = function (workColumnNames) {
     }
   }
 
-  PubSub.subscribe('board.denyNewWork', () => allowNewWork = false);
+  subscribe('board.denyNewWork', () => allowNewWork = false);
 
-  PubSub.subscribe('workitem.added', (topic, {item, column}) => {
+  subscribe('workitem.added', (topic, {item, column}) => {
     if (column.id === firstWorkColumn().id) {
       item.startTime = Date.now();
       PubSub.publish('workitem.started', item);
