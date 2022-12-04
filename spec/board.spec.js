@@ -1,6 +1,6 @@
 const {Worker, WorkItem, WorkList} = require('../src/worker');
 const Board = require('../src/board');
-const {publish, subscribe, clearAllSubscriptions} = require('../src/publish-subscribe')
+const {subscribe, clearAllSubscriptions} = require('../src/publish-subscribe')
 
 describe('a worker', () => {
   beforeEach(clearAllSubscriptions);
