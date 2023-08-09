@@ -1,4 +1,4 @@
-const PubSub = require('pubsub-js');
+const {clearAllSubscriptions, subscribe} = require('./publish-subscribe')
 const scenarios = require('./scenarios')
 const Animation = require('./animation');
 const {LimitBoardWip} = require('../src/strategies');
@@ -66,7 +66,8 @@ let lineChart = undefined;
 let cfd = undefined;
 
 function run(scenario) {
-    PubSub.clearAllSubscriptions();
+    clearAllSubscriptions();
+    // subscribe('*', (topic, message) => console.log('received', message.timestamp, {topic, message}))
 
     // force predictable randomness across each simulationr
     seedrandom('limit work in progress', {global: true});

@@ -1,3 +1,5 @@
+const {publish, subscribe} = require('./publish-subscribe')
+
 const {
   Chart,
   ArcElement,
@@ -26,7 +28,6 @@ const {
   SubTitle
 } = require('chart.js');
 Chart.register(ArcElement, LineElement, BarElement, PointElement, BarController, BubbleController, DoughnutController, LineController, PieController, PolarAreaController, RadarController, ScatterController, CategoryScale, LinearScale, LogarithmicScale, RadialLinearScale, TimeScale, TimeSeriesScale, Decimation, Filler, Legend, Title, Tooltip, SubTitle);
-const PubSub = require("pubsub-js");
 
 const distinct = (value, index, self) => self.indexOf(value) === index;
 
@@ -91,20 +92,17 @@ function Cfd($chart, updateInterval, speed) {
 
   const chart = new Chart(ctx, config);
 
-  PubSub.subscribe('board.ready', (t, board) => {
-    const start = new Date();
+  subscribe('board.ready', (t, {columns, timestamp: boardStart}) => {
 
-    function currentDate() {
-      return (new Date() - start) * speed / 1000;
-    }
+    const currentDate = now => (now - boardStart) * speed / 1000;
 
-    const columns = {}
-    board.columns
+    const localColumns = {}
+    columns
       .map(nameOfColumn)
       .filter(distinct)
-      .forEach(name => columns[name] = 0)
+      .forEach(name => localColumns[name] = 0)
 
-    chart.data.datasets = board.columns
+    chart.data.datasets = columns
       .map(nameOfColumn)
       .filter(distinct)
       .filter(c => c !== 'Backlog')
@@ -114,33 +112,33 @@ function Cfd($chart, updateInterval, speed) {
     if (updateInterval) {
       const timerId = setInterval(() => chart.update(), updateInterval);
 
-      PubSub.subscribe('board.done', () => {
+      subscribe('board.done', () => {
         clearInterval(timerId);
         chart.update()
       });
     } else {
-      PubSub.subscribe('board.done', () => {
+      subscribe('board.done', () => {
         chart.update()
       });
     }
 
-    PubSub.subscribe('workitem.added', (topic, data) => {
-      const x = currentDate();
+    subscribe('workitem.added', (topic, {column, timestamp}) => {
+      const x = currentDate(timestamp);
 
       const execute = () => {
-        const columnName = nameOfColumn(data.column)
+        const columnName = nameOfColumn(column)
         if (columnName === 'Backlog') {
-          columns[columnName]++
+          localColumns[columnName]++
         } else {
-          columns[columnName]++;
+          localColumns[columnName]++;
 
-          const inboxName = nameOfColumn(data.column.inbox);
-          columns[inboxName]--;
+          const inboxName = nameOfColumn(column.inbox);
+          localColumns[inboxName]--;
         }
-        chart.data.datasets.forEach(ds => ds.data.push({x, y: columns[ds.label]}))
+        chart.data.datasets.forEach(ds => ds.data.push({x, y: localColumns[ds.label]}))
       };
-      if (['Done'].includes(data.column.name)) execute()
-      if (data.column.type === 'work') execute();
+      if (['Done'].includes(column.name)) execute()
+      if (column.type === 'work') execute();
     });
   });
 

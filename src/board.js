@@ -1,5 +1,5 @@
 const BoardFactory = require("./boardFactory");
-const PubSub = require("pubsub-js");
+const {publish, subscribe} = require('./publish-subscribe')
 
 const NoLimits = function () {
   return {
@@ -33,21 +33,21 @@ let Board = function (workColumnNames) {
   function initialize(workColumnNames) {
     const factory = new BoardFactory();
     columns = factory.createColumns(workColumnNames);
-    PubSub.publish('board.ready', {columns});
+    publish('board.ready', {columns});
   }
 
   initialize(workColumnNames);
 
-  PubSub.subscribe('workitem.added', (topic, subject) => {
-    assignNewWorkIfPossible();
+  subscribe('workitem.added', (topic, {timestamp}) => {
+    assignNewWorkIfPossible(timestamp);
   });
 
-  PubSub.subscribe('board.allowNewWork', (topic, subject) => {
+  subscribe('board.allowNewWork', (topic, {timestamp}) => {
     allowNewWork = true;
-    assignNewWorkIfPossible();
+    assignNewWorkIfPossible(timestamp);
   });
 
-  function assignNewWorkIfPossible() {
+  function assignNewWorkIfPossible(timestamp) {
     const columnWithWork = workColumns()
       .reverse()
       .filter(column => column.inbox.hasWork())
@@ -67,24 +67,24 @@ let Board = function (workColumnNames) {
         });
 
       if (availableWorker) {
-        availableWorker.startWorkingOn(columnWithWork.inbox, columnWithWork, columnWithWork.outbox);
+        availableWorker.startWorkingOn(columnWithWork.inbox, columnWithWork, columnWithWork.outbox, timestamp);
       }
     }
   }
 
-  PubSub.subscribe('board.denyNewWork', () => allowNewWork = false);
+  subscribe('board.denyNewWork', () => allowNewWork = false);
 
-  PubSub.subscribe('workitem.added', (topic, {item, column}) => {
+  subscribe('workitem.added', (topic, {item, column, timestamp}) => {
     if (column.id === firstWorkColumn().id) {
-      item.startTime = Date.now();
-      PubSub.publish('workitem.started', item);
+      item.startTime = timestamp;
+      publish('workitem.started', {item, timestamp});
     }
     if (column.id === doneColumn().id) {
-      item.endTime = Date.now();
+      item.endTime = timestamp;
       item.duration = item.endTime - item.startTime;
-      PubSub.publish('workitem.finished', item);
+      publish('workitem.finished', {item, timestamp});
       if (done())
-        PubSub.publish('board.done', {board});
+        publish('board.done', {board, timestamp});
     }
   });
 

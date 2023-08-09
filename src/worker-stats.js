@@ -1,4 +1,4 @@
-const PubSub = require('pubsub-js');
+const {publish, subscribe} = require('./publish-subscribe')
 
 function WorkerStats() {
 
@@ -29,19 +29,19 @@ function WorkerStats() {
 
   const workersHistory = {};
 
-  PubSub.subscribe('worker.created', (topic, worker) => {
+  subscribe('worker.created', (topic, {worker}) => {
     workersHistory[worker.id] = [];
-    PubSub.publish('worker.stats.updated', calculateStatsFor(worker))
+    publish('worker.stats.updated', calculateStatsFor(worker))
   });
 
-  PubSub.subscribe('worker.idle', (topic, worker) => {
-    workersHistory[worker.id].push({timestamp: Date.now(), state: 'idle'});
-    PubSub.publish('worker.stats.updated', calculateStatsFor(worker))
+  subscribe('worker.idle', (topic, {worker, timestamp }) => {
+    workersHistory[worker.id].push({timestamp, state: 'idle'});
+    publish('worker.stats.updated', calculateStatsFor(worker))
   });
 
-  PubSub.subscribe('worker.working', (topic, worker) => {
-    workersHistory[worker.id].push({timestamp: Date.now(), state: 'working'});
-    PubSub.publish('worker.stats.updated', calculateStatsFor(worker))
+  subscribe('worker.working', (topic, {worker, timestamp}) => {
+    workersHistory[worker.id].push({timestamp, state: 'working'});
+    publish('worker.stats.updated', calculateStatsFor(worker))
   });
 
   return {}

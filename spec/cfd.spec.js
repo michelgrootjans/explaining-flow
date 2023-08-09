@@ -1,11 +1,11 @@
 const CurrentStats = require("../src/cfd");
-const PubSub = require("pubsub-js");
+const {clearAllSubscriptions} = require('../src/publish-subscribe')
 const BoardFactory = require("../src/boardFactory");
 const {WorkList} = require("../src/worker");
 
 describe("Cumulative Flow Diagram", () => {
   beforeAll(jest.useFakeTimers);
-  beforeEach(PubSub.clearAllSubscriptions);
+  beforeEach(clearAllSubscriptions);
 
   let stats = undefined;
   let columns = undefined;

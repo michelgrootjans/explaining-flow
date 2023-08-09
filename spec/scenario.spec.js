@@ -1,5 +1,5 @@
 const animation = require('../src/animation');
-const PubSub = require("pubsub-js");
+const {clearAllSubscriptions} = require('../src/publish-subscribe')
 const Range = require('../src/range')
 const Scenario = require('../src/scenario')
 
@@ -9,7 +9,7 @@ describe('scenario', () => {
     jest.useFakeTimers();
   });
 
-  afterEach(PubSub.clearAllSubscriptions)
+  afterEach(clearAllSubscriptions)
 
   beforeEach(() => {
     document.body.innerHTML = `

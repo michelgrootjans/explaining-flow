@@ -1,10 +1,10 @@
-const PubSub = require('pubsub-js');
+const {subscribe} = require('./publish-subscribe')
 const {createElement} = require('./dom-manipulation')
 
 const round = (number, positions = 2) => Math.round(number * Math.pow(10, positions)) / Math.pow(10, positions);
 
 const initialize = (currentSenarioId) => {
-  PubSub.subscribe('board.ready', (topic, {columns}) => {
+  subscribe('board.ready', (topic, {columns}) => {
     document.getElementById('board').innerHTML = ''
     let $scenario = document.querySelector(`${currentSenarioId} .workers`);
     if($scenario) $scenario.innerHTML = ''
@@ -27,7 +27,7 @@ const initialize = (currentSenarioId) => {
     });
   });
 
-  PubSub.subscribe('workitem.added', (topic, {column, item}) => {
+  subscribe('workitem.added', (topic, {column, item}) => {
     let $card = createElement({
       type: 'li',
       className: 'post-it',
@@ -39,7 +39,7 @@ const initialize = (currentSenarioId) => {
     if ($column) $column.append($card); // FIXME: this check should not happen
   });
 
-  PubSub.subscribe('workitem.removed', (topic, {column, item}) => {
+  subscribe('workitem.removed', (topic, {column, item}) => {
     let selector = `[data-column-id="${column.id}"] [data-card-id="${item.id}"]`;
     let $card = document.querySelector(selector);
     if ($card) $card.remove(); // FIXME: this check should not happen
@@ -52,8 +52,8 @@ const initialize = (currentSenarioId) => {
       $span.innerHTML = `${$cards ? $cards.childElementCount : 0}`;
     }
   }
-  PubSub.subscribe('workitem.added', updateAmount);
-  PubSub.subscribe('workitem.removed', updateAmount);
+  subscribe('workitem.added', updateAmount);
+  subscribe('workitem.removed', updateAmount);
 
   const renderWip = ({averageWip, maxWorkInProgress}) => {
     const wip = round(averageWip, 1);
@@ -72,14 +72,14 @@ const initialize = (currentSenarioId) => {
     return `${value} (max ${max})`;
   };
 
-  PubSub.subscribe('stats.calculated', (topic, stats) => {
+  subscribe('stats.calculated', (topic, {stats}) => {
     document.querySelector(`${currentSenarioId} .throughput`).innerHTML = round(stats.throughput);
     document.querySelector(`${currentSenarioId} .leadtime`).innerHTML = renderLeadTime(stats)
     document.querySelector(`${currentSenarioId} .wip`).innerHTML = renderWip(stats)
     document.querySelector(`${currentSenarioId} .timeWorked`).innerHTML = round(stats.timeWorked, 0);
   });
 
-  PubSub.subscribe('worker.created', (topic, worker) => {
+  subscribe('worker.created', (topic, {worker}) => {
     const $worker = createElement({type: 'li', className: 'worker', attributes: {'data-worker-id': worker.id}})
     $worker.append(createElement({type: 'span', className: 'name', text: `${worker.name()}: `}))
     $worker.append(createElement({type: 'span', className: 'stat', text: '0%'}))
@@ -88,7 +88,7 @@ const initialize = (currentSenarioId) => {
     if ($workers) $workers.append($worker)
   });
 
-  PubSub.subscribe('worker.stats.updated', (topic, stats) => {
+  subscribe('worker.stats.updated', (topic, stats) => {
     var efficiency = Math.round(stats.stats.efficiency * 100)
 
     let $workerEfficiency = document.querySelector(`${currentSenarioId} [data-worker-id="${stats.workerId}"] .stat`);
