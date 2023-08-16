@@ -7,6 +7,7 @@ const Stats = require('./stats');
 const WorkerStats = require('./worker-stats');
 const Scenario = require("./scenario");
 const LineChart = require("./charts");
+const HistogramChart = require("./histogram");
 const Cfd = require("./CumulativeFlowDiagram");
 const {parseInput} = require("./parsing");
 
@@ -64,6 +65,7 @@ const wipLimiter = LimitBoardWip();
 
 let lineChart = undefined;
 let cfd = undefined;
+let histogram = undefined;
 
 function run(scenario) {
     PubSub.clearAllSubscriptions();
@@ -84,6 +86,9 @@ function run(scenario) {
 
     if(cfd) cfd.destroy()
     cfd = Cfd(document.getElementById('cfd'), 2000, scenario.speed)
+
+    if(histogram) histogram.destroy()
+    histogram = HistogramChart(document.getElementById('histogram'), 1000, scenario.speed)
 
     const board = scenario.run();
 }
