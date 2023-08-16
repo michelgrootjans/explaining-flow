@@ -68,6 +68,15 @@ function createChart(ctx,speed) {
               borderWidth: 2,
               borderDash: [5, 5]
             },
+            line2: {
+              display: () => { return percentile.sle > 0; },
+              type: 'line',
+              xMax: () => { return percentile.sle; },
+              xMin: () => { return percentile.sle; },
+              borderColor: 'rgb(0, 204, 34)',
+              borderWidth: 2,
+              borderDash: [5, 5]
+            },
             label1: {
               display: () => { return percentile.average > 0; },
               type: 'label',
@@ -79,6 +88,18 @@ function createChart(ctx,speed) {
               color: 'rgb(255, 99, 132)',
               fontSize: 8,
               content: '50%',
+            },
+            label2: {
+              display: () => { return percentile.sle > 0; },
+              type: 'label',
+              rotation: 270,
+              xValue: () => { return percentile.sle; },
+              yValue: () => { return Math.max(...(Object.values(histogram))); },
+              yAdjust: 15,
+              xAdjust: -10,
+              color: 'rgb(0, 204, 34)',
+              fontSize: 8,
+              content: '85%',
             }
           }
         },
@@ -144,6 +165,8 @@ function HistogramChart($chart, updateInterval, speed) {
       if (state.percentile.cycletimes.length>1) {
         let pos = Math.floor(state.percentile.cycletimes.length/2);
         state.percentile.average = state.percentile.cycletimes[pos];
+        pos = Math.floor(state.percentile.cycletimes.length*(85/100));
+        state.percentile.sle = state.percentile.cycletimes[pos];
       }
     });
   });
