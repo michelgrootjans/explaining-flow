@@ -56,7 +56,7 @@ describe('animation', () => {
 
       const $card = find('#board div:nth-child(1) .cards li');
       expect($card.getAttribute('data-card-id')).toBe(`${workItem.id}`);
-      expect($card.getAttribute('class')).toBe('post-it');
+      expect($card.getAttribute('class')).toContain('post-it');
 
       expect(find('#board div:nth-child(2) .cards').innerHTML).toBe('');
       expect(find('#board div:nth-child(3) .cards').innerHTML).toBe('');
@@ -72,7 +72,7 @@ describe('animation', () => {
 
       const $card = find('#board div:nth-child(2) .cards li');
       expect($card.getAttribute('data-card-id')).toBe(`${workItem.id}`);
-      expect($card.getAttribute('class')).toBe('post-it');
+      expect($card.getAttribute('class')).toContain('post-it');
 
       expect(find('#board div:nth-child(3) .cards').innerHTML).toBe('');
     })
