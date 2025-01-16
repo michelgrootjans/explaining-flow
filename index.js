@@ -14879,6 +14879,7 @@ const PubSub = require('pubsub-js');
 const {createElement} = require('./dom-manipulation')
 
 const round = (number, positions = 2) => Math.round(number * Math.pow(10, positions)) / Math.pow(10, positions);
+const any = array => array[Math.floor(Math.random() * array.length)];
 
 const initialize = (currentSenarioId) => {
   PubSub.subscribe('board.ready', (topic, {columns}) => {
@@ -14905,9 +14906,10 @@ const initialize = (currentSenarioId) => {
   });
 
   PubSub.subscribe('workitem.added', (topic, {column, item}) => {
+    const rotation = any(['left-2', 'left', 'none', 'right', 'right-2']);
     let $card = createElement({
       type: 'li',
-      className: 'post-it',
+      className: `post-it rotate-${rotation}`,
       attributes:{'data-card-id': item.id},
       style: `background: ${item.color};`
     })

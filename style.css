@@ -75,22 +75,25 @@
 .queue .post-it:nth-child(1000n+1){
     margin-top: 0;
 }
-.todo .post-it:nth-child(4n+1),
-.queue .post-it:nth-child(4n+1){
+.todo .rotate-none,
+.queue .rotate-none{
     transform: rotate(0deg);
 }
-.todo .post-it:nth-child(4n+2),
-.queue .post-it:nth-child(4n+2){
+.todo .rotate-right,
+.queue .rotate-right{
     transform: rotate(2deg);
 }
-.todo .post-it:nth-child(4n+3),
-.queue .post-it:nth-child(4n+3){
+.todo .rotate-left,
+.queue .rotate-left{
     transform: rotate(-2deg);
 }
-.todo .post-it:nth-child(4n+4),
-.done .post-it:nth-child(4n+4),
-.queue .post-it:nth-child(4n+4){
+.todo .rotate-right-2,
+.queue .rotate-right-2{
     transform: rotate(4deg);
+}
+.todo .rotate-left-2,
+.queue .rotate-left-2{
+    transform: rotate(-4deg);
 }
 
 .done .post-it:nth-child(5n+1){
