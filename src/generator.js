@@ -16,7 +16,7 @@ function averageOf(value) {
 }
 
 function poisson(value) {
-  const multiplier = 10;
+  const multiplier = 5;
   const mean = value * multiplier;
 
   const L = Math.exp(-mean);
