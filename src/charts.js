@@ -2,7 +2,7 @@ const Chart = require('chart.js');
 const PubSub = require("pubsub-js");
 const TimeAdjustments = require("./timeAdjustments");
 
-function createChart(ctx, speed) {
+function createChart(ctx, _speed) {
     const leadTime = [];
     const throughput = [];
     const wip = [];
@@ -42,10 +42,18 @@ function createChart(ctx, speed) {
                 x: {
                     beginAtZero: true,
                     suggestedMax: 20,
+                    title: {
+                        display: true,
+                        text: 'Project days'
+                    }
                 },
                 y: {
                     suggestedMax: 2,
                     beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Cycle Time (days)'
+                    }
                 },
             },
             plugins: {
