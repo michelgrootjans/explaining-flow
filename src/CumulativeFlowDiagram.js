@@ -72,11 +72,23 @@ function Cfd($chart, updateInterval, speed) {
       scales: {
         x: {
           type: 'linear',
+          beginAtZero: true,
+          suggestedMax: 20,
+          title: {
+            display: true,
+            text: 'Project days'
+          }
         },
         y: {
           type: 'linear',
-          ticks: {stepSize: 50, mirror: true},
+          ticks: {stepSize: 50},
           stacked: true,
+          suggestedMax: 20,
+          title: {
+            display: true,
+            text: '#items done'
+          }
+
         },
       },
       plugins: {
