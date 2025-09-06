@@ -80,7 +80,8 @@ function run(scenario) {
 
     wipLimiter.initialize(scenario.wipLimit)
     if(lineChart) lineChart.destroy()
-    lineChart = LineChart(document.getElementById('lineChart'), 1000, scenario.speed)
+
+    lineChart = LineChart(document.getElementById('lineChart'), scenario.speed,  250)
 
     if(cfd) cfd.destroy()
     cfd = Cfd(document.getElementById('cfd'), 2000, scenario.speed)
