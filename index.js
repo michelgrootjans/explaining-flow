@@ -15161,114 +15161,111 @@ module.exports = CurrentStats
 },{}],18:[function(require,module,exports){
 const Chart = require('chart.js');
 const PubSub = require("pubsub-js");
+const TimeAdjustments = require("./timeAdjustments");
 
-function createChart(ctx,speed) {
-  const leadTime = [];
-  const throughput = [];
-  const wip = [];
-  const labels = [];
-  const startTime = new Date();
+function createChart(ctx, speed) {
+    const leadTime = [];
+    const throughput = [];
+    const wip = [];
+    const labels = [];
+    const startTime = new Date();
+    const cycleTime = []
+    const itemAge = []
 
-  const data = {
-    labels,
-    datasets: [
-      {
-        label: 'throughput',
-        type: 'line',
-        lineTension: 0,
-        data: throughput,
-        backgroundColor: 'rgba(54, 162, 235, 0.1)',
-        borderColor: 'rgba(54, 162, 235, 1)',
-        fill: true,
-        borderWidth: 1,
-        pointRadius: 0,
-      },
-      {
-        label: 'leadtime',
-        type: 'line',
-        lineTension: 0,
-        data: leadTime,
-        backgroundColor: 'rgba(255, 99, 132, 0.1)',
-        borderColor: 'rgba(255, 99, 132, 1)',
-        fill: true,
-        borderWidth: 1,
-        pointRadius: 0,
-      },
-      {
-        label: 'wip',
-        type: 'line',
-        steppedLine: true,
-        lineTension: 0,
-        data: wip,
-        backgroundColor: 'rgba(255, 206, 86, 0.1)',
-        borderColor: 'rgba(255, 206, 86, 1)',
-        fill: true,
-        stepped: true,
-        borderWidth: 1,
-        pointRadius: 0,
-      },
-    ]
-  };
+    const data = {
+        labels,
+        datasets: [
+            {
+                label: 'Cycle time',
+                data: cycleTime,
+                borderColor: 'rgb(75, 192, 192)',
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderWidth: 1,
+                fill: false,
+            },
+            {
+                label: 'Item Age',
+                data: itemAge,
+                borderColor: 'rgb(255, 99, 132)',
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderWidth: 1,
+                fill: false,
+            },
+        ]
+    };
 
-  const config = {
-    type: 'line',
-    data: data,
-    options: {
-      animation: false,
-      scales: {
-        x: {
-          type: 'linear'
-        },
-        y: {
-          type: 'linear',
-          ticks: {mirror: true},
-          position: 'left'
-        },
-      },
-      plugins: {
-        legend: {display: true, position: 'bottom', align: 'start'},
-        title: {
-          display: true,
-          text: 'Flow metrics'
+    const config = {
+        type: 'scatter',
+        data: data,
+        options: {
+            animation: false,
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    suggestedMax: 20,
+                },
+                y: {
+                    suggestedMax: 2,
+                    beginAtZero: true,
+                },
+            },
+            plugins: {
+                legend: {display: true, position: 'bottom', align: 'start'},
+                title: {
+                    display: true,
+                    text: 'Cycle Times'
+                }
+            }
         }
-      }
-    }
-  };
-  const chart = new Chart(ctx, config);
-  return {leadTime, throughput, wip, data, chart, labels, startTime};
+    };
+    const chart = new Chart(ctx, config);
+    return {leadTime, throughput, wip, data, chart, labels, startTime, cycleTime, itemAge};
 }
 
-function xValue(startTime, speed) {
-  const currentTime = new Date();
-  return (currentTime - startTime) * speed / 1000;
+function currentDate(startTime, endDate, speed) {
+    return (endDate - startTime) * speed / 1000;
 }
 
-function LineChart($chart, updateInterval, speed) {
-  const ctx = $chart.getContext('2d');
+function LineChart($chart, speed, updateInterval) {
+    const ctx = $chart.getContext('2d');
 
-  let state = createChart(ctx, speed);
-  PubSub.subscribe('board.ready', () => {
-    const timerId = setInterval(() => state.chart.update(), updateInterval);
-    PubSub.subscribe('board.done', () => {
-      clearInterval(timerId);
-      state.chart.update()
+    let state = createChart(ctx, speed);
+
+    PubSub.subscribe('board.ready', () => {
+        const updatechartData = () => {
+            state.itemAge.length = 0;
+            state.itemAge.push(...workItems
+                .filter(item => !item.duration)
+                .map(item => ({x: currentDate(state.startTime, new Date(), speed), y: ((Date.now() - item.startTime) / (TimeAdjustments.multiplicator() * 1000))}))
+            )
+            state.chart.update()
+            console.log({cycletime: state.cycleTime, age: state.itemAge})
+        }
+
+        let workItems = []
+        const timerId = setInterval(updatechartData, updateInterval)
+
+        PubSub.subscribe('workitem.started', (event, item) => {
+            workItems.push(item)
+        });
+
+        PubSub.subscribe('workitem.finished', (event, item) => {
+            workItems = workItems.filter(i => i.id !== item.id)
+            state.cycleTime.push({x: currentDate(state.startTime, item.endTime, speed), y: (item.duration / (TimeAdjustments.multiplicator() * 1000))})
+        });
+
+        PubSub.subscribe('board.done', () => {
+            clearInterval(timerId);
+            updatechartData()
+        });
     });
 
-    PubSub.subscribe('stats.calculated', (topic, stats) => {
-      const {leadTime, throughput} = stats.sliding.performance(10);
-
-      state.labels.push(xValue(state.startTime, speed));
-      state.leadTime.push(leadTime);
-      state.throughput.push(throughput);
-      state.wip.push(stats.workInProgress);
-    });
-  });
-
-  return state.chart;
+    return state.chart;
 }
 
 module.exports = LineChart
-},{"chart.js":2,"pubsub-js":3}],19:[function(require,module,exports){
+
+},{"./timeAdjustments":29,"chart.js":2,"pubsub-js":3}],19:[function(require,module,exports){
 const createElement = ({type='div', id, className, attributes=[], text, style}) => {
     const $element = document.createElement(type);
     if (id) $element.setAttribute('id', id)
@@ -15360,7 +15357,7 @@ function averageOf(value) {
 }
 
 function poisson(value) {
-  const multiplier = 10;
+  const multiplier = 5;
   const mean = value * multiplier;
 
   const L = Math.exp(-mean);
@@ -15666,7 +15663,7 @@ function run(scenario) {
     PubSub.clearAllSubscriptions();
 
     // force predictable randomness across each simulationr
-    seedrandom('limit work in progress', {global: true});
+    // seedrandom('limit work in progress', {global: true});
 
     Animation.initialize(`#scenario-${scenario.id}`);
     Stats.initialize();
@@ -15677,7 +15674,8 @@ function run(scenario) {
 
     wipLimiter.initialize(scenario.wipLimit)
     if(lineChart) lineChart.destroy()
-    lineChart = LineChart(document.getElementById('lineChart'), 1000, scenario.speed)
+
+    lineChart = LineChart(document.getElementById('lineChart'), scenario.speed,  250)
 
     if(cfd) cfd.destroy()
     cfd = Cfd(document.getElementById('cfd'), 2000, scenario.speed)
