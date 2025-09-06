@@ -69,7 +69,7 @@ function run(scenario) {
     PubSub.clearAllSubscriptions();
 
     // force predictable randomness across each simulationr
-    seedrandom('limit work in progress', {global: true});
+    // seedrandom('limit work in progress', {global: true});
 
     Animation.initialize(`#scenario-${scenario.id}`);
     Stats.initialize();
