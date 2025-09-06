@@ -14798,11 +14798,23 @@ function Cfd($chart, updateInterval, speed) {
       scales: {
         x: {
           type: 'linear',
+          beginAtZero: true,
+          suggestedMax: 20,
+          title: {
+            display: true,
+            text: 'Project days'
+          }
         },
         y: {
           type: 'linear',
-          ticks: {stepSize: 50, mirror: true},
+          ticks: {stepSize: 50},
           stacked: true,
+          suggestedMax: 20,
+          title: {
+            display: true,
+            text: '#items done'
+          }
+
         },
       },
       plugins: {
@@ -14874,6 +14886,7 @@ function Cfd($chart, updateInterval, speed) {
 }
 
 module.exports = Cfd
+
 },{"chart.js":2,"pubsub-js":3}],14:[function(require,module,exports){
 const PubSub = require('pubsub-js');
 const {createElement} = require('./dom-manipulation')
