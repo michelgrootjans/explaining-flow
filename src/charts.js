@@ -50,6 +50,9 @@ function createChart(ctx, _speed) {
                 y: {
                     suggestedMax: 2,
                     beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    },
                     title: {
                         display: true,
                         text: 'Cycle Time (days)'
