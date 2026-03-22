@@ -9,6 +9,9 @@ const Scenario = require("./scenario");
 const LineChart = require("./charts");
 const Cfd = require("./CumulativeFlowDiagram");
 const {parseInput} = require("./parsing");
+const { Chart } = require('chart.js');
+const crosshairPlugin = require('./crosshair');
+Chart.register(crosshairPlugin);
 
 // force repeatable randomness
 const seedrandom = require('seedrandom');
