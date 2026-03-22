@@ -131,6 +131,19 @@
     width: 12%
 }
 
+.scenario.instance {
+    cursor: default;
+}
+
+.scenario.instance.done {
+    cursor: pointer;
+}
+
+.scenario.instance.selected {
+    outline: 2px solid #0d6efd;
+    border-radius: 4px;
+}
+
 #throughput, #leadtime, #wip {
     font-weight: bold;
 }

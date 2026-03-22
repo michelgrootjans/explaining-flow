@@ -15681,6 +15681,45 @@ Chart.register(crosshairPlugin);
 const seedrandom = require('seedrandom');
 const FormHelper = require("./form-helper");
 
+const snapshots = new Map();
+
+function captureSnapshot(scenarioId) {
+    PubSub.subscribe('board.done', () => {
+        snapshots.set(scenarioId, {
+            boardHtml: document.getElementById('board').innerHTML,
+            cfdDatasets: cfd.data.datasets.map(ds => ({
+                ...ds,
+                data: ds.data.map(point => ({...point}))
+            })),
+            lineChartDatasets: lineChart.data.datasets.map(ds => ({
+                ...ds,
+                data: ds.data.map(point => ({...point}))
+            }))
+        });
+        document.getElementById(`scenario-${scenarioId}`).classList.add('done');
+    });
+}
+
+function restoreSnapshot(scenarioId) {
+    const snapshot = snapshots.get(scenarioId);
+    if (!snapshot) return;
+
+    document.getElementById('board').innerHTML = snapshot.boardHtml;
+
+    cfd.data.datasets = snapshot.cfdDatasets.map(ds => ({
+        ...ds,
+        data: ds.data.map(point => ({...point}))
+    }));
+    cfd.update();
+
+    lineChart.data.datasets[0].data = snapshot.lineChartDatasets[0].data.map(point => ({...point}));
+    lineChart.data.datasets[1].data = [];
+    lineChart.update();
+
+    document.querySelectorAll('.scenario.instance').forEach(el => el.classList.remove('selected'));
+    document.getElementById(`scenario-${scenarioId}`).classList.add('selected');
+}
+
 function createScenarioContainer(scenario) {
     const template = document.querySelector('#scenario-template');
 
@@ -15722,6 +15761,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const $lastScenario = document.getElementsByClassName('scenario instance')[0];
         $scenarios.insertBefore($container, $lastScenario);
 
+        $container.addEventListener('click', () => restoreSnapshot(scenario.id));
+
+        document.querySelectorAll('.scenario.instance').forEach(el => el.classList.remove('selected'));
+        $container.classList.add('selected');
+
         run(scenario);
       })
 });
@@ -15754,6 +15798,7 @@ function run(scenario) {
     cfd = Cfd(document.getElementById('cfd'), 2000, scenario.speed)
 
     const board = scenario.run();
+    captureSnapshot(scenario.id);
 }
 
 
