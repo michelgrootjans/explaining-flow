@@ -48,10 +48,8 @@ function restoreSnapshot(scenarioId) {
     }));
     cfd.update();
 
-    lineChart.data.datasets = snapshot.lineChartDatasets.map(ds => ({
-        ...ds,
-        data: ds.data.map(point => ({...point}))
-    }));
+    lineChart.data.datasets[0].data = snapshot.lineChartDatasets[0].data.map(point => ({...point}));
+    lineChart.data.datasets[1].data = [];
     lineChart.update();
 
     document.querySelectorAll('.scenario.instance').forEach(el => el.classList.remove('selected'));
@@ -101,6 +99,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         $container.addEventListener('click', () => restoreSnapshot(scenario.id));
 
+        document.querySelectorAll('.scenario.instance').forEach(el => el.classList.remove('selected'));
+        $container.classList.add('selected');
+
         run(scenario);
       })
 });
@@ -132,7 +133,7 @@ function run(scenario) {
     if(cfd) cfd.destroy()
     cfd = Cfd(document.getElementById('cfd'), 2000, scenario.speed)
 
-    captureSnapshot(scenario.id);
     const board = scenario.run();
+    captureSnapshot(scenario.id);
 }
 
