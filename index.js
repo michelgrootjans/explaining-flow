@@ -14991,7 +14991,7 @@ const initialize = (currentSenarioId) => {
 
 module.exports = {initialize};
 
-},{"./dom-manipulation":19,"pubsub-js":3}],15:[function(require,module,exports){
+},{"./dom-manipulation":20,"pubsub-js":3}],15:[function(require,module,exports){
 const BoardFactory = require("./boardFactory");
 const PubSub = require("pubsub-js");
 
@@ -15132,7 +15132,7 @@ function BoardFactory() {
 }
 
 module.exports = BoardFactory
-},{"./worker":31}],17:[function(require,module,exports){
+},{"./worker":32}],17:[function(require,module,exports){
 const CurrentStats = columns => {
 
   const needsAStatistic = column => column.name !== '-';
@@ -15289,7 +15289,53 @@ function LineChart($chart, speed, updateInterval) {
 
 module.exports = LineChart
 
-},{"./timeAdjustments":29,"chart.js":2,"pubsub-js":3}],19:[function(require,module,exports){
+},{"./timeAdjustments":30,"chart.js":2,"pubsub-js":3}],19:[function(require,module,exports){
+let currentX = null;
+const charts = [];
+
+const crosshairPlugin = {
+  id: 'crosshair',
+  afterInit(chart) {
+    charts.push(chart);
+
+    chart.canvas.addEventListener('mousemove', (e) => {
+      const rect = chart.canvas.getBoundingClientRect();
+      const mouseX = e.clientX - rect.left;
+      currentX = chart.scales.x.getValueForPixel(mouseX);
+      charts.forEach(c => c.update('none'));
+    });
+
+    chart.canvas.addEventListener('mouseleave', () => {
+      currentX = null;
+      charts.forEach(c => c.update('none'));
+    });
+  },
+
+  afterDraw(chart) {
+    if (currentX === null) return;
+    const xPixel = chart.scales.x.getPixelForValue(currentX);
+    const { ctx, scales: { y } } = chart;
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(xPixel, y.top);
+    ctx.lineTo(xPixel, y.bottom);
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = 'rgba(0, 0, 0, 0.5)';
+    ctx.setLineDash([4, 4]);
+    ctx.stroke();
+    ctx.restore();
+  },
+
+  beforeDestroy(chart) {
+    const index = charts.indexOf(chart);
+    if (index > -1) charts.splice(index, 1);
+  }
+};
+
+module.exports = crosshairPlugin;
+
+},{}],20:[function(require,module,exports){
 const createElement = ({type='div', id, className, attributes=[], text, style}) => {
     const $element = document.createElement(type);
     if (id) $element.setAttribute('id', id)
@@ -15302,7 +15348,7 @@ const createElement = ({type='div', id, className, attributes=[], text, style}) 
 };
 
 module.exports = {createElement};
-},{}],20:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 const validateWork = ({workload}) => /^(\s*\w+\s*:\s*\d+\s*)(,\s*\w+\s*:\s*\d+\s*)*$/.test(workload);
 
 const validateWorkers = ({workload, workers}) => {
@@ -15362,7 +15408,7 @@ const initialize = () => {
 };
 
 module.exports = {initialize, validateWork, validateWorkers, suggestNumberOfStories}
-},{}],21:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 const {WorkItem} = require('./worker');
 
 function generateWorkItems(work, numberOfWorkItems = 100) {
@@ -15398,7 +15444,7 @@ function poisson(value) {
 
 module.exports = {generateWorkItems, randomBetween, averageOf, average: averageOf, poisson};
 
-},{"./worker":31}],22:[function(require,module,exports){
+},{"./worker":32}],23:[function(require,module,exports){
 const {average, poisson} = require("./generator");
 
 function parseInput(rawInput) {
@@ -15454,14 +15500,14 @@ module.exports = {
     parseWorkers
 };
 
-},{"./generator":21}],23:[function(require,module,exports){
+},{"./generator":22}],24:[function(require,module,exports){
 function Range(from, to) {
   let length = to - from + 1;
   return Array.from(Array(length).keys()).map(value => value + from);
 }
 
 module.exports = Range
-},{}],24:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 const Board = require("./board");
 const {generateWorkItems} = require("./generator");
 const {Worker} = require('./worker')
@@ -15501,7 +15547,7 @@ const Scenario = scenario => {
 };
 
 module.exports = Scenario
-},{"./board":15,"./generator":21,"./worker":31}],25:[function(require,module,exports){
+},{"./board":15,"./generator":22,"./worker":32}],26:[function(require,module,exports){
 const {average} = require('./generator');
 
 module.exports = [
@@ -15615,7 +15661,7 @@ module.exports = [
     speed: 20
   },
 ];
-},{"./generator":21}],26:[function(require,module,exports){
+},{"./generator":22}],27:[function(require,module,exports){
 const PubSub = require('pubsub-js');
 const scenarios = require('./scenarios')
 const Animation = require('./animation');
@@ -15627,6 +15673,9 @@ const Scenario = require("./scenario");
 const LineChart = require("./charts");
 const Cfd = require("./CumulativeFlowDiagram");
 const {parseInput} = require("./parsing");
+const { Chart } = require('chart.js');
+const crosshairPlugin = require('./crosshair');
+Chart.register(crosshairPlugin);
 
 // force repeatable randomness
 const seedrandom = require('seedrandom');
@@ -15708,7 +15757,7 @@ function run(scenario) {
 }
 
 
-},{"../src/strategies":28,"./CumulativeFlowDiagram":13,"./animation":14,"./charts":18,"./form-helper":20,"./parsing":22,"./scenario":24,"./scenarios":25,"./stats":27,"./timeAdjustments":29,"./worker-stats":30,"pubsub-js":3,"seedrandom":4}],27:[function(require,module,exports){
+},{"../src/strategies":29,"./CumulativeFlowDiagram":13,"./animation":14,"./charts":18,"./crosshair":19,"./form-helper":21,"./parsing":23,"./scenario":25,"./scenarios":26,"./stats":28,"./timeAdjustments":30,"./worker-stats":31,"chart.js":2,"pubsub-js":3,"seedrandom":4}],28:[function(require,module,exports){
 const TimeAdjustments = require('./timeAdjustments');
 const PubSub = require('pubsub-js');
 
@@ -15852,7 +15901,7 @@ module.exports = {
   performance,
 };
 
-},{"./timeAdjustments":29,"pubsub-js":3}],28:[function(require,module,exports){
+},{"./timeAdjustments":30,"pubsub-js":3}],29:[function(require,module,exports){
 const PubSub = require('pubsub-js');
 
 function LimitBoardWip() {
@@ -15937,7 +15986,7 @@ function WipUp(step = 10) {
 
 module.exports = {LimitBoardWip, DynamicLimitBoardWip, WipUp}
 
-},{"pubsub-js":3}],29:[function(require,module,exports){
+},{"pubsub-js":3}],30:[function(require,module,exports){
 (function(){
   factor = 1;
 
@@ -15946,7 +15995,7 @@ module.exports = {LimitBoardWip, DynamicLimitBoardWip, WipUp}
     speedUpBy: (f) => { factor = 1.0/f; }
   }
 })();
-},{}],30:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 const PubSub = require('pubsub-js');
 
 function WorkerStats() {
@@ -15998,7 +16047,7 @@ function WorkerStats() {
 
 module.exports = WorkerStats;
 
-},{"pubsub-js":3}],31:[function(require,module,exports){
+},{"pubsub-js":3}],32:[function(require,module,exports){
 const PubSub = require('pubsub-js');
 const TimeAdjustments = require('./timeAdjustments');
 const {anyCardColor} = require("./Colors");
@@ -16112,4 +16161,4 @@ function WorkList(skill = "dev") {
 
 module.exports = {Worker, WorkItem, WorkList};
 
-},{"./Colors":12,"./timeAdjustments":29,"pubsub-js":3}]},{},[12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31]);
+},{"./Colors":12,"./timeAdjustments":30,"pubsub-js":3}]},{},[12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32]);
