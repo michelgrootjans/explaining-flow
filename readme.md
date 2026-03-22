@@ -29,7 +29,7 @@ During this lightning talk, I will leave the _#stories_ on automatic.
 The stats we're interested in are:
 - **Throughput**: this is what is typically measured under the name _velocity_. It's the number of user stories finished per unit of time.
 - **Cycle time**: the time taken for each story from the moment it has been taken out of the _todo_ column until it reaches the _done_ column.
-- **WIP**: Work In Progress. The amount of user stories _in flight_. These stories have been started but are not done yet.
+- **WIP**: Work In Progress. The number of user stories _in flight_. These stories have been started but are not done yet.
  ### A single developer working on a predictable backlog
 In this predictable scenario, a single developer works on 50 stories. Each story takes exactly 1 day to complete. So we expect a throughput of `1` story per day. We expect a cycle time of `1` since each story will be in progress for exactly 1 day. This means that we'll have an average of `1` story in progress at any given time.
 
@@ -60,7 +60,7 @@ This is a direct illustration of [Little's law](https://en.wikipedia.org/wiki/Li
 ### Handover from development to QA
 Now both development and qa will spend 1 day _on average_ for each story.
 
-We expect the cycle time be 2 on average now: 1 day of development, 1 day of qa. We also expect a Throughput of 1 story per day.
+We expect the cycle time to be 2 on average now: 1 day of development, 1 day of qa. We also expect a Throughput of 1 story per day.
 
 However, if the simulation runs for long enough, a queue will start to appear between dev and qa, adding to the cycle time of the stories waiting in the queue.
 The reason is simple: As long as qa works faster than dev, everything will run smoothly. Once development starts going faster than qa, its output will wait in the queue.
@@ -91,7 +91,7 @@ Ux, development and qa will each spend 2 days _on average_ for each story. So ea
 - WIP: **9 stories with peaks of 16**
 
 ### Let's stack the deck to make development the slowest in the process
-We're now going to shift the effort a little.The total amount of work for each story is still 6, but the distribution is now:
+We're now going to shift the effort a little. The total amount of work for each story is still 6, but the distribution is now:
 - **1** day of ux on average
 - **3** days of dev on average
 - **2** days of qa on average
@@ -112,7 +112,7 @@ Predictably, a big queue will appear in front of the dev column as dev has three
 
 This is bad. The low velocity and high cycle time will make customers very unhappy. Let me remind you that each work item takes 6 days of work on average. Because they wait in a queue for most of their lifecycle, it takes 200 days on average to go from start to finish. This is one of the reasons why the amount of work for a task has no correlation to when it will be finished.
 
-How can we change team structure to improve this?
+How can we change the team structure to improve this?
 
 ### Let's add an extra developer
 The usual reflex at this point is to add developers to speed things up. This will obviously raise the daily cost of the team. What would be the expected benefit? Twice the throughput? Let's try that out in the next simulation.
@@ -127,9 +127,9 @@ The usual reflex at this point is to add developers to speed things up. This wil
 - Cycle time: **100 days per story**
 - WIP: **about 50 with a peak of 100**
 
-We have an improvement in throughput, but it's not the doubling we expected. Cycle time halved, but is still disastrous.
+We have an improvement in throughput, but it's not the doubling we expected. Cycle time halved but is still disastrous.
 
-### Let's add yet an extra developer
+### Let's add an extra developer
 Since adding a developer improved matters, let's try by adding yet another developer
 
 **Input**
@@ -161,7 +161,7 @@ We will simulate with the same team from scenario 5, but introduce a WIP-limit o
 With no extra cost, our throughput was unaffected, while our cycle time went from 200 days to 30 days.
 
 ### Improve even more
-Since limiting WIP works so well, why not limiting it to 5?
+Since limiting WIP works so well, why not limit it to 5?
 
 **Input**
 - Work per story: **`ux: 1, dev: 3, qa: 2`**
@@ -192,7 +192,7 @@ Let's try limiting WIP to 2 now.
 
 Now we start to see a drop in throughput. This might be a good tradeoff depending on your situation. If you care more about rapid feedback than feature delivery speed, you might choose this configuration.
 
-If you prefer a higher throughput with longer feedback cycles, you went too far in limiting WIP.
+If you prefer higher throughput with longer feedback cycles, you went too far in limiting WIP.
 
 ### Introducing multidisciplinary team members
 Now that we control our cycle time, is there anything we could do to improve the throughput while keeping lead time low? Let's introduce a tester that can also develop.
@@ -222,7 +222,7 @@ Now the throughput is higher. A throughput improvement from `0.30` to `0.38` mea
 - Cycle time: **6.2 days per story**
 - WIP: **3 stories**
 
-The throughput is approximatively the same as scenario 6, without the cost of the extra developer. The cycle time is now very close to the ideal 6.
+The throughput is approximately the same as scenario 6, without the cost of the extra developer. The cycle time is now very close to the ideal 6.
 
 This is the *ideal* situation, and will probably never be reached. Notice how the WIP is limited naturally by the number of team members.
 
@@ -230,15 +230,15 @@ This is the *ideal* situation, and will probably never be reached. Notice how th
 First: notice that [Little's law](https://en.wikipedia.org/wiki/Little%27s_law) applies to every scenario we saw:
 `throughput * cycle time = WIP` on average values.
 
-The ideal situation is having a team of only full-stack developers. You will probably never reach this state. However, you can still aim for this state:
+The ideal situation is to have a team of only full-stack developers. You will probably never reach this state. However, you can still aim for this state:
 
-Start by introducing WIP limits. When the WIP limit has been reached, some team members will have nothing to do. Try to encourage [swarming](https://blog.crisp.se/2009/06/26/henrikkniberg). Team members will then learn new skills and evolve towards becoming full-stack developer. This will in turn improve the total throughput and cycle time.
+Start by introducing WIP limits. When the WIP limit has been reached, some team members will have nothing to do. Try to encourage [swarming](https://blog.crisp.se/2009/06/26/henrikkniberg). Team members will then learn new skills and evolve towards becoming a full-stack developer. This will in turn improve the total throughput and cycle time.
 
 ## Other experiments to try:
-Experiment with some hybrid setups, and think about why some of these are better than others. For example, which worker setup do you expect to be better: `fullstack, dev, qa`, `ux, fullstack, qa` or `ux, dev, fullstack`? Verify your assumptions by running the simulation.
+Experiment with some hybrid setups and think about why some of these are better than others. For example, which worker setup do you expect to be better: `fullstack, dev, qa`, `ux, fullstack, qa` or `ux, dev, fullstack`? Verify your assumptions by running the simulation.
 
 
-You could try to add architecture, analysis, deveops, ... I'm sure you'll quickly realize that the more handovers you introduce, the less effective the setup will become.
+You could try to add architecture, analysis, devops, ... I'm sure you'll quickly realize that the more handovers you introduce, the less effective the setup will become.
 
 ## Roadmap
 This project is written in a RDD fashion: Readme Driven Development. This means that this readme is the only feature tracking tool I'm using.
