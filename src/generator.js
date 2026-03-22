@@ -28,7 +28,7 @@ function poisson(value) {
     p *= Math.random();
   } while (p > L);
 
-  return (k-1)/multiplier;
+  return (k - 1 + Math.random()) / multiplier;
 }
 
 module.exports = {generateWorkItems, randomBetween, averageOf, average: averageOf, poisson};
