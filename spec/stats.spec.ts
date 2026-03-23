@@ -116,8 +116,8 @@ describe('calculate basic stats', () => {
     const maxTime = time(5);
   });
 
-  function time(second) {
-    return new Date(2000, 1, 1, 1, 0, second);
+  function time(second: number): number {
+    return new Date(2000, 1, 1, 1, 0, second).getTime();
   }
 
   function given(publications) {

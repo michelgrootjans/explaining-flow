@@ -63,7 +63,7 @@ describe('worker stats', () => {
   });
 
   function publishAt(second, topic, worker) {
-    jest.spyOn(Date, 'now').mockImplementationOnce(() => new Date(2000, 1, 1, 0, 0, second));
+    jest.spyOn(Date, 'now').mockImplementationOnce(() => new Date(2000, 1, 1, 0, 0, second).getTime());
     PubSub.publish(topic, worker);
     jest.runAllTimers();
   }

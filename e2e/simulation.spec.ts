@@ -1,11 +1,10 @@
-// @ts-check
-const { test, expect } = require('@playwright/test');
+import { test, expect, Page } from '@playwright/test';
 
 /**
  * Helper: run a simulation with given parameters and return the stats.
  * This is the primary interaction point for AI agents verifying simulation behavior.
  */
-async function runSimulation(page, { workload, workers, wipLimit = '', numberOfStories = '', random = false } = {}) {
+async function runSimulation(page: Page, { workload, workers, wipLimit = '', numberOfStories = '', random = false }: { workload?: string, workers?: string, wipLimit?: string, numberOfStories?: string, random?: boolean } = {}) {
   await page.goto('/');
 
   if (workload !== undefined) {
@@ -38,7 +37,7 @@ async function runSimulation(page, { workload, workers, wipLimit = '', numberOfS
 /**
  * Read stats from the most recently added scenario panel.
  */
-async function readStats(page) {
+async function readStats(page: Page) {
   const scenario = page.locator('.scenario.instance').last();
   return {
     title: await scenario.locator('.scenario-title').textContent(),
@@ -53,7 +52,7 @@ async function readStats(page) {
 /**
  * Parse a numeric value from a stat string like "1.00 stories/day" → 1.0
  */
-function parseStatValue(text) {
+function parseStatValue(text: string | null) {
   const match = (text || '').match(/[\d.]+/);
   return match ? parseFloat(match[0]) : null;
 }
@@ -110,7 +109,7 @@ test('adding WIP limit reduces cycle time compared to no WIP limit', async ({ pa
   const cycleWith = parseStatValue(withWip.leadtime);
 
   // WIP limit should significantly reduce cycle time
-  expect(cycleWith).toBeLessThan(cycleWithout);
+  expect(cycleWith).toBeLessThan(cycleWithout!);
 });
 
 // ─── Board visibility ─────────────────────────────────────────────────────────
