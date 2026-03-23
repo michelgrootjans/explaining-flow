@@ -3,10 +3,10 @@ With this project, you can simulate team structure and see the effect on your te
 
 The measurements you get for each simulation are:
 - Throughput: the number of stories the team finishes per unit of time. Typically referred to as team velocity.
-- Cycle: the average time taken from start to finish for a story 
+- Cycle Time: the average time taken from start to finish for a story 
 - WIP: the number of items in progress, started, but not done
 
-Stakeholders and customers typically worry about throughput and cycle time. Throughput indicates how efficient a team is. Lead time indicates how long stakeholders have to wait for their ideas to be implemented.
+Stakeholders and customers typically worry about throughput and cycle time. Throughput indicates how efficient a team is. Cycle Time indicates how long stakeholders have to wait for their ideas to be implemented, once work starts.
 
 ## Using the simulator
 You can use the [online simulator](https://michelgrootjans.github.io/explaining-flow/)
@@ -23,8 +23,6 @@ open index.html
 ## My lightning talk
 I'd like to share a few simulations showing the effects of team flow.
 These simulations show the different scenarios I run to illustrate the need to understand team flow.
-
-During this lightning talk, I will leave the _#stories_ on automatic.
 
 The stats we're interested in are:
 - **Throughput**: this is what is typically measured under the name _velocity_. It's the number of user stories finished per unit of time.
