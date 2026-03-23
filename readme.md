@@ -16,7 +16,7 @@ You can use the [online simulator](https://michelgrootjans.github.io/explaining-
 git clone git@github.com:michelgrootjans/explaining-flow.git
 cd explaining-flow
 npm install
-npm run bundle
+npm run bundle:watch
 open index.html
 ```
 
