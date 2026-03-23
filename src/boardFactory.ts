@@ -1,8 +1,8 @@
 const {WorkList} = require("./worker");
 
 function BoardFactory() {
-  const createColumns = workColumnNames => {
-    const columns = []
+  const createColumns = (workColumnNames: string[]) => {
+    const columns: any[] = []
 
     const workColumns = workColumnNames.map(name => new WorkList(name));
     columns.push(new WorkList('Backlog'));
@@ -41,4 +41,6 @@ function BoardFactory() {
   };
 }
 
-module.exports = BoardFactory
+module.exports = BoardFactory;
+
+export {};
