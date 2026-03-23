@@ -31,3 +31,4 @@ describe('a generalist', () => {
     expect(developer.canWorkOn('ux')).toBe(0.5);
   });
 });
+export {};
