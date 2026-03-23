@@ -83,7 +83,7 @@ function HistogramChart($chart: HTMLCanvasElement) {
         const p50 = percentile(cycleTimes, 0.5);
         const p85 = percentile(cycleTimes, 0.85);
         if (p50 === null || p85 === null) return;
-        const toBinIndex = (v: number) => (Math.round(v) - minDay) / binSize;
+        const toBinIndex = (v: number) => (v - minDay) / binSize;
         (chart.options as any).verticalLinesOffset = 0;
         const lines = [{value: toBinIndex(p50), color: 'rgb(128,128,128)', label: 'p50'}];
         if (p85 !== p50) lines.push({value: toBinIndex(p85), color: 'rgb(128,128,128)', label: 'p85'});
