@@ -1,21 +1,23 @@
-const CurrentStats = columns => {
+const PubSub = require('pubsub-js');
 
-  const needsAStatistic = column => column.name !== '-';
+const CurrentStats = (columns: any[]) => {
+
+  const needsAStatistic = (column: any) => column.name !== '-';
 
   const stats = columns
     .filter(needsAStatistic)
     .map(column => ({name: column.name, value: 0}))
 
-  const statNameFor = column => {
+  const statNameFor = (column: any) => {
     if (column.name === '-')
       return column.inbox.name
     return column.name;
   };
 
-  const statFor = column => stats.find(stat => stat.name === statNameFor(column));
+  const statFor = (column: any) => stats.find(stat => stat.name === statNameFor(column));
 
-  const itemAdded = (topic, {column, item}) => statFor(column).value++;
-  const itemRemoved = (topic, {column, item}) => statFor(column).value--;
+  const itemAdded = (topic: string, {column, item}: any) => statFor(column)!.value++;
+  const itemRemoved = (topic: string, {column, item}: any) => statFor(column)!.value--;
 
   const init = () => {
     PubSub.subscribe('workitem.added', itemAdded)
@@ -35,4 +37,6 @@ const CurrentStats = columns => {
   }
 };
 
-module.exports = CurrentStats
+module.exports = CurrentStats;
+
+export {};
