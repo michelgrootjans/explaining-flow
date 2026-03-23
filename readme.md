@@ -11,14 +11,15 @@ Stakeholders and customers typically worry about throughput and cycle time. Thro
 ## Using the simulator
 You can use the [online simulator](https://michelgrootjans.github.io/explaining-flow/)
 
-...or you can install it locally to fiddle with it:
+...or you can run it locally:
 ```shell
 git clone git@github.com:michelgrootjans/explaining-flow.git
 cd explaining-flow
 npm install
-npm run bundle:watch
-open index.html
+npm run dev
 ```
+
+Then open [http://localhost:5173](http://localhost:5173) in your browser.
 
 ## My lightning talk
 I'd like to share a few simulations showing the effects of team flow.
