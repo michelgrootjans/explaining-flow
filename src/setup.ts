@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const $container = createScenarioContainer(scenario);
         const $scenarios = document.getElementById('scenarios')!;
 
-        const $lastScenario = document.getElementsByClassName('scenario instance')[0];
+        const $lastScenario = document.getElementsByClassName('scenario instance')[0] ?? null;
         $scenarios.insertBefore($container, $lastScenario);
 
         $container.addEventListener('click', () => restoreSnapshot(scenario.id));

@@ -14,7 +14,7 @@ const createElement = ({type='div', id, className, attributes={}, text, style}: 
     if (text) $element.innerHTML = text
     if (style) $element.setAttribute('style', style);
 
-    Object.keys(attributes).forEach(key => $element.setAttribute(key, attributes[key]))
+    Object.keys(attributes).forEach(key => $element.setAttribute(key, attributes[key]!))
     return $element;
 };
 

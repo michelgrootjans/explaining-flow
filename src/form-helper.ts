@@ -8,7 +8,7 @@ const validateWorkers = ({workload, workers}: {workload: string, workers: string
     if (workers.includes('fs')) return workers;
 
     const expectedWorkers = workload.split(',')
-      .map(worker => worker.split(':')[0].trim());
+      .map(worker => worker.split(':')[0]!.trim());
 
     return expectedWorkers.every(w => workers.includes(w))
   };

@@ -124,7 +124,7 @@ function Cfd($chart: HTMLCanvasElement, updateInterval: number, speed: number) {
       .map(nameOfColumn)
       .filter(distinct)
       .filter((c: string) => c !== 'Backlog')
-      .map((column: string, index: number) => createDataset(column, colors[index]))
+      .map((column: string, index: number) => createDataset(column, colors[index]!))
       .reverse()
 
     if (updateInterval) {
@@ -146,14 +146,14 @@ function Cfd($chart: HTMLCanvasElement, updateInterval: number, speed: number) {
       const execute = () => {
         const columnName = nameOfColumn(data.column)
         if (columnName === 'Backlog') {
-          columns[columnName]++
+          columns[columnName] = (columns[columnName] ?? 0) + 1;
         } else {
-          columns[columnName]++;
+          columns[columnName] = (columns[columnName] ?? 0) + 1;
 
           const inboxName = nameOfColumn(data.column.inbox);
-          columns[inboxName]--;
+          columns[inboxName] = (columns[inboxName] ?? 0) - 1;
         }
-        chart.data.datasets.forEach((ds: any) => ds.data.push({x, y: columns[ds.label]}))
+        chart.data.datasets.forEach((ds: any) => ds.data.push({x, y: columns[ds.label] ?? 0}))
       };
       if (['Done'].includes(data.column.name)) execute()
       if (data.column.type === 'work') execute();

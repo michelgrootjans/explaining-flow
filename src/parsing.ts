@@ -42,7 +42,7 @@ function parseWorkload(input: string): Record<string, number> {
             .split(":")
         )
         .reduce((work: Record<string, number>, pair) => {
-            work[pair[0].trim()] = parseInt(pair[1].trim());
+            work[pair[0]!.trim()] = parseInt(pair[1]!.trim());
             return work;
         }, {})
 }

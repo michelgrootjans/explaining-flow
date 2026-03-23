@@ -29,7 +29,7 @@ function Worker(skills: Record<string, number> = {dev: 1}) {
   }
 
   function workSpeedFor(skill: string) {
-    return skills[skill] || skills['all'] || skills['rest'] || skills['fs'] || skills['fullstack'];
+    return skills[skill] || skills['all'] || skills['rest'] || skills['fs'] || skills['fullstack'] || 0;
   }
 
   function calculateTimeoutFor(workItem: any, skill: string) {
