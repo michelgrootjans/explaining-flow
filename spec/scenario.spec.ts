@@ -1,7 +1,7 @@
-const animation = require('../src/animation');
-const PubSub = require("pubsub-js");
-const Range = require('../src/range')
-const Scenario = require('../src/scenario')
+import { initialize as initAnimation } from '../src/animation';
+import PubSub from 'pubsub-js';
+import makeRange from '../src/range';
+import Scenario from '../src/scenario';
 
 
 describe('scenario', () => {
@@ -18,12 +18,12 @@ describe('scenario', () => {
         </div>
         <ul id="board"></ul>
     `;
-    animation.initialize("#stats-container");
+    initAnimation("#stats-container");
   });
 
   const numberOfCardsInColumn = (columnNumber: number) => document.querySelectorAll(`#board ${(`.col:nth-child(${columnNumber})`)} .post-it`).length;
   const numberOfColumns = () => document.querySelectorAll('.col').length;
-  const cardsInColumns = () => Range(1, numberOfColumns()).map(numberOfCardsInColumn);
+  const cardsInColumns = () => makeRange(1, numberOfColumns()).map(numberOfCardsInColumn);
   const run = (scenario: any) => Scenario(scenario).run();
 
 
@@ -111,4 +111,3 @@ describe('scenario', () => {
   });
 
 });
-export {};

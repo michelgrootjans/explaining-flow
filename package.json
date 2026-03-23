@@ -6,10 +6,10 @@
   "scripts": {
     "test": "jest --env=jsdom",
     "test:watch": "jest --env=jsdom --watchAll",
-    "refactor": "jest && npm run bundle && git commit --amend --no-edit -a || git reset --hard",
+    "refactor": "jest && npm run build && git commit --amend --no-edit -a || git reset --hard",
     "typecheck": "tsc --noEmit",
-    "bundle": "node bundle.js",
-    "bundle:watch": "nodemon --watch src --ext js,ts bundle.js",
+    "dev": "vite",
+    "build": "vite build",
     "test:e2e": "playwright test"
   },
   "keywords": [],
@@ -22,6 +22,7 @@
     "@playwright/test": "^1.58.2",
     "@types/jest": "^30.0.0",
     "@types/node": "^25.5.0",
+    "@vitejs/plugin-legacy": "^8.0.0",
     "babel-jest": "^30.3.0",
     "browserify": "^17.0.1",
     "jest": "^24.8.0",
@@ -30,7 +31,8 @@
     "open": "^11.0.0",
     "serve": "^14.2.6",
     "tsify": "^5.0.4",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vite": "^8.0.2"
   },
   "jest": {
     "testPathIgnorePatterns": [

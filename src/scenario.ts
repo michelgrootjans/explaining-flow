@@ -1,6 +1,6 @@
-const Board = require("./board");
-const {generateWorkItems} = require("./generator");
-const {Worker} = require('./worker')
+import Board from './board';
+import { generateWorkItems } from './generator';
+import { Worker } from './worker';
 
 let counter = 1;
 
@@ -36,6 +36,4 @@ const Scenario = (scenario: any) => {
   return {...scenario, run, id, wipLimit}
 };
 
-module.exports = Scenario;
-
-export {};
+export default (Scenario as any);

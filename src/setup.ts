@@ -1,20 +1,20 @@
-const PubSub = require('pubsub-js');
-const scenarios = require('./scenarios')
-const Animation = require('./animation');
-const {LimitBoardWip} = require('../src/strategies');
-const TimeAdjustments = require('./timeAdjustments');
-const Stats = require('./stats');
-const WorkerStats = require('./worker-stats');
-const Scenario = require("./scenario");
-const {LineChart} = require("./charts");
-const {HistogramChart} = require("./HistogramChart");
-const Cfd = require("./CumulativeFlowDiagram");
-const {parseInput} = require("./parsing");
-const { Chart } = require('chart.js');
-const crosshairPlugin = require('./crosshair');
-Chart.register(crosshairPlugin);
+import PubSub from 'pubsub-js';
+import scenarios from './scenarios';
+import { initialize as initAnimation } from './animation';
+import { LimitBoardWip } from './strategies';
+import * as TimeAdjustments from './timeAdjustments';
+import * as Stats from './stats';
+import WorkerStats from './worker-stats';
+import Scenario from './scenario';
+import { LineChart } from './charts';
+import { HistogramChart } from './HistogramChart';
+import Cfd from './CumulativeFlowDiagram';
+import { parseInput } from './parsing';
+import { Chart } from 'chart.js';
+import crosshairPlugin from './crosshair';
+import * as FormHelper from './form-helper';
 
-const FormHelper = require("./form-helper");
+Chart.register(crosshairPlugin);
 
 const snapshots = new Map();
 
@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('new-scenario')!
       .addEventListener('submit', (event: Event) => {
         event.preventDefault()
-        if(!form.isValid()) return;
+        if(!form?.isValid()) return;
 
         const scenario = parseScenario(event);
         const $container = createScenarioContainer(scenario);
@@ -127,7 +127,7 @@ let histogram: any = undefined;
 function run(scenario: any) {
     PubSub.clearAllSubscriptions();
 
-    Animation.initialize(`#scenario-${scenario.id}`);
+    initAnimation(`#scenario-${scenario.id}`);
     Stats.initialize();
 
     new WorkerStats();
@@ -137,16 +137,14 @@ function run(scenario: any) {
     wipLimiter.initialize(scenario.wipLimit)
     if(lineChart) lineChart.destroy()
 
-    lineChart = LineChart(document.getElementById('lineChart'), scenario.speed,  250)
+    lineChart = LineChart(document.getElementById('lineChart') as HTMLCanvasElement, scenario.speed,  250)
 
     if(cfd) cfd.destroy()
-    cfd = Cfd(document.getElementById('cfd'), 2000, scenario.speed)
+    cfd = Cfd(document.getElementById('cfd') as HTMLCanvasElement, 2000, scenario.speed)
 
     if(histogram) histogram.destroy()
-    histogram = HistogramChart(document.getElementById('histogram'))
+    histogram = HistogramChart(document.getElementById('histogram') as HTMLCanvasElement)
 
     const board = scenario.run();
     captureSnapshot(scenario.id);
 }
-
-export {};

@@ -1,6 +1,6 @@
-const {average} = require('./generator');
+import { average } from './generator';
 
-module.exports = [
+export default [
   {
     title: 'a single developer',
     workers: ['dev'],
@@ -111,5 +111,3 @@ module.exports = [
     speed: 20
   },
 ];
-
-export {};

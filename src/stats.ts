@@ -1,5 +1,5 @@
-const TimeAdjustments = require('./timeAdjustments');
-const PubSub = require('pubsub-js');
+import * as TimeAdjustments from './timeAdjustments';
+import PubSub from 'pubsub-js';
 
 function RunningWip() {
   const startTick = Date.now();
@@ -135,10 +135,5 @@ function initialize() {
 
 }
 
-module.exports = {
-  initialize,
-  calculateThroughput,
-  performance: calculatePerformance,
-};
-
-export {};
+export { initialize, calculateThroughput };
+export { calculatePerformance as performance };

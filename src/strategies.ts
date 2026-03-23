@@ -1,4 +1,4 @@
-const PubSub = require('pubsub-js');
+import PubSub from 'pubsub-js';
 
 function LimitBoardWip() {
   const initialize = (limit = 1) => {
@@ -80,6 +80,8 @@ function WipUp(step = 10) {
   return {};
 }
 
-module.exports = {LimitBoardWip, DynamicLimitBoardWip, WipUp}
-
-export {};
+// Cast to any to allow usage with `new` (factory function pattern)
+const LimitBoardWipCtor: any = LimitBoardWip;
+const DynamicLimitBoardWipCtor: any = DynamicLimitBoardWip;
+const WipUpCtor: any = WipUp;
+export { LimitBoardWipCtor as LimitBoardWip, DynamicLimitBoardWipCtor as DynamicLimitBoardWip, WipUpCtor as WipUp };

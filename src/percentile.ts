@@ -5,6 +5,4 @@ function percentile(values: number[], p: number): number | null {
     return sorted[Math.max(0, idx)] ?? null;
 }
 
-module.exports = { percentile };
-
-export {};
+export { percentile };

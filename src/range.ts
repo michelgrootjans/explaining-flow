@@ -3,6 +3,4 @@ function makeRange(from: number, to: number): number[] {
   return Array.from(Array(length).keys()).map(value => value + from);
 }
 
-module.exports = makeRange;
-
-export {};
+export default makeRange;

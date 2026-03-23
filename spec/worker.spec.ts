@@ -1,4 +1,4 @@
-const {Worker} = require('../src/worker');
+import { Worker } from '../src/worker';
 
 describe('a specialist', () => {
   it('can work on its skill', () => {
@@ -31,4 +31,3 @@ describe('a generalist', () => {
     expect(developer.canWorkOn('ux')).toBe(0.5);
   });
 });
-export {};

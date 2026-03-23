@@ -1,7 +1,7 @@
-const CurrentStats = require("../src/cfd");
-const PubSub = require("pubsub-js");
-const BoardFactory = require("../src/boardFactory");
-const {WorkList} = require("../src/worker");
+import CurrentStats from '../src/cfd';
+import PubSub from 'pubsub-js';
+import BoardFactory from '../src/boardFactory';
+import { WorkList } from '../src/worker';
 
 describe("Cumulative Flow Diagram", () => {
   beforeAll(jest.useFakeTimers);
@@ -146,4 +146,4 @@ describe("Cumulative Flow Diagram", () => {
       expect(stats.done()).toBeTruthy()
     });
   });
-});export {};
+});

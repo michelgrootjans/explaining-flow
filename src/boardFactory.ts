@@ -1,4 +1,4 @@
-const {WorkList} = require("./worker");
+import { WorkList } from './worker';
 
 function BoardFactory() {
   const createColumns = (workColumnNames: string[]) => {
@@ -41,6 +41,4 @@ function BoardFactory() {
   };
 }
 
-module.exports = BoardFactory;
-
-export {};
+export default (BoardFactory as any);

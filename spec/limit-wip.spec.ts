@@ -1,7 +1,7 @@
-const PubSub = require('pubsub-js');
-const Board = require('../src/board');
-const {WorkList, Worker, WorkItem} = require('../src/worker');
-const {LimitBoardWip} = require('../src/strategies');
+import PubSub from 'pubsub-js';
+import Board from '../src/board';
+import { WorkList, Worker, WorkItem } from '../src/worker';
+import { LimitBoardWip } from '../src/strategies';
 
 describe('limiting overall wip', () => {
 
@@ -53,4 +53,4 @@ describe('limiting overall wip', () => {
     });
 
   });
-});export {};
+});

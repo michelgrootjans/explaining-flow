@@ -1,4 +1,4 @@
-const {validateWork, validateWorkers, suggestNumberOfStories} = require("../src/form-helper");
+import { validateWork, validateWorkers, suggestNumberOfStories } from '../src/form-helper';
 
 describe('validate workload', () => {
   it.each([
@@ -78,4 +78,4 @@ describe('number of stories', () => {
     ['dev, dev', 50],
     ['dev, dev, dev', 200],
   ])('should suggest [%s -> %s]', (workers, numberOfStories) => expect(suggestNumberOfStories({workers})).toEqual(numberOfStories));
-});export {};
+});

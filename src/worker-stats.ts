@@ -1,4 +1,4 @@
-const PubSub = require('pubsub-js');
+import PubSub from 'pubsub-js';
 
 function WorkerStats() {
 
@@ -47,6 +47,4 @@ function WorkerStats() {
   return {}
 }
 
-module.exports = WorkerStats;
-
-export {};
+export default (WorkerStats as any);

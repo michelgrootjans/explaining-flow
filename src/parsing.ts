@@ -1,4 +1,4 @@
-const {average, poisson} = require("./generator");
+import { average, poisson } from './generator';
 
 function parseInput(rawInput: any) {
     const title = rawInput.title;
@@ -47,10 +47,4 @@ function parseWorkload(input: string): Record<string, number> {
         }, {})
 }
 
-module.exports = {
-    parseInput,
-    parseWorkload,
-    parseWorkers
-};
-
-export {};
+export { parseInput, parseWorkload, parseWorkers };

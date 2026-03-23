@@ -1,6 +1,6 @@
-const PubSub = require('pubsub-js');
-const {Worker} = require('../src/worker');
-const WorkerStats = require('../src/worker-stats');
+import PubSub from 'pubsub-js';
+import { Worker } from '../src/worker';
+import WorkerStats from '../src/worker-stats';
 
 describe('worker stats', () => {
   beforeEach(jest.useFakeTimers);
@@ -67,4 +67,4 @@ describe('worker stats', () => {
     PubSub.publish(topic, worker);
     jest.runAllTimers();
   }
-});export {};
+});

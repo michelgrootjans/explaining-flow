@@ -18,6 +18,4 @@ const createElement = ({type='div', id, className, attributes={}, text, style}: 
     return $element;
 };
 
-module.exports = {createElement};
-
-export {};
+export { createElement };

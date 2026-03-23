@@ -1,6 +1,6 @@
-const {Worker, WorkItem, WorkList} = require('../src/worker');
-const Board = require('../src/board');
-const PubSub = require('pubsub-js');
+import { Worker, WorkItem, WorkList } from '../src/worker';
+import Board from '../src/board';
+import PubSub from 'pubsub-js';
 
 describe('a worker', () => {
   let now: number;
@@ -220,5 +220,3 @@ describe('a typical workflow', () => {
     expect(board.items()).toEqual([[], [], [], [], [workItem1, workItem2]]);
   });
 });
-
-export {};

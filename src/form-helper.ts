@@ -1,11 +1,12 @@
 const validateWork = ({workload}: {workload: string}) => /^(\s*\w+\s*:\s*\d+\s*)(,\s*\w+\s*:\s*\d+\s*)*$/.test(workload);
 
-const validateWorkers = ({workload, workers}: {workload: string, workers: string}) => {
+const validateWorkers = ({workload, workers}: {workload?: string, workers: string}) => {
   const validateWorkersFormat = () => /^(\s*(\w+)(\+\w+)*\s*)(,\s*(\w+)(\+\w+)*\s*)*$/gm.test(workers);
 
   const validateWorkLoadCanBeExecuted = () => {
     if (workers.includes('fullstack')) return workers;
     if (workers.includes('fs')) return workers;
+    if (!workload) return false;
 
     const expectedWorkers = workload.split(',')
       .map(worker => worker.split(':')[0]!.trim());
@@ -16,7 +17,7 @@ const validateWorkers = ({workload, workers}: {workload: string, workers: string
   return validateWorkersFormat() && validateWorkLoadCanBeExecuted();
 };
 
-const suggestNumberOfStories = ({workers}: {workers: string}) => workers?.split(',').length > 2 ? 200 : 50;
+const suggestNumberOfStories = ({workers}: {workers?: string | null | undefined}) => (workers?.split(',').length ?? 0) > 2 ? 200 : 50;
 
 const initialize = () => {
   const $workload = document.getElementById('workload') as HTMLInputElement | null;
@@ -56,6 +57,4 @@ const initialize = () => {
   }
 };
 
-module.exports = {initialize, validateWork, validateWorkers, suggestNumberOfStories};
-
-export {};
+export { initialize, validateWork, validateWorkers, suggestNumberOfStories };

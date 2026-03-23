@@ -1,8 +1,7 @@
-const PubSub = require('pubsub-js');
-const animation = require('../src/animation');
-
-const {Worker, WorkItem} = require('../src/worker');
-const Board = require('../src/board');
+import PubSub from 'pubsub-js';
+import { initialize } from '../src/animation';
+import { Worker, WorkItem } from '../src/worker';
+import Board from '../src/board';
 
 const find = (selector: string): any => document.querySelector(selector);
 
@@ -10,7 +9,7 @@ describe('animation', () => {
   beforeAll(() => {
     jest.useFakeTimers();
     PubSub.clearAllSubscriptions();
-    animation.initialize("#stats-container");
+    initialize("#stats-container");
   });
 
   describe('a simple dashboard', () => {
@@ -158,5 +157,3 @@ describe('animation', () => {
     });
   })
 });
-
-export {};

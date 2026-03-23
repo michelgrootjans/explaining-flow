@@ -1,4 +1,4 @@
-const {WorkItem} = require('./worker');
+import { WorkItem } from './worker';
 
 function generateWorkItems(work: () => any, numberOfWorkItems = 100) {
   return [...Array(numberOfWorkItems).keys()]
@@ -31,6 +31,5 @@ function poisson(value: number) {
   return (k - 1 + (Math.random() - 0.5)) / multiplier;
 }
 
-module.exports = {generateWorkItems, randomBetween, averageOf, average: averageOf, poisson};
-
-export {};
+export { generateWorkItems, randomBetween, averageOf, poisson };
+export { averageOf as average };

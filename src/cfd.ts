@@ -1,4 +1,4 @@
-const PubSub = require('pubsub-js');
+import PubSub from 'pubsub-js';
 
 const CurrentStats = (columns: any[]) => {
 
@@ -37,6 +37,4 @@ const CurrentStats = (columns: any[]) => {
   }
 };
 
-module.exports = CurrentStats;
-
-export {};
+export default CurrentStats;

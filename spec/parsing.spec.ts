@@ -1,5 +1,5 @@
-const {parseWorkload, parseWorkers, parseInput} = require('../src/parsing')
-const {average, poisson} = require("../src/generator");
+import { parseWorkload, parseWorkers, parseInput } from '../src/parsing';
+import { average, poisson } from '../src/generator';
 
 describe('parseWorkload', () => {
   it('parses a single workload', () => {
@@ -100,4 +100,4 @@ describe('parseInput', () => {
     });
   });
 
-});export {};
+});

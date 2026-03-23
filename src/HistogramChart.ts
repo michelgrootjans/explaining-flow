@@ -1,7 +1,7 @@
-const { Chart } = require('chart.js');
-const PubSub = require("pubsub-js");
-const TimeAdjustments = require("./timeAdjustments");
-const { percentile } = require("./percentile");
+import { Chart } from 'chart.js';
+import PubSub from 'pubsub-js';
+import * as TimeAdjustments from './timeAdjustments';
+import { percentile } from './percentile';
 
 const histogramVerticalLinesPlugin = {
     id: 'histogramVerticalLines',
@@ -36,13 +36,13 @@ const histogramVerticalLinesPlugin = {
 };
 
 function HistogramChart($chart: HTMLCanvasElement) {
-    const ctx = $chart.getContext('2d');
+    const ctx = $chart.getContext('2d')!;
 
     const chart = new Chart(ctx, {
         type: 'bar',
         data: {labels: [], datasets: [{data: [], backgroundColor: 'rgba(75, 192, 192, 0.5)', borderColor: 'rgb(75, 192, 192)', borderWidth: 1}]},
         options: {
-            animation: false,
+            animation: false as const,
             crosshair: false,
             verticalLines: [],
             plugins: {
@@ -54,7 +54,7 @@ function HistogramChart($chart: HTMLCanvasElement) {
                 x: {title: {display: true, text: 'Cycle Time (days)'}},
                 y: {beginAtZero: true, ticks: {stepSize: 1}, title: {display: true, text: 'Count'}}
             }
-        },
+        } as any,
         plugins: [histogramVerticalLinesPlugin]
     });
 
@@ -73,20 +73,21 @@ function HistogramChart($chart: HTMLCanvasElement) {
             counts[bin]++;
         });
 
-        chart.data.labels = counts.map((_: any, i: number) => {
+        (chart.data as any).labels = counts.map((_: any, i: number) => {
             const start = minDay + i * binSize;
             const end = start + binSize - 1;
             return binSize === 1 ? `${start}` : `${start}-${end}`;
         });
-        chart.data.datasets[0].data = counts;
+        chart.data.datasets[0]!.data = counts as any;
 
         const p50 = percentile(cycleTimes, 0.5);
         const p85 = percentile(cycleTimes, 0.85);
+        if (p50 === null || p85 === null) return;
         const toBinIndex = (v: number) => (Math.round(v) - minDay) / binSize;
-        chart.options.verticalLinesOffset = 0;
+        (chart.options as any).verticalLinesOffset = 0;
         const lines = [{value: toBinIndex(p50), color: 'rgb(128,128,128)', label: 'p50'}];
         if (p85 !== p50) lines.push({value: toBinIndex(p85), color: 'rgb(128,128,128)', label: 'p85'});
-        chart.options.verticalLines = lines;
+        (chart.options as any).verticalLines = lines;
         chart.update();
     }
 
@@ -100,6 +101,4 @@ function HistogramChart($chart: HTMLCanvasElement) {
     return chart;
 }
 
-module.exports = { HistogramChart };
-
-export {};
+export { HistogramChart };

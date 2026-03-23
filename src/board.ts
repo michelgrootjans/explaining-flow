@@ -1,11 +1,5 @@
-const BoardFactory = require("./boardFactory");
-const PubSub = require("pubsub-js");
-
-const NoLimits = function () {
-  return {
-    allowsNewWork: () => true
-  };
-};
+import BoardFactory from './boardFactory';
+import PubSub from 'pubsub-js';
 
 let Board = function (workColumnNames: string[]) {
   let columns: any[] = [];
@@ -91,6 +85,4 @@ let Board = function (workColumnNames: string[]) {
   return board
 };
 
-module.exports = Board;
-
-export {};
+export default (Board as any);

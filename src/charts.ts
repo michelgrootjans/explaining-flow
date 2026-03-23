@@ -1,7 +1,7 @@
-const { Chart } = require('chart.js');
-const PubSub = require("pubsub-js");
-const TimeAdjustments = require("./timeAdjustments");
-const { percentile } = require("./percentile");
+import { Chart } from 'chart.js';
+import PubSub from 'pubsub-js';
+import * as TimeAdjustments from './timeAdjustments';
+import { percentile } from './percentile';
 
 const percentileLinesPlugin = {
     id: 'percentileLines',
@@ -67,10 +67,10 @@ function createChart(ctx: any, _speed: number) {
     };
 
     const config = {
-        type: 'scatter',
+        type: 'scatter' as const,
         data: data,
         options: {
-            animation: false,
+            animation: false as const,
             layout: {
                 padding: {right: 36}
             },
@@ -96,12 +96,12 @@ function createChart(ctx: any, _speed: number) {
                 },
             },
             interaction: {
-                mode: 'x',
+                mode: 'x' as const,
                 intersect: false,
             },
-            percentileLines: [],
+            percentileLines: [] as any[],
             plugins: {
-                legend: {display: true, position: 'bottom', align: 'start'},
+                legend: {display: true, position: 'bottom', align: 'start' as const},
                 title: {
                     display: true,
                     text: 'Cycle Time Scatter Plot'
@@ -109,7 +109,7 @@ function createChart(ctx: any, _speed: number) {
             }
         }
     };
-    const chart = new Chart(ctx, config);
+    const chart = new Chart(ctx, config as any);
     return {leadTime, throughput, wip, data, chart, labels, startTime, cycleTime, itemAge};
 }
 
@@ -148,7 +148,7 @@ function LineChart($chart: HTMLCanvasElement, speed: number, updateInterval: num
             const p85 = percentile(yValues, 0.85);
             const lines = [{value: p50, color: 'rgb(128,128,128)', label: 'p50'}];
             if (p85 !== p50) lines.push({value: p85, color: 'rgb(128,128,128)', label: 'p85'});
-            state.chart.options.percentileLines = lines;
+            (state.chart.options as any).percentileLines = lines;
         });
 
         PubSub.subscribe('board.done', () => {
@@ -160,6 +160,4 @@ function LineChart($chart: HTMLCanvasElement, speed: number, updateInterval: num
     return state.chart;
 }
 
-module.exports = {LineChart};
-
-export {};
+export { LineChart };

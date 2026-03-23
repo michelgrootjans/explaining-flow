@@ -1,7 +1,6 @@
-const Stats = require('../src/stats');
-const {performance} = require("../src/stats");
-
-const {publish, subscribe, clearAllSubscriptions} = require('pubsub-js');
+import * as Stats from '../src/stats';
+import { performance } from '../src/stats';
+import { publish, subscribe, clearAllSubscriptions } from 'pubsub-js';
 
 describe('calculate basic stats', () => {
   beforeEach(() => {
@@ -227,6 +226,3 @@ describe('calculate performance', () => {
     ])).toMatchObject({throughput: 1, leadTime: 5})
   });
 })
-
-export {};
-

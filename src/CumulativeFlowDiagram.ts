@@ -1,4 +1,4 @@
-const {
+import {
   Chart,
   ArcElement,
   LineElement,
@@ -24,9 +24,10 @@ const {
   Title,
   Tooltip,
   SubTitle
-} = require('chart.js');
+} from 'chart.js';
+import PubSub from 'pubsub-js';
+
 Chart.register(ArcElement, LineElement, BarElement, PointElement, BarController, BubbleController, DoughnutController, LineController, PieController, PolarAreaController, RadarController, ScatterController, CategoryScale, LinearScale, LogarithmicScale, RadialLinearScale, TimeScale, TimeSeriesScale, Decimation, Filler, Legend, Title, Tooltip, SubTitle);
-const PubSub = require("pubsub-js");
 
 const distinct = (value: any, index: number, self: any[]) => self.indexOf(value) === index;
 
@@ -60,10 +61,10 @@ function nameOfColumn(column: any) {
 }
 
 function Cfd($chart: HTMLCanvasElement, updateInterval: number, speed: number) {
-  const ctx = $chart.getContext('2d');
+  const ctx = $chart.getContext('2d')!;
 
   const config = {
-    type: 'line',
+    type: 'line' as const,
     data: {
       datasets: [] as any[]
     },
@@ -92,7 +93,7 @@ function Cfd($chart: HTMLCanvasElement, updateInterval: number, speed: number) {
         },
       },
       interaction: {
-        mode: 'index',
+        mode: 'index' as const,
         intersect: false,
       },
       plugins: {
@@ -105,7 +106,7 @@ function Cfd($chart: HTMLCanvasElement, updateInterval: number, speed: number) {
     },
   };
 
-  const chart = new Chart(ctx, config);
+  const chart = new Chart(ctx, config as any);
 
   PubSub.subscribe('board.ready', (t: string, board: any) => {
     const start = new Date();
@@ -163,6 +164,4 @@ function Cfd($chart: HTMLCanvasElement, updateInterval: number, speed: number) {
   return chart
 }
 
-module.exports = Cfd;
-
-export {};
+export default Cfd;

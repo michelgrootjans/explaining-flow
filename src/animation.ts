@@ -1,5 +1,5 @@
-const PubSub = require('pubsub-js');
-const {createElement} = require('./dom-manipulation')
+import PubSub from 'pubsub-js';
+import { createElement } from './dom-manipulation';
 
 const round = (number: number, positions = 2) => Math.round(number * Math.pow(10, positions)) / Math.pow(10, positions);
 const any = (array: string[]) => array[Math.floor(Math.random() * array.length)];
@@ -99,6 +99,4 @@ const initialize = (currentSenarioId: string) => {
 
 };
 
-module.exports = {initialize};
-
-export {};
+export { initialize };

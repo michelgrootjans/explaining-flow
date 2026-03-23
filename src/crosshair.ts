@@ -144,6 +144,4 @@ const crosshairPlugin = {
   }
 };
 
-module.exports = crosshairPlugin;
-
-export {};
+export default crosshairPlugin;

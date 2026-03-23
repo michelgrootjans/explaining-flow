@@ -1,6 +1,6 @@
-const PubSub = require('pubsub-js');
-const TimeAdjustments = require('./timeAdjustments');
-const {anyCardColor} = require("./Colors");
+import PubSub from 'pubsub-js';
+import * as TimeAdjustments from './timeAdjustments';
+import { anyCardColor } from './Colors';
 
 let workerCounter = 1;
 
@@ -109,6 +109,8 @@ function WorkList(skill = "dev") {
   return column;
 }
 
-module.exports = {Worker, WorkItem, WorkList};
-
-export {};
+// Cast to any to allow usage with `new` (factory function pattern)
+const WorkerCtor: any = Worker;
+const WorkItemCtor: any = WorkItem;
+const WorkListCtor: any = WorkList;
+export { WorkerCtor as Worker, WorkItemCtor as WorkItem, WorkListCtor as WorkList };
