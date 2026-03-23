@@ -128,7 +128,8 @@
 .scenario {
     list-style: none;
     padding: 0;
-    width: 8%
+    min-width: 7rem;
+    flex-shrink: 0;
 }
 
 .scenario.instance {
@@ -170,4 +171,24 @@
 
 .chart {
     border: 1px solid lightgray;
+}
+
+@media (max-width: 767px) {
+    .post-it {
+        width: 24px;
+        height: 24px;
+        padding: 6px;
+        margin: 6px;
+    }
+
+    .queue .post-it {
+        margin-top: -30px;
+    }
+
+    .done .post-it:nth-child(5n+2),
+    .done .post-it:nth-child(5n+3),
+    .done .post-it:nth-child(5n+4),
+    .done .post-it:nth-child(5n+5) {
+        margin-top: -42px;
+    }
 }

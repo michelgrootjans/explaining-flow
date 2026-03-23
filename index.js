@@ -15742,6 +15742,111 @@ function Cfd($chart, updateInterval, speed) {
 module.exports = Cfd
 
 },{"chart.js":2,"pubsub-js":4}],7:[function(require,module,exports){
+const { Chart } = require('chart.js');
+const PubSub = require("pubsub-js");
+const TimeAdjustments = require("./timeAdjustments");
+const { percentile } = require("./percentile");
+
+const histogramVerticalLinesPlugin = {
+    id: 'histogramVerticalLines',
+    beforeDraw(chart) {
+        const lines = chart.options.verticalLines;
+        if (!lines || lines.length === 0) return;
+        const {ctx, chartArea: {top, bottom, left, right}, scales: {x}} = chart;
+        // Category scale: interpolate pixel using uniform bar spacing
+        const offset = chart.options.verticalLinesOffset || 0;
+        const origin = x.getPixelForValue(0);
+        const step = x.getPixelForValue(1) - origin;
+        ctx.save();
+        ctx.font = '11px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'bottom';
+        for (const {value, color, label} of lines) {
+            const px = origin + (value - offset) * step;
+            if (px < left || px > right) continue;
+            ctx.beginPath();
+            ctx.setLineDash([5, 5]);
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 1.5;
+            ctx.moveTo(px, top);
+            ctx.lineTo(px, bottom);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            ctx.fillStyle = color;
+            ctx.fillText(label, px, top - 2);
+        }
+        ctx.restore();
+    }
+};
+
+function HistogramChart($chart) {
+    const ctx = $chart.getContext('2d');
+
+    const chart = new Chart(ctx, {
+        type: 'bar',
+        data: {labels: [], datasets: [{data: [], backgroundColor: 'rgba(75, 192, 192, 0.5)', borderColor: 'rgb(75, 192, 192)', borderWidth: 1}]},
+        options: {
+            animation: false,
+            crosshair: false,
+            verticalLines: [],
+            plugins: {
+                legend: {display: false},
+                title: {display: true, text: 'Cycle Time Histogram'},
+                histogramVerticalLines: {}
+            },
+            scales: {
+                x: {title: {display: true, text: 'Cycle Time (days)'}},
+                y: {beginAtZero: true, ticks: {stepSize: 1}, title: {display: true, text: 'Count'}}
+            }
+        },
+        plugins: [histogramVerticalLinesPlugin]
+    });
+
+    function rebuild(cycleTimes) {
+        if (cycleTimes.length === 0) return;
+        const MAX_BINS = 20;
+        const minDay = Math.round(Math.min(...cycleTimes));
+        const maxDay = Math.round(Math.max(...cycleTimes));
+        const range = maxDay - minDay + 1;
+        const binSize = Math.ceil(range / MAX_BINS);
+        const numBins = Math.ceil(range / binSize);
+
+        const counts = Array(numBins).fill(0);
+        cycleTimes.forEach(v => {
+            const bin = Math.min(Math.floor((Math.round(v) - minDay) / binSize), numBins - 1);
+            counts[bin]++;
+        });
+
+        chart.data.labels = counts.map((_, i) => {
+            const start = minDay + i * binSize;
+            const end = start + binSize - 1;
+            return binSize === 1 ? `${start}` : `${start}-${end}`;
+        });
+        chart.data.datasets[0].data = counts;
+
+        const p50 = percentile(cycleTimes, 0.5);
+        const p85 = percentile(cycleTimes, 0.85);
+        const toBinIndex = v => (Math.round(v) - minDay) / binSize;
+        chart.options.verticalLinesOffset = 0;
+        const lines = [{value: toBinIndex(p50), color: 'rgb(128,128,128)', label: 'p50'}];
+        if (p85 !== p50) lines.push({value: toBinIndex(p85), color: 'rgb(128,128,128)', label: 'p85'});
+        chart.options.verticalLines = lines;
+        chart.update();
+    }
+
+    const cycleTimes = [];
+
+    PubSub.subscribe('workitem.finished', (event, item) => {
+        cycleTimes.push(item.duration / (TimeAdjustments.multiplicator() * 1000));
+        rebuild(cycleTimes);
+    });
+
+    return chart;
+}
+
+module.exports = { HistogramChart };
+
+},{"./percentile":18,"./timeAdjustments":25,"chart.js":2,"pubsub-js":4}],8:[function(require,module,exports){
 const PubSub = require('pubsub-js');
 const {createElement} = require('./dom-manipulation')
 
@@ -15845,7 +15950,7 @@ const initialize = (currentSenarioId) => {
 
 module.exports = {initialize};
 
-},{"./dom-manipulation":13,"pubsub-js":4}],8:[function(require,module,exports){
+},{"./dom-manipulation":14,"pubsub-js":4}],9:[function(require,module,exports){
 const BoardFactory = require("./boardFactory");
 const PubSub = require("pubsub-js");
 
@@ -15941,7 +16046,7 @@ let Board = function (workColumnNames) {
 
 module.exports = Board
 
-},{"./boardFactory":9,"pubsub-js":4}],9:[function(require,module,exports){
+},{"./boardFactory":10,"pubsub-js":4}],10:[function(require,module,exports){
 const {WorkList} = require("./worker");
 
 function BoardFactory() {
@@ -15986,7 +16091,7 @@ function BoardFactory() {
 }
 
 module.exports = BoardFactory
-},{"./worker":25}],10:[function(require,module,exports){
+},{"./worker":27}],11:[function(require,module,exports){
 const CurrentStats = columns => {
 
   const needsAStatistic = column => column.name !== '-';
@@ -16025,17 +16130,11 @@ const CurrentStats = columns => {
 };
 
 module.exports = CurrentStats
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 const { Chart } = require('chart.js');
 const PubSub = require("pubsub-js");
 const TimeAdjustments = require("./timeAdjustments");
-
-function percentile(values, p) {
-    if (values.length === 0) return null;
-    const sorted = [...values].sort((a, b) => a - b);
-    const idx = Math.ceil(p * sorted.length) - 1;
-    return sorted[Math.max(0, idx)];
-}
+const { percentile } = require("./percentile");
 
 const percentileLinesPlugin = {
     id: 'percentileLines',
@@ -16194,92 +16293,9 @@ function LineChart($chart, speed, updateInterval) {
     return state.chart;
 }
 
-const histogramVerticalLinesPlugin = {
-    id: 'histogramVerticalLines',
-    beforeDraw(chart) {
-        const lines = chart.options.verticalLines;
-        if (!lines || lines.length === 0) return;
-        const {ctx, chartArea: {top, bottom, left, right}, scales: {x}} = chart;
-        // Category scale: interpolate pixel using uniform bar spacing
-        const offset = chart.options.verticalLinesOffset || 0;
-        const origin = x.getPixelForValue(0);
-        const step = x.getPixelForValue(1) - origin;
-        ctx.save();
-        ctx.font = '11px sans-serif';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'bottom';
-        for (const {value, color, label} of lines) {
-            const px = origin + (value - offset) * step;
-            if (px < left || px > right) continue;
-            ctx.beginPath();
-            ctx.setLineDash([5, 5]);
-            ctx.strokeStyle = color;
-            ctx.lineWidth = 1.5;
-            ctx.moveTo(px, top);
-            ctx.lineTo(px, bottom);
-            ctx.stroke();
-            ctx.setLineDash([]);
-            ctx.fillStyle = color;
-            ctx.fillText(label, px, top - 2);
-        }
-        ctx.restore();
-    }
-};
+module.exports = {LineChart}
 
-function HistogramChart($chart) {
-    const ctx = $chart.getContext('2d');
-
-    const chart = new Chart(ctx, {
-        type: 'bar',
-        data: {labels: [], datasets: [{data: [], backgroundColor: 'rgba(75, 192, 192, 0.5)', borderColor: 'rgb(75, 192, 192)', borderWidth: 1}]},
-        options: {
-            animation: false,
-            crosshair: false,
-            verticalLines: [],
-            plugins: {
-                legend: {display: false},
-                title: {display: true, text: 'Cycle Time Histogram'},
-                histogramVerticalLines: {}
-            },
-            scales: {
-                x: {title: {display: true, text: 'Cycle Time (days)'}},
-                y: {beginAtZero: true, ticks: {stepSize: 1}, title: {display: true, text: 'Count'}}
-            }
-        },
-        plugins: [histogramVerticalLinesPlugin]
-    });
-
-    function rebuild(cycleTimes) {
-        if (cycleTimes.length === 0) return;
-        const maxBin = Math.round(Math.max(...cycleTimes));
-        const counts = Array(maxBin + 1).fill(0);
-        cycleTimes.forEach(v => { counts[Math.min(Math.round(v), maxBin)]++; });
-        const minBin = counts.findIndex(c => c > 0);
-        const trimmed = counts.slice(minBin);
-        chart.data.labels = trimmed.map((_, i) => i + minBin);
-        chart.data.datasets[0].data = trimmed;
-        chart.options.verticalLinesOffset = minBin;
-        const p50 = percentile(cycleTimes, 0.5);
-        const p85 = percentile(cycleTimes, 0.85);
-        const lines = [{value: p50, color: 'rgb(128,128,128)', label: 'p50'}];
-        if (p85 !== p50) lines.push({value: p85, color: 'rgb(128,128,128)', label: 'p85'});
-        chart.options.verticalLines = lines;
-        chart.update();
-    }
-
-    const cycleTimes = [];
-
-    PubSub.subscribe('workitem.finished', (event, item) => {
-        cycleTimes.push(item.duration / (TimeAdjustments.multiplicator() * 1000));
-        rebuild(cycleTimes);
-    });
-
-    return chart;
-}
-
-module.exports = {LineChart, HistogramChart}
-
-},{"./timeAdjustments":23,"chart.js":2,"pubsub-js":4}],12:[function(require,module,exports){
+},{"./percentile":18,"./timeAdjustments":25,"chart.js":2,"pubsub-js":4}],13:[function(require,module,exports){
 let currentX = null;
 const charts = [];
 
@@ -16428,7 +16444,7 @@ const crosshairPlugin = {
 
 module.exports = crosshairPlugin;
 
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 const createElement = ({type='div', id, className, attributes=[], text, style}) => {
     const $element = document.createElement(type);
     if (id) $element.setAttribute('id', id)
@@ -16441,7 +16457,7 @@ const createElement = ({type='div', id, className, attributes=[], text, style}) 
 };
 
 module.exports = {createElement};
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 const validateWork = ({workload}) => /^(\s*\w+\s*:\s*\d+\s*)(,\s*\w+\s*:\s*\d+\s*)*$/.test(workload);
 
 const validateWorkers = ({workload, workers}) => {
@@ -16501,7 +16517,7 @@ const initialize = () => {
 };
 
 module.exports = {initialize, validateWork, validateWorkers, suggestNumberOfStories}
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 const {WorkItem} = require('./worker');
 
 function generateWorkItems(work, numberOfWorkItems = 100) {
@@ -16537,7 +16553,7 @@ function poisson(value) {
 
 module.exports = {generateWorkItems, randomBetween, averageOf, average: averageOf, poisson};
 
-},{"./worker":25}],16:[function(require,module,exports){
+},{"./worker":27}],17:[function(require,module,exports){
 const {average, poisson} = require("./generator");
 
 function parseInput(rawInput) {
@@ -16593,14 +16609,24 @@ module.exports = {
     parseWorkers
 };
 
-},{"./generator":15}],17:[function(require,module,exports){
+},{"./generator":16}],18:[function(require,module,exports){
+function percentile(values, p) {
+    if (values.length === 0) return null;
+    const sorted = [...values].sort((a, b) => a - b);
+    const idx = Math.ceil(p * sorted.length) - 1;
+    return sorted[Math.max(0, idx)];
+}
+
+module.exports = { percentile };
+
+},{}],19:[function(require,module,exports){
 function Range(from, to) {
   let length = to - from + 1;
   return Array.from(Array(length).keys()).map(value => value + from);
 }
 
 module.exports = Range
-},{}],18:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 const Board = require("./board");
 const {generateWorkItems} = require("./generator");
 const {Worker} = require('./worker')
@@ -16640,7 +16666,7 @@ const Scenario = scenario => {
 };
 
 module.exports = Scenario
-},{"./board":8,"./generator":15,"./worker":25}],19:[function(require,module,exports){
+},{"./board":9,"./generator":16,"./worker":27}],21:[function(require,module,exports){
 const {average} = require('./generator');
 
 module.exports = [
@@ -16754,7 +16780,7 @@ module.exports = [
     speed: 20
   },
 ];
-},{"./generator":15}],20:[function(require,module,exports){
+},{"./generator":16}],22:[function(require,module,exports){
 const PubSub = require('pubsub-js');
 const scenarios = require('./scenarios')
 const Animation = require('./animation');
@@ -16763,7 +16789,8 @@ const TimeAdjustments = require('./timeAdjustments');
 const Stats = require('./stats');
 const WorkerStats = require('./worker-stats');
 const Scenario = require("./scenario");
-const {LineChart, HistogramChart} = require("./charts");
+const {LineChart} = require("./charts");
+const {HistogramChart} = require("./HistogramChart");
 const Cfd = require("./CumulativeFlowDiagram");
 const {parseInput} = require("./parsing");
 const { Chart } = require('chart.js');
@@ -16906,7 +16933,7 @@ function run(scenario) {
 }
 
 
-},{"../src/strategies":22,"./CumulativeFlowDiagram":6,"./animation":7,"./charts":11,"./crosshair":12,"./form-helper":14,"./parsing":16,"./scenario":18,"./scenarios":19,"./stats":21,"./timeAdjustments":23,"./worker-stats":24,"chart.js":2,"pubsub-js":4}],21:[function(require,module,exports){
+},{"../src/strategies":24,"./CumulativeFlowDiagram":6,"./HistogramChart":7,"./animation":8,"./charts":12,"./crosshair":13,"./form-helper":15,"./parsing":17,"./scenario":20,"./scenarios":21,"./stats":23,"./timeAdjustments":25,"./worker-stats":26,"chart.js":2,"pubsub-js":4}],23:[function(require,module,exports){
 const TimeAdjustments = require('./timeAdjustments');
 const PubSub = require('pubsub-js');
 
@@ -17050,7 +17077,7 @@ module.exports = {
   performance,
 };
 
-},{"./timeAdjustments":23,"pubsub-js":4}],22:[function(require,module,exports){
+},{"./timeAdjustments":25,"pubsub-js":4}],24:[function(require,module,exports){
 const PubSub = require('pubsub-js');
 
 function LimitBoardWip() {
@@ -17135,7 +17162,7 @@ function WipUp(step = 10) {
 
 module.exports = {LimitBoardWip, DynamicLimitBoardWip, WipUp}
 
-},{"pubsub-js":4}],23:[function(require,module,exports){
+},{"pubsub-js":4}],25:[function(require,module,exports){
 (function(){
   factor = 1;
 
@@ -17144,7 +17171,7 @@ module.exports = {LimitBoardWip, DynamicLimitBoardWip, WipUp}
     speedUpBy: (f) => { factor = 1.0/f; }
   }
 })();
-},{}],24:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 const PubSub = require('pubsub-js');
 
 function WorkerStats() {
@@ -17196,7 +17223,7 @@ function WorkerStats() {
 
 module.exports = WorkerStats;
 
-},{"pubsub-js":4}],25:[function(require,module,exports){
+},{"pubsub-js":4}],27:[function(require,module,exports){
 const PubSub = require('pubsub-js');
 const TimeAdjustments = require('./timeAdjustments');
 const {anyCardColor} = require("./Colors");
@@ -17310,4 +17337,4 @@ function WorkList(skill = "dev") {
 
 module.exports = {Worker, WorkItem, WorkList};
 
-},{"./Colors":5,"./timeAdjustments":23,"pubsub-js":4}]},{},[5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25]);
+},{"./Colors":5,"./timeAdjustments":25,"pubsub-js":4}]},{},[5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27]);

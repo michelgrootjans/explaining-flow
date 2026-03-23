@@ -13,9 +13,9 @@
     <script src="index.js"></script>
 </head>
 <body>
-<header class="navbar sticky-top flex-md-nowrap p-0 shadow">
-    <div class="navbar-nav">
-        <form id="new-scenario" class="row gy-2 gx-3 align-items-center">
+<header class="navbar sticky-top p-2 shadow">
+    <div class="navbar-nav w-100">
+        <form id="new-scenario" class="row gy-2 gx-3 align-items-center flex-wrap">
             <div class="col-auto">
                 <div class="input-group">
                     <div class="input-group-text">Work per story</div>
@@ -74,13 +74,13 @@
     </div>
 
     <div id="charts" class="row">
-        <div class="chart col col-4">
+        <div class="chart col-12 col-md-6 col-lg-4">
             <canvas id="cfd" class="cfd"></canvas>
         </div>
-        <div class="chart col col-4">
+        <div class="chart col-12 col-md-6 col-lg-4">
             <canvas id="lineChart" class="lineChart"></canvas>
         </div>
-        <div class="chart col col-4">
+        <div class="chart col-12 col-md-12 col-lg-4">
             <canvas id="histogram"></canvas>
         </div>
     </div>
