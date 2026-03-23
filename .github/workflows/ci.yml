@@ -19,9 +19,7 @@ jobs:
           npm test
       - name: Bundle
         run: |
-          npm run-script bundle
-          cp style.css dist/style.css
-          cat index.html | sed 's#dist/index.js#index.js#' > dist/index.html
+          npm run build
       - name: debug
         run: |
           pwd
