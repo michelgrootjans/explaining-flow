@@ -1,6 +1,6 @@
 const {WorkItem} = require('./worker');
 
-function generateWorkItems(work, numberOfWorkItems = 100) {
+function generateWorkItems(work: () => any, numberOfWorkItems = 100) {
   return [...Array(numberOfWorkItems).keys()]
     .map(() => new WorkItem(work())
     );
@@ -10,12 +10,12 @@ function randomBetween(min = 0, max = 1) {
   return min + (Math.random() * (max - min));
 }
 
-function averageOf(value) {
+function averageOf(value: number) {
   let distance = value * 0.8;
   return randomBetween(value - distance, value + distance);
 }
 
-function poisson(value) {
+function poisson(value: number) {
   const multiplier = 5;
   const mean = value * multiplier;
 
@@ -32,3 +32,5 @@ function poisson(value) {
 }
 
 module.exports = {generateWorkItems, randomBetween, averageOf, average: averageOf, poisson};
+
+export {};
