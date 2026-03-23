@@ -18,17 +18,17 @@ const FormHelper = require("./form-helper");
 
 const snapshots = new Map();
 
-function captureSnapshot(scenarioId) {
+function captureSnapshot(scenarioId: number) {
     PubSub.subscribe('board.done', () => {
         snapshots.set(scenarioId, {
-            boardHtml: document.getElementById('board').innerHTML,
-            cfdDatasets: cfd.data.datasets.map(ds => ({
+            boardHtml: document.getElementById('board')!.innerHTML,
+            cfdDatasets: cfd.data.datasets.map((ds: any) => ({
                 ...ds,
-                data: ds.data.map(point => ({...point}))
+                data: ds.data.map((point: any) => ({...point}))
             })),
-            lineChartDatasets: lineChart.data.datasets.map(ds => ({
+            lineChartDatasets: lineChart.data.datasets.map((ds: any) => ({
                 ...ds,
-                data: ds.data.map(point => ({...point}))
+                data: ds.data.map((point: any) => ({...point}))
             })),
             percentileLines: [...(lineChart.options.percentileLines || [])],
             histogramLabels: [...histogram.data.labels],
@@ -36,23 +36,23 @@ function captureSnapshot(scenarioId) {
             histogramVerticalLines: [...(histogram.options.verticalLines || [])],
             histogramVerticalLinesOffset: histogram.options.verticalLinesOffset || 0
         });
-        document.getElementById(`scenario-${scenarioId}`).classList.add('done');
+        document.getElementById(`scenario-${scenarioId}`)!.classList.add('done');
     });
 }
 
-function restoreSnapshot(scenarioId) {
+function restoreSnapshot(scenarioId: number) {
     const snapshot = snapshots.get(scenarioId);
     if (!snapshot) return;
 
-    document.getElementById('board').innerHTML = snapshot.boardHtml;
+    document.getElementById('board')!.innerHTML = snapshot.boardHtml;
 
-    cfd.data.datasets = snapshot.cfdDatasets.map(ds => ({
+    cfd.data.datasets = snapshot.cfdDatasets.map((ds: any) => ({
         ...ds,
-        data: ds.data.map(point => ({...point}))
+        data: ds.data.map((point: any) => ({...point}))
     }));
     cfd.update();
 
-    lineChart.data.datasets[0].data = snapshot.lineChartDatasets[0].data.map(point => ({...point}));
+    lineChart.data.datasets[0].data = snapshot.lineChartDatasets[0].data.map((point: any) => ({...point}));
     lineChart.data.datasets[1].data = [];
     lineChart.options.percentileLines = [...(snapshot.percentileLines || [])];
     lineChart.update();
@@ -64,20 +64,20 @@ function restoreSnapshot(scenarioId) {
     histogram.update();
 
     document.querySelectorAll('.scenario.instance').forEach(el => el.classList.remove('selected'));
-    document.getElementById(`scenario-${scenarioId}`).classList.add('selected');
+    document.getElementById(`scenario-${scenarioId}`)!.classList.add('selected');
 }
 
-function createScenarioContainer(scenario) {
-    const template = document.querySelector('#scenario-template');
+function createScenarioContainer(scenario: any) {
+    const template = document.querySelector('#scenario-template') as HTMLTemplateElement;
 
-    const clone = template.content.cloneNode(true).querySelector('ul');
+    const clone = (template.content.cloneNode(true) as DocumentFragment).querySelector('ul')!;
     clone.setAttribute('id', `scenario-${scenario.id}`);
-    clone.querySelector('.scenario-title').textContent = scenario.title;
+    clone.querySelector('.scenario-title')!.textContent = scenario.title;
     return clone
 }
 
-function parse(form) {
-  const field = fieldName => form.querySelector(`[name="${fieldName}"]`).value;
+function parse(form: HTMLFormElement) {
+  const field = (fieldName: string) => (form.querySelector(`[name="${fieldName}"]`) as HTMLInputElement).value;
 
   return parseInput({
       title: field('workload'),
@@ -85,25 +85,25 @@ function parse(form) {
       workload: field('workload'),
       wipLimit: field('wip-limit'),
       numberOfStories: field('numberOfStories'),
-      random: form.querySelector('[name="random"]').checked
+      random: (form.querySelector('[name="random"]') as HTMLInputElement).checked
   });
 }
 
-function parseScenario(event) {
-  return Scenario(parse(event.target));
+function parseScenario(event: Event) {
+  return Scenario(parse(event.target as HTMLFormElement));
 }
 
 document.addEventListener('DOMContentLoaded', () => {
     const form = FormHelper.initialize();
 
-    document.getElementById('new-scenario')
-      .addEventListener('submit', event => {
+    document.getElementById('new-scenario')!
+      .addEventListener('submit', (event: Event) => {
         event.preventDefault()
         if(!form.isValid()) return;
 
         const scenario = parseScenario(event);
         const $container = createScenarioContainer(scenario);
-        const $scenarios = document.getElementById('scenarios');
+        const $scenarios = document.getElementById('scenarios')!;
 
         const $lastScenario = document.getElementsByClassName('scenario instance')[0];
         $scenarios.insertBefore($container, $lastScenario);
@@ -120,11 +120,11 @@ document.addEventListener('DOMContentLoaded', () => {
 const wipLimiter = LimitBoardWip();
 
 
-let lineChart = undefined;
-let cfd = undefined;
-let histogram = undefined;
+let lineChart: any = undefined;
+let cfd: any = undefined;
+let histogram: any = undefined;
 
-function run(scenario) {
+function run(scenario: any) {
     PubSub.clearAllSubscriptions();
 
     Animation.initialize(`#scenario-${scenario.id}`);
@@ -149,3 +149,4 @@ function run(scenario) {
     captureSnapshot(scenario.id);
 }
 
+export {};
