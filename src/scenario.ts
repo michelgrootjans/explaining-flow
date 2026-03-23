@@ -4,12 +4,12 @@ const {Worker} = require('./worker')
 
 let counter = 1;
 
-const Scenario = scenario => {
+const Scenario = (scenario: any) => {
   const id = counter++;
   const wipLimit = scenario.wipLimit || scenario.stories.amount
 
-  const createWorker = ({ skills: skillNames }, speed = 1) => {
-    let skills = {};
+  const createWorker = ({ skills: skillNames }: {skills: string[]}, speed = 1) => {
+    let skills: Record<string, number> = {};
     skillNames.forEach(skillName => skills[skillName] = speed);
     return new Worker(skills);
   };
@@ -17,8 +17,8 @@ const Scenario = scenario => {
   const columnNames = () => Object.keys(scenario.stories.work);
 
   const generateStory = () => {
-    const story = {}
-    let distribute = scenario.distribution || (identity => identity);
+    const story: Record<string, any> = {}
+    let distribute = scenario.distribution || ((identity: any) => identity);
     columnNames().forEach(key => {
       let givenValue = scenario.stories.work[key];
       story[key] = distribute(givenValue);
@@ -28,7 +28,7 @@ const Scenario = scenario => {
 
   const run = () => {
     const board = new Board(columnNames());
-    board.addWorkers(...(scenario.workers.map(workerDetails => createWorker(workerDetails))));
+    board.addWorkers(...(scenario.workers.map((workerDetails: any) => createWorker(workerDetails))));
     board.addWorkItems(...generateWorkItems(generateStory, scenario.stories.amount));
     return board;
   }
@@ -36,4 +36,6 @@ const Scenario = scenario => {
   return {...scenario, run, id, wipLimit}
 };
 
-module.exports = Scenario
+module.exports = Scenario;
+
+export {};
