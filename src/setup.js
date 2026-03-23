@@ -30,7 +30,8 @@ function captureSnapshot(scenarioId) {
             lineChartDatasets: lineChart.data.datasets.map(ds => ({
                 ...ds,
                 data: ds.data.map(point => ({...point}))
-            }))
+            })),
+            percentileLines: [...(lineChart.options.percentileLines || [])]
         });
         document.getElementById(`scenario-${scenarioId}`).classList.add('done');
     });
@@ -50,6 +51,7 @@ function restoreSnapshot(scenarioId) {
 
     lineChart.data.datasets[0].data = snapshot.lineChartDatasets[0].data.map(point => ({...point}));
     lineChart.data.datasets[1].data = [];
+    lineChart.options.percentileLines = [...(snapshot.percentileLines || [])];
     lineChart.update();
 
     document.querySelectorAll('.scenario.instance').forEach(el => el.classList.remove('selected'));
