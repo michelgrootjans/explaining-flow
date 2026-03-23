@@ -123,6 +123,7 @@ const crosshairPlugin = {
 
   afterDraw(chart) {
     if (currentX === null) return;
+    if (chart.options.crosshair === false) return;
     const xPixel = chart.scales.x.getPixelForValue(currentX);
     const { ctx, scales: { y }, chartArea } = chart;
 

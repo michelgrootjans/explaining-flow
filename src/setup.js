@@ -6,7 +6,7 @@ const TimeAdjustments = require('./timeAdjustments');
 const Stats = require('./stats');
 const WorkerStats = require('./worker-stats');
 const Scenario = require("./scenario");
-const LineChart = require("./charts");
+const {LineChart, HistogramChart} = require("./charts");
 const Cfd = require("./CumulativeFlowDiagram");
 const {parseInput} = require("./parsing");
 const { Chart } = require('chart.js');
@@ -29,7 +29,11 @@ function captureSnapshot(scenarioId) {
                 ...ds,
                 data: ds.data.map(point => ({...point}))
             })),
-            percentileLines: [...(lineChart.options.percentileLines || [])]
+            percentileLines: [...(lineChart.options.percentileLines || [])],
+            histogramLabels: [...histogram.data.labels],
+            histogramData: [...histogram.data.datasets[0].data],
+            histogramVerticalLines: [...(histogram.options.verticalLines || [])],
+            histogramVerticalLinesOffset: histogram.options.verticalLinesOffset || 0
         });
         document.getElementById(`scenario-${scenarioId}`).classList.add('done');
     });
@@ -51,6 +55,12 @@ function restoreSnapshot(scenarioId) {
     lineChart.data.datasets[1].data = [];
     lineChart.options.percentileLines = [...(snapshot.percentileLines || [])];
     lineChart.update();
+
+    histogram.data.labels = [...snapshot.histogramLabels];
+    histogram.data.datasets[0].data = [...snapshot.histogramData];
+    histogram.options.verticalLines = [...(snapshot.histogramVerticalLines || [])];
+    histogram.options.verticalLinesOffset = snapshot.histogramVerticalLinesOffset || 0;
+    histogram.update();
 
     document.querySelectorAll('.scenario.instance').forEach(el => el.classList.remove('selected'));
     document.getElementById(`scenario-${scenarioId}`).classList.add('selected');
@@ -111,6 +121,7 @@ const wipLimiter = LimitBoardWip();
 
 let lineChart = undefined;
 let cfd = undefined;
+let histogram = undefined;
 
 function run(scenario) {
     PubSub.clearAllSubscriptions();
@@ -129,6 +140,9 @@ function run(scenario) {
 
     if(cfd) cfd.destroy()
     cfd = Cfd(document.getElementById('cfd'), 2000, scenario.speed)
+
+    if(histogram) histogram.destroy()
+    histogram = HistogramChart(document.getElementById('histogram'))
 
     const board = scenario.run();
     captureSnapshot(scenario.id);

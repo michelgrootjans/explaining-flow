@@ -11,13 +11,14 @@ function percentile(values, p) {
 
 const percentileLinesPlugin = {
     id: 'percentileLines',
-    afterDraw(chart) {
+    beforeDraw(chart) {
         const lines = chart.options.percentileLines;
         if (!lines || lines.length === 0) return;
         const {ctx, chartArea, scales} = chart;
         const {top, bottom, left, right} = chartArea;
         const yScale = scales.y;
         ctx.save();
+
         ctx.font = '11px sans-serif';
         ctx.textAlign = 'left';
         ctx.textBaseline = 'middle';
@@ -109,7 +110,7 @@ function createChart(ctx, _speed) {
                 legend: {display: true, position: 'bottom', align: 'start'},
                 title: {
                     display: true,
-                    text: 'Cycle Times'
+                    text: 'Cycle Time Scatter Plot'
                 }
             }
         }
@@ -151,10 +152,9 @@ function LineChart($chart, speed, updateInterval) {
             const yValues = state.cycleTime.map(pt => pt.y);
             const p50 = percentile(yValues, 0.5);
             const p85 = percentile(yValues, 0.85);
-            state.chart.options.percentileLines = [
-                {value: p50, color: 'rgb(128,128,128)', label: 'p50'},
-                {value: p85, color: 'rgb(128,128,128)', label: 'p85'},
-            ];
+            const lines = [{value: p50, color: 'rgb(128,128,128)', label: 'p50'}];
+            if (p85 !== p50) lines.push({value: p85, color: 'rgb(128,128,128)', label: 'p85'});
+            state.chart.options.percentileLines = lines;
         });
 
         PubSub.subscribe('board.done', () => {
@@ -166,4 +166,87 @@ function LineChart($chart, speed, updateInterval) {
     return state.chart;
 }
 
-module.exports = LineChart
+const histogramVerticalLinesPlugin = {
+    id: 'histogramVerticalLines',
+    beforeDraw(chart) {
+        const lines = chart.options.verticalLines;
+        if (!lines || lines.length === 0) return;
+        const {ctx, chartArea: {top, bottom, left, right}, scales: {x}} = chart;
+        // Category scale: interpolate pixel using uniform bar spacing
+        const offset = chart.options.verticalLinesOffset || 0;
+        const origin = x.getPixelForValue(0);
+        const step = x.getPixelForValue(1) - origin;
+        ctx.save();
+        ctx.font = '11px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'bottom';
+        for (const {value, color, label} of lines) {
+            const px = origin + (value - offset) * step;
+            if (px < left || px > right) continue;
+            ctx.beginPath();
+            ctx.setLineDash([5, 5]);
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 1.5;
+            ctx.moveTo(px, top);
+            ctx.lineTo(px, bottom);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            ctx.fillStyle = color;
+            ctx.fillText(label, px, top - 2);
+        }
+        ctx.restore();
+    }
+};
+
+function HistogramChart($chart) {
+    const ctx = $chart.getContext('2d');
+
+    const chart = new Chart(ctx, {
+        type: 'bar',
+        data: {labels: [], datasets: [{data: [], backgroundColor: 'rgba(75, 192, 192, 0.5)', borderColor: 'rgb(75, 192, 192)', borderWidth: 1}]},
+        options: {
+            animation: false,
+            crosshair: false,
+            verticalLines: [],
+            plugins: {
+                legend: {display: false},
+                title: {display: true, text: 'Cycle Time Histogram'},
+                histogramVerticalLines: {}
+            },
+            scales: {
+                x: {title: {display: true, text: 'Cycle Time (days)'}},
+                y: {beginAtZero: true, ticks: {stepSize: 1}, title: {display: true, text: 'Count'}}
+            }
+        },
+        plugins: [histogramVerticalLinesPlugin]
+    });
+
+    function rebuild(cycleTimes) {
+        if (cycleTimes.length === 0) return;
+        const maxBin = Math.round(Math.max(...cycleTimes));
+        const counts = Array(maxBin + 1).fill(0);
+        cycleTimes.forEach(v => { counts[Math.min(Math.round(v), maxBin)]++; });
+        const minBin = counts.findIndex(c => c > 0);
+        const trimmed = counts.slice(minBin);
+        chart.data.labels = trimmed.map((_, i) => i + minBin);
+        chart.data.datasets[0].data = trimmed;
+        chart.options.verticalLinesOffset = minBin;
+        const p50 = percentile(cycleTimes, 0.5);
+        const p85 = percentile(cycleTimes, 0.85);
+        const lines = [{value: p50, color: 'rgb(128,128,128)', label: 'p50'}];
+        if (p85 !== p50) lines.push({value: p85, color: 'rgb(128,128,128)', label: 'p85'});
+        chart.options.verticalLines = lines;
+        chart.update();
+    }
+
+    const cycleTimes = [];
+
+    PubSub.subscribe('workitem.finished', (event, item) => {
+        cycleTimes.push(item.duration / (TimeAdjustments.multiplicator() * 1000));
+        rebuild(cycleTimes);
+    });
+
+    return chart;
+}
+
+module.exports = {LineChart, HistogramChart}
