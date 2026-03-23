@@ -6,3 +6,5 @@ function percentile(values: number[], p: number): number | null {
 }
 
 module.exports = { percentile };
+
+export {};

@@ -17,3 +17,5 @@ const cardColors: string[] = [
 const any = (array: string[]) => array[Math.floor(Math.random() * array.length)];
 
 module.exports = {anyCardColor: () => any(cardColors)};
+
+export {};

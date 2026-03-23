@@ -140,3 +140,5 @@ module.exports = {
   calculateThroughput,
   performance: calculatePerformance,
 };
+
+export {};

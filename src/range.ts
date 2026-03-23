@@ -4,3 +4,5 @@ function makeRange(from: number, to: number): number[] {
 }
 
 module.exports = makeRange;
+
+export {};

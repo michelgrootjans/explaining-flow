@@ -21,20 +21,20 @@ function LimitBoardWip() {
 }
 
 function DynamicLimitBoardWip() {
-  let measurements = [];
+  let measurements: any[] = [];
   let counter = 0;
   let optimized = false;
-  let limiter = new LimitBoardWip(1);
+  let limiter = new (LimitBoardWip as any)(1);
 
 
-  PubSub.subscribe('stats.calculated', (topic, stats) => {
+  PubSub.subscribe('stats.calculated', (topic: string, stats: any) => {
     if (optimized)
       return;
     if (stats.workInProgress === limiter.limit())
       counter++;
     if (counter >= 50) {
       counter = 0;
-      key = stats.sliding.leadTime(10) / stats.sliding.throughput(10);
+      const key = stats.sliding.leadTime(10) / stats.sliding.throughput(10);
       const newMeasurement = {limit: limiter.limit(), key};
       measurements.push(newMeasurement);
 
@@ -65,7 +65,7 @@ function DynamicLimitBoardWip() {
 function WipUp(step = 10) {
   let counter = 0;
   let wipLimit = 1;
-  let limiter = new LimitBoardWip(wipLimit);
+  let limiter = new (LimitBoardWip as any)(wipLimit);
 
 
   PubSub.subscribe('workitem.finished', () => {
@@ -81,3 +81,5 @@ function WipUp(step = 10) {
 }
 
 module.exports = {LimitBoardWip, DynamicLimitBoardWip, WipUp}
+
+export {};

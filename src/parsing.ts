@@ -52,3 +52,5 @@ module.exports = {
     parseWorkload,
     parseWorkers
 };
+
+export {};
