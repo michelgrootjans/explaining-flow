@@ -7,9 +7,9 @@ const NoLimits = function () {
   };
 };
 
-let Board = function (workColumnNames) {
-  let columns = [];
-  const workers = [];
+let Board = function (workColumnNames: string[]) {
+  let columns: any[] = [];
+  const workers: any[] = [];
   const backlogColumn = () => columns[0];
   const firstWorkColumn = () => columns[1];
   const doneColumn = () => columns[columns.length - 1];
@@ -17,8 +17,8 @@ let Board = function (workColumnNames) {
     .reduce((totalSize, size) => totalSize + size);
   const done = () => doneColumn().size() === size();
   const workColumns = () => columns.filter(column => column.type === 'work');
-  const addWorkers = (...newWorkers) => newWorkers.forEach(worker => workers.push(worker));
-  const addWorkItems = (...items) => items.forEach(item => backlogColumn().add(item));
+  const addWorkers = (...newWorkers: any[]) => newWorkers.forEach(worker => workers.push(worker));
+  const addWorkItems = (...items: any[]) => items.forEach(item => backlogColumn().add(item));
   let allowNewWork = true;
 
   const board = {
@@ -30,7 +30,7 @@ let Board = function (workColumnNames) {
     done
   };
 
-  function initialize(workColumnNames) {
+  function initialize(workColumnNames: string[]) {
     const factory = new BoardFactory();
     columns = factory.createColumns(workColumnNames);
     PubSub.publish('board.ready', {columns});
@@ -38,11 +38,11 @@ let Board = function (workColumnNames) {
 
   initialize(workColumnNames);
 
-  PubSub.subscribe('workitem.added', (topic, subject) => {
+  PubSub.subscribe('workitem.added', (topic: string, subject: any) => {
     assignNewWorkIfPossible();
   });
 
-  PubSub.subscribe('board.allowNewWork', (topic, subject) => {
+  PubSub.subscribe('board.allowNewWork', (topic: string, subject: any) => {
     allowNewWork = true;
     assignNewWorkIfPossible();
   });
@@ -59,7 +59,7 @@ let Board = function (workColumnNames) {
 
       const availableWorker = workers
         .filter(worker => worker.canWorkOn(columnWithWork.necessarySkill))
-        .reduce((bestCandidate, worker) => {
+        .reduce((bestCandidate: any, worker: any) => {
           if (!bestCandidate) return worker;
           const bestScore = bestCandidate.canWorkOn(columnWithWork.necessarySkill);
           const currentScore = worker.canWorkOn(columnWithWork.necessarySkill);
@@ -74,7 +74,7 @@ let Board = function (workColumnNames) {
 
   PubSub.subscribe('board.denyNewWork', () => allowNewWork = false);
 
-  PubSub.subscribe('workitem.added', (topic, {item, column}) => {
+  PubSub.subscribe('workitem.added', (topic: string, {item, column}: any) => {
     if (column.id === firstWorkColumn().id) {
       item.startTime = Date.now();
       PubSub.publish('workitem.started', item);
@@ -91,4 +91,6 @@ let Board = function (workColumnNames) {
   return board
 };
 
-module.exports = Board
+module.exports = Board;
+
+export {};
