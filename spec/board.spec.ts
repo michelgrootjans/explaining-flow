@@ -186,9 +186,9 @@ describe('a typical workflow', () => {
   beforeEach(jest.useFakeTimers);
   afterEach(jest.runAllTimers);
 
-  var board = undefined;
-  var workItem1 = undefined;
-  var workItem2 = undefined;
+  var board: any;
+  var workItem1: any;
+  var workItem2: any;
   beforeEach(() => {
     board = new Board(['dev', 'qa'])
     board.addWorkers(

@@ -10,9 +10,9 @@ describe('limiting overall wip', () => {
   afterEach(jest.runAllTimers);
 
   describe('on a project with dev-qa', () => {
-    let board = undefined;
-    let item1 = undefined;
-    let item2 = undefined;
+    let board: any;
+    let item1: any;
+    let item2: any;
 
     beforeEach(() => {
       board = new Board(['dev', 'qa']);

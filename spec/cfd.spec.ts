@@ -7,14 +7,14 @@ describe("Cumulative Flow Diagram", () => {
   beforeAll(jest.useFakeTimers);
   beforeEach(PubSub.clearAllSubscriptions);
 
-  let stats = undefined;
-  let columns = undefined;
+  let stats: any;
+  let columns: any;
   const backlog = () => columns[0];
   const done = () => columns[columns.length - 1];
-  const add = (column, items) => items.forEach(column.add);
+  const add = (column: any, items: any[]) => items.forEach(column.add);
   const items = [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}]
 
-  const init = columnNames => {
+  const init = (columnNames: any) => {
     columns = new BoardFactory().createColumns(columnNames)
     stats = CurrentStats(columns);
     stats.init();

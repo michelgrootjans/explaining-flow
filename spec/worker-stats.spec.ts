@@ -6,12 +6,12 @@ describe('worker stats', () => {
   beforeEach(jest.useFakeTimers);
   afterEach(jest.runAllTimers);
 
-  let latestStats = undefined;
+  let latestStats: any;
   beforeEach(() => {
     PubSub.clearAllSubscriptions();
     new WorkerStats();
     latestStats = {};
-    PubSub.subscribe('worker.stats.updated', (topic, stats) => latestStats[stats.workerId] = stats.stats);
+    PubSub.subscribe('worker.stats.updated', (topic: any, stats: any) => latestStats[stats.workerId] = stats.stats);
   });
 
   it('when worker is idle', () => {
@@ -62,7 +62,7 @@ describe('worker stats', () => {
     expect(latestStats[worker2.id]).toMatchObject({efficiency: 0});
   });
 
-  function publishAt(second, topic, worker) {
+  function publishAt(second: number, topic: string, worker: any) {
     jest.spyOn(Date, 'now').mockImplementationOnce(() => new Date(2000, 1, 1, 0, 0, second).getTime());
     PubSub.publish(topic, worker);
     jest.runAllTimers();

@@ -4,7 +4,7 @@ const animation = require('../src/animation');
 const {Worker, WorkItem} = require('../src/worker');
 const Board = require('../src/board');
 
-const find = selector => document.querySelector(selector);
+const find = (selector: string): any => document.querySelector(selector);
 
 describe('animation', () => {
   beforeAll(() => {
@@ -14,7 +14,7 @@ describe('animation', () => {
   });
 
   describe('a simple dashboard', () => {
-    let board = undefined;
+    let board: any;
     beforeEach(() => {
       document.body.innerHTML = '<ul id="board"></ul>';
       board = new Board(['dev']);

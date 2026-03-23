@@ -21,10 +21,10 @@ describe('scenario', () => {
     animation.initialize("#stats-container");
   });
 
-  const numberOfCardsInColumn = (columnNumber) => document.querySelectorAll(`#board ${(`.col:nth-child(${columnNumber})`)} .post-it`).length;
+  const numberOfCardsInColumn = (columnNumber: number) => document.querySelectorAll(`#board ${(`.col:nth-child(${columnNumber})`)} .post-it`).length;
   const numberOfColumns = () => document.querySelectorAll('.col').length;
   const cardsInColumns = () => Range(1, numberOfColumns()).map(numberOfCardsInColumn);
-  const run = scenario => Scenario(scenario).run();
+  const run = (scenario: any) => Scenario(scenario).run();
 
 
   describe('no workers available', () => {
