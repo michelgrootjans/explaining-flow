@@ -152,8 +152,8 @@ function LineChart($chart, speed, updateInterval) {
             const p50 = percentile(yValues, 0.5);
             const p85 = percentile(yValues, 0.85);
             state.chart.options.percentileLines = [
-                {value: p50, color: 'rgba(75, 192, 192, 0.9)', label: 'p50'},
-                {value: p85, color: 'rgba(255, 159, 64, 0.9)', label: 'p85'},
+                {value: p50, color: 'rgb(128,128,128)', label: 'p50'},
+                {value: p85, color: 'rgb(128,128,128)', label: 'p85'},
             ];
         });
 
