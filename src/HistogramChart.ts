@@ -5,7 +5,7 @@ const { percentile } = require("./percentile");
 
 const histogramVerticalLinesPlugin = {
     id: 'histogramVerticalLines',
-    beforeDraw(chart) {
+    beforeDraw(chart: any) {
         const lines = chart.options.verticalLines;
         if (!lines || lines.length === 0) return;
         const {ctx, chartArea: {top, bottom, left, right}, scales: {x}} = chart;
@@ -35,7 +35,7 @@ const histogramVerticalLinesPlugin = {
     }
 };
 
-function HistogramChart($chart) {
+function HistogramChart($chart: HTMLCanvasElement) {
     const ctx = $chart.getContext('2d');
 
     const chart = new Chart(ctx, {
@@ -58,7 +58,7 @@ function HistogramChart($chart) {
         plugins: [histogramVerticalLinesPlugin]
     });
 
-    function rebuild(cycleTimes) {
+    function rebuild(cycleTimes: number[]) {
         if (cycleTimes.length === 0) return;
         const MAX_BINS = 20;
         const minDay = Math.round(Math.min(...cycleTimes));
@@ -73,7 +73,7 @@ function HistogramChart($chart) {
             counts[bin]++;
         });
 
-        chart.data.labels = counts.map((_, i) => {
+        chart.data.labels = counts.map((_: any, i: number) => {
             const start = minDay + i * binSize;
             const end = start + binSize - 1;
             return binSize === 1 ? `${start}` : `${start}-${end}`;
@@ -82,7 +82,7 @@ function HistogramChart($chart) {
 
         const p50 = percentile(cycleTimes, 0.5);
         const p85 = percentile(cycleTimes, 0.85);
-        const toBinIndex = v => (Math.round(v) - minDay) / binSize;
+        const toBinIndex = (v: number) => (Math.round(v) - minDay) / binSize;
         chart.options.verticalLinesOffset = 0;
         const lines = [{value: toBinIndex(p50), color: 'rgb(128,128,128)', label: 'p50'}];
         if (p85 !== p50) lines.push({value: toBinIndex(p85), color: 'rgb(128,128,128)', label: 'p85'});
@@ -90,9 +90,9 @@ function HistogramChart($chart) {
         chart.update();
     }
 
-    const cycleTimes = [];
+    const cycleTimes: number[] = [];
 
-    PubSub.subscribe('workitem.finished', (event, item) => {
+    PubSub.subscribe('workitem.finished', (event: string, item: any) => {
         cycleTimes.push(item.duration / (TimeAdjustments.multiplicator() * 1000));
         rebuild(cycleTimes);
     });
@@ -101,3 +101,5 @@ function HistogramChart($chart) {
 }
 
 module.exports = { HistogramChart };
+
+export {};

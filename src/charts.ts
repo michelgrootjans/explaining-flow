@@ -5,7 +5,7 @@ const { percentile } = require("./percentile");
 
 const percentileLinesPlugin = {
     id: 'percentileLines',
-    beforeDraw(chart) {
+    beforeDraw(chart: any) {
         const lines = chart.options.percentileLines;
         if (!lines || lines.length === 0) return;
         const {ctx, chartArea, scales} = chart;
@@ -35,14 +35,14 @@ const percentileLinesPlugin = {
 
 Chart.register(percentileLinesPlugin);
 
-function createChart(ctx, _speed) {
-    const leadTime = [];
-    const throughput = [];
-    const wip = [];
-    const labels = [];
+function createChart(ctx: any, _speed: number) {
+    const leadTime: any[] = [];
+    const throughput: any[] = [];
+    const wip: any[] = [];
+    const labels: any[] = [];
     const startTime = new Date();
-    const cycleTime = []
-    const itemAge = []
+    const cycleTime: any[] = []
+    const itemAge: any[] = []
 
     const data = {
         labels,
@@ -113,11 +113,11 @@ function createChart(ctx, _speed) {
     return {leadTime, throughput, wip, data, chart, labels, startTime, cycleTime, itemAge};
 }
 
-function currentDate(startTime, endDate, speed) {
-    return (endDate - startTime) * speed / 1000;
+function currentDate(startTime: Date, endDate: Date | number, speed: number) {
+    return (new Date(endDate).getTime() - startTime.getTime()) * speed / 1000;
 }
 
-function LineChart($chart, speed, updateInterval) {
+function LineChart($chart: HTMLCanvasElement, speed: number, updateInterval: number) {
     const ctx = $chart.getContext('2d');
 
     let state = createChart(ctx, speed);
@@ -126,24 +126,24 @@ function LineChart($chart, speed, updateInterval) {
         const updatechartData = () => {
             state.itemAge.length = 0;
             state.itemAge.push(...workItems
-                .filter(item => !item.duration)
-                .map(item => ({x: currentDate(state.startTime, new Date(), speed), y: ((Date.now() - item.startTime) / (TimeAdjustments.multiplicator() * 1000))}))
+                .filter((item: any) => !item.duration)
+                .map((item: any) => ({x: currentDate(state.startTime, new Date(), speed), y: ((Date.now() - item.startTime) / (TimeAdjustments.multiplicator() * 1000))}))
             )
             state.chart.update()
             console.log({cycletime: state.cycleTime, age: state.itemAge})
         }
 
-        let workItems = []
+        let workItems: any[] = []
         const timerId = setInterval(updatechartData, updateInterval)
 
-        PubSub.subscribe('workitem.started', (event, item) => {
+        PubSub.subscribe('workitem.started', (event: string, item: any) => {
             workItems.push(item)
         });
 
-        PubSub.subscribe('workitem.finished', (event, item) => {
-            workItems = workItems.filter(i => i.id !== item.id)
+        PubSub.subscribe('workitem.finished', (event: string, item: any) => {
+            workItems = workItems.filter((i: any) => i.id !== item.id)
             state.cycleTime.push({x: currentDate(state.startTime, item.endTime, speed), y: (item.duration / (TimeAdjustments.multiplicator() * 1000))})
-            const yValues = state.cycleTime.map(pt => pt.y);
+            const yValues = state.cycleTime.map((pt: any) => pt.y);
             const p50 = percentile(yValues, 0.5);
             const p85 = percentile(yValues, 0.85);
             const lines = [{value: p50, color: 'rgb(128,128,128)', label: 'p50'}];
@@ -160,4 +160,6 @@ function LineChart($chart, speed, updateInterval) {
     return state.chart;
 }
 
-module.exports = {LineChart}
+module.exports = {LineChart};
+
+export {};

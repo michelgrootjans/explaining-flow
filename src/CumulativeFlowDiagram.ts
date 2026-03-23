@@ -28,13 +28,13 @@ const {
 Chart.register(ArcElement, LineElement, BarElement, PointElement, BarController, BubbleController, DoughnutController, LineController, PieController, PolarAreaController, RadarController, ScatterController, CategoryScale, LinearScale, LogarithmicScale, RadialLinearScale, TimeScale, TimeSeriesScale, Decimation, Filler, Legend, Title, Tooltip, SubTitle);
 const PubSub = require("pubsub-js");
 
-const distinct = (value, index, self) => self.indexOf(value) === index;
+const distinct = (value: any, index: number, self: any[]) => self.indexOf(value) === index;
 
-const createDataset = (label, color) =>
+const createDataset = (label: string, color: string) =>
   ({
     label: label,
     type: 'line',
-    data: [],
+    data: [] as any[],
     fill: true,
     stepped: true,
     pointRadius: 0,
@@ -53,19 +53,19 @@ const colors = [
   '255, 99, 132',
 ]
 
-function nameOfColumn(column) {
+function nameOfColumn(column: any) {
   return column.name === '-'
     ? column.inbox.name
     : column.name;
 }
 
-function Cfd($chart, updateInterval, speed) {
+function Cfd($chart: HTMLCanvasElement, updateInterval: number, speed: number) {
   const ctx = $chart.getContext('2d');
 
   const config = {
     type: 'line',
     data: {
-      datasets: []
+      datasets: [] as any[]
     },
     options: {
       animation: false,
@@ -107,24 +107,24 @@ function Cfd($chart, updateInterval, speed) {
 
   const chart = new Chart(ctx, config);
 
-  PubSub.subscribe('board.ready', (t, board) => {
+  PubSub.subscribe('board.ready', (t: string, board: any) => {
     const start = new Date();
 
     function currentDate() {
-      return (new Date() - start) * speed / 1000;
+      return (new Date().getTime() - start.getTime()) * speed / 1000;
     }
 
-    const columns = {}
+    const columns: Record<string, number> = {}
     board.columns
       .map(nameOfColumn)
       .filter(distinct)
-      .forEach(name => columns[name] = 0)
+      .forEach((name: string) => columns[name] = 0)
 
     chart.data.datasets = board.columns
       .map(nameOfColumn)
       .filter(distinct)
-      .filter(c => c !== 'Backlog')
-      .map((column, index) => createDataset(column, colors[index]))
+      .filter((c: string) => c !== 'Backlog')
+      .map((column: string, index: number) => createDataset(column, colors[index]))
       .reverse()
 
     if (updateInterval) {
@@ -140,7 +140,7 @@ function Cfd($chart, updateInterval, speed) {
       });
     }
 
-    PubSub.subscribe('workitem.added', (topic, data) => {
+    PubSub.subscribe('workitem.added', (topic: string, data: any) => {
       const x = currentDate();
 
       const execute = () => {
@@ -153,7 +153,7 @@ function Cfd($chart, updateInterval, speed) {
           const inboxName = nameOfColumn(data.column.inbox);
           columns[inboxName]--;
         }
-        chart.data.datasets.forEach(ds => ds.data.push({x, y: columns[ds.label]}))
+        chart.data.datasets.forEach((ds: any) => ds.data.push({x, y: columns[ds.label]}))
       };
       if (['Done'].includes(data.column.name)) execute()
       if (data.column.type === 'work') execute();
@@ -163,4 +163,6 @@ function Cfd($chart, updateInterval, speed) {
   return chart
 }
 
-module.exports = Cfd
+module.exports = Cfd;
+
+export {};
