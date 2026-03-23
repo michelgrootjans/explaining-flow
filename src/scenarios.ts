@@ -111,3 +111,5 @@ module.exports = [
     speed: 20
   },
 ];
+
+export {};
