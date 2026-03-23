@@ -5,3 +5,5 @@ dist/index.js
 # AI-assisted files
 .claude
 .ralph
+ralph.yml
+prompt.md
