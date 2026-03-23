@@ -2,7 +2,7 @@ const PubSub = require('pubsub-js');
 
 function WorkerStats() {
 
-  function calculateEfficiencyFor(history) {
+  function calculateEfficiencyFor(history: Array<{state: string, timestamp: number}>) {
     if (history.length === 1 && history[0].state === 'idle') return 0;
     if (history.length === 1 && history[0].state === 'working') return 1;
 
@@ -20,26 +20,26 @@ function WorkerStats() {
     return working / (working + idle);
   }
 
-  function calculateStatsFor(worker) {
+  function calculateStatsFor(worker: any) {
     return {
       workerId: worker.id,
       stats: {efficiency: calculateEfficiencyFor(workersHistory[worker.id])}
     };
   }
 
-  const workersHistory = {};
+  const workersHistory: Record<number, Array<{state: string, timestamp: number}>> = {};
 
-  PubSub.subscribe('worker.created', (topic, worker) => {
+  PubSub.subscribe('worker.created', (topic: string, worker: any) => {
     workersHistory[worker.id] = [];
     PubSub.publish('worker.stats.updated', calculateStatsFor(worker))
   });
 
-  PubSub.subscribe('worker.idle', (topic, worker) => {
+  PubSub.subscribe('worker.idle', (topic: string, worker: any) => {
     workersHistory[worker.id].push({timestamp: Date.now(), state: 'idle'});
     PubSub.publish('worker.stats.updated', calculateStatsFor(worker))
   });
 
-  PubSub.subscribe('worker.working', (topic, worker) => {
+  PubSub.subscribe('worker.working', (topic: string, worker: any) => {
     workersHistory[worker.id].push({timestamp: Date.now(), state: 'working'});
     PubSub.publish('worker.stats.updated', calculateStatsFor(worker))
   });
@@ -48,3 +48,5 @@ function WorkerStats() {
 }
 
 module.exports = WorkerStats;
+
+export {};
