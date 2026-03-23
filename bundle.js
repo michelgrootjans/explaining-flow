@@ -11,7 +11,7 @@ async function bundle() {
 }
 
 async function createBundle(files) {
-  const b = browserify();
+  const b = browserify().plugin(require('tsify'));
   files.forEach(f=> b.add(f));
   var doBundle = promisify(b.bundle.bind(b));
   var buf = await doBundle()
@@ -20,7 +20,7 @@ async function createBundle(files) {
 
 async function getSourceFiles() {
   const files = await fs.readdir('src');
-  const jsFiles = files.filter(f=> f.endsWith('.js'));
+  const jsFiles = files.filter(f=> f.endsWith('.js') || f.endsWith('.ts'));
   return jsFiles.map(f=> path.join('src', f));
 }
 
