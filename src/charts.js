@@ -2,6 +2,44 @@ const Chart = require('chart.js');
 const PubSub = require("pubsub-js");
 const TimeAdjustments = require("./timeAdjustments");
 
+function percentile(values, p) {
+    if (values.length === 0) return null;
+    const sorted = [...values].sort((a, b) => a - b);
+    const idx = Math.ceil(p * sorted.length) - 1;
+    return sorted[Math.max(0, idx)];
+}
+
+const percentileLinesPlugin = {
+    id: 'percentileLines',
+    afterDraw(chart) {
+        const lines = chart.options.percentileLines;
+        if (!lines || lines.length === 0) return;
+        const {ctx, chartArea, scales} = chart;
+        const {top, bottom, left, right} = chartArea;
+        const yScale = scales.y;
+        ctx.save();
+        ctx.font = '11px sans-serif';
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'bottom';
+        for (const {value, color, label} of lines) {
+            const y = yScale.getPixelForValue(value);
+            if (y < top || y > bottom) continue;
+            ctx.beginPath();
+            ctx.setLineDash([5, 5]);
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 1.5;
+            ctx.moveTo(left, y);
+            ctx.lineTo(right, y);
+            ctx.stroke();
+            ctx.fillStyle = color;
+            ctx.fillText(label, right - 2, y - 2);
+        }
+        ctx.restore();
+    }
+};
+
+Chart.register(percentileLinesPlugin);
+
 function createChart(ctx, _speed) {
     const leadTime = [];
     const throughput = [];
@@ -63,6 +101,7 @@ function createChart(ctx, _speed) {
                 mode: 'x',
                 intersect: false,
             },
+            percentileLines: [],
             plugins: {
                 legend: {display: true, position: 'bottom', align: 'start'},
                 title: {
@@ -106,6 +145,13 @@ function LineChart($chart, speed, updateInterval) {
         PubSub.subscribe('workitem.finished', (event, item) => {
             workItems = workItems.filter(i => i.id !== item.id)
             state.cycleTime.push({x: currentDate(state.startTime, item.endTime, speed), y: (item.duration / (TimeAdjustments.multiplicator() * 1000))})
+            const yValues = state.cycleTime.map(pt => pt.y);
+            const p50 = percentile(yValues, 0.5);
+            const p85 = percentile(yValues, 0.85);
+            state.chart.options.percentileLines = [
+                {value: p50, color: 'rgba(75, 192, 192, 0.9)', label: 'p50'},
+                {value: p85, color: 'rgba(255, 159, 64, 0.9)', label: 'p85'},
+            ];
         });
 
         PubSub.subscribe('board.done', () => {
