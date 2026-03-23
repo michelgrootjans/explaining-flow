@@ -1,4 +1,13 @@
-const createElement = ({type='div', id, className, attributes=[], text, style}) => {
+interface ElementOptions {
+    type?: string;
+    id?: string;
+    className?: string;
+    attributes?: Record<string, string>;
+    text?: string;
+    style?: string;
+}
+
+const createElement = ({type='div', id, className, attributes={}, text, style}: ElementOptions): HTMLElement => {
     const $element = document.createElement(type);
     if (id) $element.setAttribute('id', id)
     if (className) $element.className = className
@@ -10,3 +19,5 @@ const createElement = ({type='div', id, className, attributes=[], text, style}) 
 };
 
 module.exports = {createElement};
+
+export {};

@@ -1,6 +1,6 @@
-const validateWork = ({workload}) => /^(\s*\w+\s*:\s*\d+\s*)(,\s*\w+\s*:\s*\d+\s*)*$/.test(workload);
+const validateWork = ({workload}: {workload: string}) => /^(\s*\w+\s*:\s*\d+\s*)(,\s*\w+\s*:\s*\d+\s*)*$/.test(workload);
 
-const validateWorkers = ({workload, workers}) => {
+const validateWorkers = ({workload, workers}: {workload: string, workers: string}) => {
   const validateWorkersFormat = () => /^(\s*(\w+)(\+\w+)*\s*)(,\s*(\w+)(\+\w+)*\s*)*$/gm.test(workers);
 
   const validateWorkLoadCanBeExecuted = () => {
@@ -16,11 +16,11 @@ const validateWorkers = ({workload, workers}) => {
   return validateWorkersFormat() && validateWorkLoadCanBeExecuted();
 };
 
-const suggestNumberOfStories = ({workers}) => workers?.split(',').length > 2 ? 200 : 50;
+const suggestNumberOfStories = ({workers}: {workers: string}) => workers?.split(',').length > 2 ? 200 : 50;
 
 const initialize = () => {
-  const $workload = document.getElementById('workload');
-  const $workers = document.getElementById('workers');
+  const $workload = document.getElementById('workload') as HTMLInputElement | null;
+  const $workers = document.getElementById('workers') as HTMLInputElement | null;
   const $numberOfStories = document.getElementById('numberOfStories');
 
   if (!($workload && $workers)) return;
@@ -42,7 +42,7 @@ const initialize = () => {
 
     if (validateWorkers(input)) {
       $workers.classList.remove('bg-warning');
-      $numberOfStories.setAttribute('placeholder', suggestNumberOfStories(input))
+      $numberOfStories?.setAttribute('placeholder', String(suggestNumberOfStories(input)))
     } else {
       $workers.classList.add('bg-warning');
     }
@@ -56,4 +56,6 @@ const initialize = () => {
   }
 };
 
-module.exports = {initialize, validateWork, validateWorkers, suggestNumberOfStories}
+module.exports = {initialize, validateWork, validateWorkers, suggestNumberOfStories};
+
+export {};
