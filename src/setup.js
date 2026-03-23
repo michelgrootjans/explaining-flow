@@ -13,8 +13,6 @@ const { Chart } = require('chart.js');
 const crosshairPlugin = require('./crosshair');
 Chart.register(crosshairPlugin);
 
-// force repeatable randomness
-const seedrandom = require('seedrandom');
 const FormHelper = require("./form-helper");
 
 const snapshots = new Map();
@@ -116,9 +114,6 @@ let cfd = undefined;
 
 function run(scenario) {
     PubSub.clearAllSubscriptions();
-
-    // force predictable randomness across each simulationr
-    // seedrandom('limit work in progress', {global: true});
 
     Animation.initialize(`#scenario-${scenario.id}`);
     Stats.initialize();

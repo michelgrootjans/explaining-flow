@@ -1,4 +1,4 @@
-const Chart = require('chart.js');
+const { Chart } = require('chart.js');
 const PubSub = require("pubsub-js");
 const TimeAdjustments = require("./timeAdjustments");
 
