@@ -1,7 +1,7 @@
-let currentX = null;
-const charts = [];
+let currentX: number | null = null;
+const charts: any[] = [];
 
-function drawRoundRect(ctx, x, y, width, height, radius) {
+function drawRoundRect(ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, radius: number) {
   ctx.beginPath();
   ctx.moveTo(x + radius, y);
   ctx.lineTo(x + width - radius, y);
@@ -15,11 +15,11 @@ function drawRoundRect(ctx, x, y, width, height, radius) {
   ctx.closePath();
 }
 
-function getValuesAtX(chart, x) {
+function getValuesAtX(chart: any, x: number) {
   const isScatter = chart.config.type === 'scatter';
-  const entries = [];
+  const entries: any[] = [];
 
-  chart.data.datasets.forEach((dataset, i) => {
+  chart.data.datasets.forEach((dataset: any, i: number) => {
     const meta = chart.getDatasetMeta(i);
     if (meta.hidden) return;
 
@@ -30,8 +30,8 @@ function getValuesAtX(chart, x) {
       const xRange = chart.scales.x.max - chart.scales.x.min;
       const tolerance = Math.max(xRange * 0.015, 0.1);
       points
-        .filter(p => Math.abs(p.x - x) <= tolerance)
-        .forEach(p => {
+        .filter((p: any) => Math.abs(p.x - x) <= tolerance)
+        .forEach((p: any) => {
           entries.push({ label: dataset.label, value: p.y.toFixed(2), color: dataset.borderColor });
         });
     } else {
@@ -49,7 +49,7 @@ function getValuesAtX(chart, x) {
   return entries;
 }
 
-function drawTooltip(ctx, chartArea, xPixel, entries, dayLabel) {
+function drawTooltip(ctx: CanvasRenderingContext2D, chartArea: any, xPixel: number, entries: any[], dayLabel: string) {
   const padding = 7;
   const lineHeight = 17;
   const fontSize = 11;
@@ -105,10 +105,10 @@ function drawTooltip(ctx, chartArea, xPixel, entries, dayLabel) {
 
 const crosshairPlugin = {
   id: 'crosshair',
-  afterInit(chart) {
+  afterInit(chart: any) {
     charts.push(chart);
 
-    chart.canvas.addEventListener('mousemove', (e) => {
+    chart.canvas.addEventListener('mousemove', (e: MouseEvent) => {
       const rect = chart.canvas.getBoundingClientRect();
       const mouseX = e.clientX - rect.left;
       currentX = chart.scales.x.getValueForPixel(mouseX);
@@ -121,7 +121,7 @@ const crosshairPlugin = {
     });
   },
 
-  afterDraw(chart) {
+  afterDraw(chart: any) {
     if (currentX === null) return;
     if (chart.options.crosshair === false) return;
     const xPixel = chart.scales.x.getPixelForValue(currentX);
@@ -138,10 +138,12 @@ const crosshairPlugin = {
     ctx.restore();
   },
 
-  beforeDestroy(chart) {
+  beforeDestroy(chart: any) {
     const index = charts.indexOf(chart);
     if (index > -1) charts.splice(index, 1);
   }
 };
 
 module.exports = crosshairPlugin;
+
+export {};
