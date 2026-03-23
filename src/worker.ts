@@ -4,11 +4,11 @@ const {anyCardColor} = require("./Colors");
 
 let workerCounter = 1;
 
-function Worker(skills = {dev: 1}) {
+function Worker(skills: Record<string, number> = {dev: 1}) {
   let idle = true;
   const id = workerCounter++;
 
-  function canWorkOn(skill) {
+  function canWorkOn(skill: string) {
     if (!idle) return 0;
     return workSpeedFor(skill);
   }
@@ -28,15 +28,15 @@ function Worker(skills = {dev: 1}) {
     return `${renderSkills()}`;
   }
 
-  function workSpeedFor(skill) {
+  function workSpeedFor(skill: string) {
     return skills[skill] || skills['all'] || skills['rest'] || skills['fs'] || skills['fullstack'];
   }
 
-  function calculateTimeoutFor(workItem, skill) {
+  function calculateTimeoutFor(workItem: any, skill: string) {
     return 1000 * TimeAdjustments.multiplicator() * workItem.work[skill] / workSpeedFor(skill);
   }
 
-  function startWorkingOn(inbox, inProgress, outbox) {
+  function startWorkingOn(inbox: any, inProgress: any, outbox: any) {
     let item = inbox.peek();
     if (item) {
       idle = false;
@@ -58,7 +58,7 @@ function Worker(skills = {dev: 1}) {
 
 let workItemCounter = 1;
 
-function WorkItem(work) {
+function WorkItem(work: any) {
   return {
     id: workItemCounter++,
     work,
@@ -69,7 +69,7 @@ function WorkItem(work) {
 let workListCounter = 1;
 
 function WorkList(skill = "dev") {
-  let work = [];
+  let work: any[] = [];
   let id = workListCounter++;
 
   const size = () => work.length;
@@ -86,12 +86,12 @@ function WorkList(skill = "dev") {
     necessarySkill: skill
   };
 
-  function add(item) {
+  function add(item: any) {
     work.push(item);
     PubSub.publish('workitem.added', {item, column});
   }
 
-  function _remove(item) {
+  function _remove(item: any) {
     for (let i = 0; i < size(); i++) {
       if (work[i] === item) {
         work.splice(i, 1);
@@ -100,7 +100,7 @@ function WorkList(skill = "dev") {
     PubSub.publish('workitem.removed', {item, column});
   }
 
-  function move(to, item) {
+  function move(to: any, item: any) {
     _remove(item);
     to.add(item);
     return item;
@@ -110,3 +110,5 @@ function WorkList(skill = "dev") {
 }
 
 module.exports = {Worker, WorkItem, WorkList};
+
+export {};
