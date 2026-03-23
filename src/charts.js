@@ -19,8 +19,8 @@ const percentileLinesPlugin = {
         const yScale = scales.y;
         ctx.save();
         ctx.font = '11px sans-serif';
-        ctx.textAlign = 'right';
-        ctx.textBaseline = 'bottom';
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'middle';
         for (const {value, color, label} of lines) {
             const y = yScale.getPixelForValue(value);
             if (y < top || y > bottom) continue;
@@ -32,7 +32,7 @@ const percentileLinesPlugin = {
             ctx.lineTo(right, y);
             ctx.stroke();
             ctx.fillStyle = color;
-            ctx.fillText(label, right - 2, y - 2);
+            ctx.fillText(label, right + 4, y);
         }
         ctx.restore();
     }
@@ -76,6 +76,9 @@ function createChart(ctx, _speed) {
         data: data,
         options: {
             animation: false,
+            layout: {
+                padding: {right: 36}
+            },
             scales: {
                 x: {
                     beginAtZero: true,
