@@ -159,3 +159,4 @@ describe('animation', () => {
   })
 });
 
+export {};

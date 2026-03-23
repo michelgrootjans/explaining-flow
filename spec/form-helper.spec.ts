@@ -78,4 +78,4 @@ describe('number of stories', () => {
     ['dev, dev', 50],
     ['dev, dev, dev', 200],
   ])('should suggest [%s -> %s]', (workers, numberOfStories) => expect(suggestNumberOfStories({workers})).toEqual(numberOfStories));
-});
+});export {};

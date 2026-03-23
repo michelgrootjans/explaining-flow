@@ -100,4 +100,4 @@ describe('parseInput', () => {
     });
   });
 
-});
+});export {};

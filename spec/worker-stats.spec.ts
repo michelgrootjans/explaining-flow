@@ -67,4 +67,4 @@ describe('worker stats', () => {
     PubSub.publish(topic, worker);
     jest.runAllTimers();
   }
-});
+});export {};

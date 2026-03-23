@@ -3,6 +3,12 @@ const Board = require('../src/board');
 const PubSub = require('pubsub-js');
 
 describe('a worker', () => {
+  let now: number;
+  let board: any;
+  let workItem: any;
+  let workItem1: any;
+  let workItem2: any;
+
   beforeEach(PubSub.clearAllSubscriptions);
   beforeEach(jest.useFakeTimers);
   afterEach(jest.runAllTimers);
@@ -123,6 +129,9 @@ describe('a worker', () => {
 });
 
 describe('workers work at their own speed', () => {
+  let board: any;
+  let workItem: any;
+
   beforeEach(PubSub.clearAllSubscriptions);
   beforeEach(jest.useFakeTimers);
   afterEach(jest.runAllTimers);
@@ -212,3 +221,4 @@ describe('a typical workflow', () => {
   });
 });
 
+export {};

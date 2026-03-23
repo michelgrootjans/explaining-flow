@@ -227,3 +227,6 @@ describe('calculate performance', () => {
     ])).toMatchObject({throughput: 1, leadTime: 5})
   });
 })
+
+export {};
+
