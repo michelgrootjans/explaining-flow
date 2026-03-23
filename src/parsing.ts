@@ -1,13 +1,13 @@
 const {average, poisson} = require("./generator");
 
-function parseInput(rawInput) {
+function parseInput(rawInput: any) {
     const title = rawInput.title;
     const workers = parseWorkers(rawInput.workers);
     const work = parseWorkload(rawInput.workload);
     const wipLimit = rawInput.wipLimit;
     const numberOfStories = parseInt(rawInput.numberOfStories || ((workers.length > 2) ? 200 : 50));
     const speed = (numberOfStories >= 100) ? 20 : 1;
-    let input = {
+    let input: any = {
         title,
         workers,
         stories: {
@@ -21,19 +21,19 @@ function parseInput(rawInput) {
     return input;
 }
 
-function parseWorkers(input) {
+function parseWorkers(input: string) {
     return input
         .split(',')
         .map(skillsInput => ({skills: parseSkills(skillsInput)}));
 }
 
-function parseSkills(input) {
+function parseSkills(input: string): string[] {
     return input
         .split('+')
         .map(skill => skill.trim());
 }
 
-function parseWorkload(input) {
+function parseWorkload(input: string): Record<string, number> {
     return input
         .trim()
         .split(',')
@@ -41,7 +41,7 @@ function parseWorkload(input) {
             .trim()
             .split(":")
         )
-        .reduce((work, pair) => {
+        .reduce((work: Record<string, number>, pair) => {
             work[pair[0].trim()] = parseInt(pair[1].trim());
             return work;
         }, {})
