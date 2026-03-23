@@ -135,12 +135,6 @@ const crosshairPlugin = {
     ctx.setLineDash([4, 4]);
     ctx.stroke();
     ctx.restore();
-
-    const entries = getValuesAtX(chart, currentX);
-    if (entries.length === 0) return;
-
-    const dayLabel = `Day ${currentX.toFixed(1)}`;
-    drawTooltip(ctx, chartArea, xPixel, entries, dayLabel);
   },
 
   beforeDestroy(chart) {

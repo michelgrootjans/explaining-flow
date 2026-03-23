@@ -59,6 +59,10 @@ function createChart(ctx, _speed) {
                     }
                 },
             },
+            interaction: {
+                mode: 'x',
+                intersect: false,
+            },
             plugins: {
                 legend: {display: true, position: 'bottom', align: 'start'},
                 title: {

@@ -91,6 +91,10 @@ function Cfd($chart, updateInterval, speed) {
 
         },
       },
+      interaction: {
+        mode: 'index',
+        intersect: false,
+      },
       plugins: {
         legend: {display: true, position: 'bottom', align: 'start', reverse: true},
         title: {
