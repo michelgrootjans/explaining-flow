@@ -1,3 +1,4 @@
+import 'bootstrap/dist/css/bootstrap.min.css';
 import PubSub from 'pubsub-js';
 import scenarios from './scenarios';
 import { initialize as initAnimation } from './animation';

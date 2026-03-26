@@ -41,6 +41,7 @@
     }
   },
   "dependencies": {
+    "bootstrap": "^5.3.8",
     "chart.js": "^4.5.1",
     "pubsub-js": "^1.9.5"
   }
