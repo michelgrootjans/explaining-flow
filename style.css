@@ -15,10 +15,13 @@
     align-items: center;
 }
 
+#board-preview {
+    width: fit-content;
+}
+
 .board {
     margin: 1em;
     width: fit-content;
-    max-width: 100%;
     --bs-gutter-x: 0;
     gap: 0;
     background: #f6f5f0;
