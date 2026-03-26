@@ -10,12 +10,15 @@
 }
 
 #board_container {
-    max-width: 1200px;
-    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .board {
     margin: 1em;
+    width: fit-content;
+    max-width: 100%;
     --bs-gutter-x: 0;
     gap: 0;
     background: #f6f5f0;
@@ -31,8 +34,8 @@
 }
 
 .board .col {
-    flex: 1 0 0%;
-    width: auto;
+    flex: 0 0 160px;
+    width: 160px;
     max-width: none;
     background: transparent;
     border-left: 1px solid rgba(0, 0, 0, 0.08);
