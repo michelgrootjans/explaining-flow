@@ -7,6 +7,16 @@ let startMs: number | null = null;
 let allItems: Map<number, any> = new Map();
 let boardColumns: any[] = [];
 
+export function getState() {
+  return { startMs, allItems, boardColumns };
+}
+
+export function restoreState(state: { startMs: number | null; allItems: Map<number, any>; boardColumns: any[] }) {
+  startMs = state.startMs;
+  allItems = state.allItems;
+  boardColumns = state.boardColumns;
+}
+
 export function initialize() {
   startMs = null;
   allItems = new Map();

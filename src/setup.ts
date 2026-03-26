@@ -14,7 +14,7 @@ import { parseInput } from './parsing';
 import { Chart } from 'chart.js';
 import crosshairPlugin from './crosshair';
 import * as FormHelper from './form-helper';
-import { initialize as initBoardTimeline } from './boardTimeline';
+import { initialize as initBoardTimeline, getState as getBoardTimelineState, restoreState as restoreBoardTimelineState } from './boardTimeline';
 
 Chart.register(crosshairPlugin);
 
@@ -36,7 +36,8 @@ function captureSnapshot(scenarioId: number) {
             histogramLabels: [...histogram.data.labels],
             histogramData: [...histogram.data.datasets[0].data],
             histogramVerticalLines: [...(histogram.options.verticalLines || [])],
-            histogramVerticalLinesOffset: histogram.options.verticalLinesOffset || 0
+            histogramVerticalLinesOffset: histogram.options.verticalLinesOffset || 0,
+            boardTimeline: getBoardTimelineState()
         });
         document.getElementById(`scenario-${scenarioId}`)!.classList.add('done');
     });
@@ -64,6 +65,8 @@ function restoreSnapshot(scenarioId: number) {
     histogram.options.verticalLines = [...(snapshot.histogramVerticalLines || [])];
     histogram.options.verticalLinesOffset = snapshot.histogramVerticalLinesOffset || 0;
     histogram.update();
+
+    restoreBoardTimelineState(snapshot.boardTimeline);
 
     document.querySelectorAll('.scenario.instance').forEach(el => el.classList.remove('selected'));
     document.getElementById(`scenario-${scenarioId}`)!.classList.add('selected');
