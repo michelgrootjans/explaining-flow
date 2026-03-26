@@ -9,6 +9,11 @@
     content: ')'
 }
 
+#board_container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
 .board {
     margin: 1em;
     --bs-gutter-x: 0;
@@ -26,6 +31,9 @@
 }
 
 .board .col {
+    flex: 1 0 0%;
+    width: auto;
+    max-width: none;
     background: transparent;
     border-left: 1px solid rgba(0, 0, 0, 0.08);
     border-radius: 0;
@@ -183,11 +191,6 @@
     border: 1px solid lightgray;
 }
 
-.board-preview-label {
-    font-size: 0.8em;
-    color: #888;
-    margin: 0 1em 0.2em;
-}
 
 @media (max-width: 767px) {
     .post-it {

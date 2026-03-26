@@ -89,7 +89,5 @@ function renderPreview(container: HTMLElement, state: Map<number, any[]>, projec
       </div>`;
   });
 
-  container.innerHTML = `
-    <div class="board-preview-label">Day ${dayLabel}</div>
-    <div class="board row board-preview-board">${columnsHtml}</div>`;
+  container.innerHTML = `<div class="board row board-preview-board">${columnsHtml}</div>`;
 }
