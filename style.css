@@ -11,12 +11,13 @@
 
 .board {
     margin: 1em;
-
-    /*background: #EBECF0;*/
-    /*border-radius: 10px;*/
-    /*border: 10px solid #adb2bd;*/
-    /*box-shadow: inset -1px 2px 2px #404040, 4px 4px 4px rgba(0, 0, 0, 0.1);*/
-    /*min-height: 600px;*/
+    --bs-gutter-x: 0;
+    gap: 0;
+    background: #f6f5f0;
+    border-radius: 10px;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.18), 0 1px 3px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    min-height: 150px;
 }
 
 .board ul {
@@ -25,32 +26,37 @@
 }
 
 .board .col {
-    background: #EBECF0;
-    border-top: 10px solid #adb2bd;
-    border-bottom: 10px solid #adb2bd;
-    /*box-shadow: inset 0px 0px 2px 2px #404040, 4px 4px 4px rgba(0, 0, 0, 0.1);*/
+    background: transparent;
+    border-left: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 0;
+    box-shadow: none;
 }
 
-.board .col.todo {
-    border-left: 10px solid #adb2bd;
-    border-top-left-radius: 10px;
-    border-bottom-left-radius: 10px;
-    box-shadow: inset 0px 2px 2px #404040, inset 2px 0px 2px #404040;
+.board .col:first-child {
+    border-left: none;
 }
-.board .col.work {
-    border-left: 2px solid black;
-    box-shadow: inset 0px 2px 2px #404040;
+
+.board .col h5 {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: #5e6c84;
+    padding: 8px 10px;
+    margin: 0;
+    border-bottom: 2px solid rgba(0, 0, 0, 0.07);
 }
+
+.board .col.work h5 {
+    border-bottom-color: #4c9be8;
+}
+
+.board .col.done h5 {
+    border-bottom-color: #57a55a;
+}
+
 .board .col.queue {
-    border-left: 1px dashed grey;
-    box-shadow: inset 0px 2px 2px #404040;
-}
-.board .col.done {
-    border-left: 2px solid black;
-    border-right: 10px solid #adb2bd;
-    border-top-right-radius: 10px;
-    border-bottom-right-radius: 10px;
-    box-shadow: inset 0px 2px 2px #404040;
+    background: rgba(0, 0, 0, 0.018);
 }
 
 .board-preview-board {
@@ -181,11 +187,6 @@
     font-size: 0.8em;
     color: #888;
     margin: 0 1em 0.2em;
-}
-
-.board-preview-board {
-    filter: sepia(0.5) brightness(0.92);
-    margin: 1em;
 }
 
 @media (max-width: 767px) {
