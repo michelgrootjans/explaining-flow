@@ -173,6 +173,71 @@
     border: 1px solid lightgray;
 }
 
+#board-preview {
+    margin: 0.5em 1em 0;
+    padding: 6px 8px;
+    background: rgba(255, 255, 255, 0.97);
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    font-size: 0.8em;
+}
+
+.board-preview-day {
+    font-weight: bold;
+    color: #555;
+    margin-bottom: 4px;
+}
+
+.board-preview-columns {
+    display: flex;
+    gap: 3px;
+    overflow-x: auto;
+}
+
+.board-preview-col {
+    flex: 1;
+    min-width: 50px;
+    background: #EBECF0;
+    border-radius: 3px;
+    padding: 3px 5px;
+    border-top: 3px solid #adb2bd;
+}
+
+.board-preview-col.work {
+    border-top-color: #6c757d;
+}
+
+.board-preview-col.done {
+    border-top-color: #198754;
+}
+
+.board-preview-col-header {
+    font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 3px;
+}
+
+.board-preview-count {
+    font-weight: normal;
+    color: #666;
+}
+
+.board-preview-cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+}
+
+.board-preview-card {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+    display: inline-block;
+}
+
 @media (max-width: 767px) {
     .post-it {
         width: 24px;

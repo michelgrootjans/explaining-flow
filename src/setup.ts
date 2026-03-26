@@ -14,6 +14,7 @@ import { parseInput } from './parsing';
 import { Chart } from 'chart.js';
 import crosshairPlugin from './crosshair';
 import * as FormHelper from './form-helper';
+import { initialize as initBoardTimeline } from './boardTimeline';
 
 Chart.register(crosshairPlugin);
 
@@ -130,6 +131,7 @@ function run(scenario: any) {
 
     initAnimation(`#scenario-${scenario.id}`);
     Stats.initialize();
+    initBoardTimeline();
 
     new WorkerStats();
     document.title = scenario.title

@@ -1,3 +1,5 @@
+import PubSub from 'pubsub-js';
+
 let currentX: number | null = null;
 const charts: any[] = [];
 
@@ -113,11 +115,13 @@ const crosshairPlugin = {
       const mouseX = e.clientX - rect.left;
       currentX = chart.scales.x.getValueForPixel(mouseX);
       charts.forEach(c => c.update('none'));
+      PubSub.publish('crosshair.moved', {projectDay: currentX});
     });
 
     chart.canvas.addEventListener('mouseleave', () => {
       currentX = null;
       charts.forEach(c => c.update('none'));
+      PubSub.publish('crosshair.moved', {projectDay: null});
     });
   },
 
