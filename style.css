@@ -33,6 +33,12 @@
     padding: 0;
 }
 
+.board .cards {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 .board .col {
     flex: 0 0 160px;
     width: 160px;
