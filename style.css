@@ -9,7 +9,7 @@
     content: ')'
 }
 
-#board {
+.board {
     margin: 1em;
 
     /*background: #EBECF0;*/
@@ -19,38 +19,42 @@
     /*min-height: 600px;*/
 }
 
-#board ul {
+.board ul {
     list-style: none;
     padding: 0;
 }
 
-#board .col {
+.board .col {
     background: #EBECF0;
     border-top: 10px solid #adb2bd;
     border-bottom: 10px solid #adb2bd;
     /*box-shadow: inset 0px 0px 2px 2px #404040, 4px 4px 4px rgba(0, 0, 0, 0.1);*/
 }
 
-#board .col.todo {
+.board .col.todo {
     border-left: 10px solid #adb2bd;
     border-top-left-radius: 10px;
     border-bottom-left-radius: 10px;
     box-shadow: inset 0px 2px 2px #404040, inset 2px 0px 2px #404040;
 }
-#board .col.work {
+.board .col.work {
     border-left: 2px solid black;
     box-shadow: inset 0px 2px 2px #404040;
 }
-#board .col.queue {
+.board .col.queue {
     border-left: 1px dashed grey;
     box-shadow: inset 0px 2px 2px #404040;
 }
-#board .col.done {
+.board .col.done {
     border-left: 2px solid black;
     border-right: 10px solid #adb2bd;
     border-top-right-radius: 10px;
     border-bottom-right-radius: 10px;
     box-shadow: inset 0px 2px 2px #404040;
+}
+
+.board-preview-board {
+    filter: sepia(0.5) brightness(0.92);
 }
 
 
@@ -173,69 +177,15 @@
     border: 1px solid lightgray;
 }
 
-#board-preview {
-    margin: 0.5em 1em 0;
-    padding: 6px 8px;
-    background: rgba(255, 255, 255, 0.97);
-    border: 1px solid #dee2e6;
-    border-radius: 4px;
+.board-preview-label {
     font-size: 0.8em;
+    color: #888;
+    margin: 0 1em 0.2em;
 }
 
-.board-preview-day {
-    font-weight: bold;
-    color: #555;
-    margin-bottom: 4px;
-}
-
-.board-preview-columns {
-    display: flex;
-    gap: 3px;
-    overflow-x: auto;
-}
-
-.board-preview-col {
-    flex: 1;
-    min-width: 50px;
-    background: #EBECF0;
-    border-radius: 3px;
-    padding: 3px 5px;
-    border-top: 3px solid #adb2bd;
-}
-
-.board-preview-col.work {
-    border-top-color: #6c757d;
-}
-
-.board-preview-col.done {
-    border-top-color: #198754;
-}
-
-.board-preview-col-header {
-    font-weight: bold;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    margin-bottom: 3px;
-}
-
-.board-preview-count {
-    font-weight: normal;
-    color: #666;
-}
-
-.board-preview-cards {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 2px;
-}
-
-.board-preview-card {
-    width: 10px;
-    height: 10px;
-    border-radius: 2px;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
-    display: inline-block;
+.board-preview-board {
+    filter: sepia(0.5) brightness(0.92);
+    margin: 1em;
 }
 
 @media (max-width: 767px) {
