@@ -24,7 +24,7 @@
     "@types/node": "^25.5.0",
     "@vitejs/plugin-legacy": "^8.0.0",
     "babel-jest": "^30.3.0",
-    "jest": "^24.8.0",
+    "jest": "^30.3.0",
     "node-notifier": "^10.0.1",
     "open": "^11.0.0",
     "serve": "^14.2.6",
