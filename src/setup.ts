@@ -14,6 +14,7 @@ import { parseInput } from './parsing';
 import { Chart } from 'chart.js';
 import crosshairPlugin from './crosshair';
 import * as FormHelper from './form-helper';
+import * as Recipes from './recipes';
 import { initialize as initBoardTimeline, getState as getBoardTimelineState, restoreState as restoreBoardTimelineState } from './boardTimeline';
 
 Chart.register(crosshairPlugin);
@@ -77,7 +78,15 @@ function createScenarioContainer(scenario: any) {
 
     const clone = (template.content.cloneNode(true) as DocumentFragment).querySelector('ul')!;
     clone.setAttribute('id', `scenario-${scenario.id}`);
-    clone.querySelector('.scenario-title')!.textContent = scenario.title;
+    const $title = clone.querySelector('.scenario-title') as HTMLElement;
+    $title.textContent = scenario.title;
+    $title.title = scenario.title;
+    // Price tag: headcount × cost-per-member, snapshotted at Run time.
+    const headcount = (scenario.workers || []).length;
+    const costPerMember = parseMoney((document.getElementById('memberCost') as HTMLInputElement)?.value);
+    const $cost = clone.querySelector('.teamCost') as HTMLElement;
+    $cost.textContent = '$' + (headcount * costPerMember).toLocaleString('en-US');
+    $cost.title = `${headcount} people × $${costPerMember.toLocaleString('en-US')} each`;
     return clone
 }
 
@@ -85,7 +94,7 @@ function parse(form: HTMLFormElement) {
   const field = (fieldName: string) => (form.querySelector(`[name="${fieldName}"]`) as HTMLInputElement).value;
 
   return parseInput({
-      title: field('workload'),
+      title: field('scenario-name').trim() || field('workload'),
       workers: field('workers'),
       workload: field('workload'),
       wipLimit: field('wip-limit'),
@@ -98,14 +107,85 @@ function parseScenario(event: Event) {
   return Scenario(parse(event.target as HTMLFormElement));
 }
 
+const $field = (id: string) => document.getElementById(id) as HTMLInputElement;
+
+// "$100,000" -> 100000; tolerant of any mix of digits, $, commas, spaces.
+const parseMoney = (s: string | undefined) => Number(String(s || '').replace(/[^0-9.]/g, '')) || 0;
+
+function refreshRecipeDropdown() {
+  const $select = document.getElementById('recipe-select') as HTMLSelectElement | null;
+  if (!$select) return;
+  $select.innerHTML = '<option value="">pick one…</option>';
+  Recipes.all().forEach(recipe => {
+    const option = document.createElement('option');
+    option.value = recipe.name;
+    option.textContent = recipe.name;
+    $select.appendChild(option);
+  });
+}
+
+function fillFormFromRecipe(name: string) {
+  const recipe = Recipes.find(name);
+  if (!recipe) return;
+  $field('scenario-name').value = recipe.name;
+  $field('workload').value = recipe.workload;
+  $field('workers').value = recipe.workers;
+  $field('wip-limit').value = recipe.wipLimit;
+  $field('numberOfStories').value = recipe.numberOfStories;
+  $field('random').checked = recipe.random;
+}
+
+function saveRecipeFromForm() {
+  Recipes.upsert({
+    name: $field('scenario-name').value.trim(),
+    workload: $field('workload').value,
+    workers: $field('workers').value,
+    wipLimit: $field('wip-limit').value,
+    numberOfStories: $field('numberOfStories').value,
+    random: $field('random').checked,
+  });
+  refreshRecipeDropdown();
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const form = FormHelper.initialize();
+
+    Recipes.seedDefaults();
+    refreshRecipeDropdown();
+
+    // Keep the cost field looking like money: "$100,000" no matter what gets typed.
+    const $cost = document.getElementById('memberCost') as HTMLInputElement;
+    $cost.addEventListener('change', () => {
+      $cost.value = '$' + parseMoney($cost.value).toLocaleString('en-US');
+    });
+
+    const $recipeSelect = document.getElementById('recipe-select') as HTMLSelectElement;
+    const $deleteRecipe = document.getElementById('delete-recipe') as HTMLButtonElement;
+
+    $recipeSelect.addEventListener('change', (event: Event) => {
+      const name = (event.target as HTMLSelectElement).value;
+      fillFormFromRecipe(name);
+      $deleteRecipe.disabled = !name;
+    });
+
+    $deleteRecipe.addEventListener('click', () => {
+      const name = $recipeSelect.value;
+      if (!name) return;
+      Recipes.remove(name);
+      refreshRecipeDropdown();
+      $recipeSelect.value = '';
+      $deleteRecipe.disabled = true;
+    });
+
+    document.getElementById('clear-runs')!
+      .addEventListener('click', () => window.location.reload());
 
     document.getElementById('new-scenario')!
       .addEventListener('submit', (event: Event) => {
         event.preventDefault()
         if(!form?.isValid()) return;
 
+        saveRecipeFromForm();
         const scenario = parseScenario(event);
         const $container = createScenarioContainer(scenario);
         const $scenarios = document.getElementById('scenarios')!;

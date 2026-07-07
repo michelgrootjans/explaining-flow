@@ -13,6 +13,24 @@
         <form id="new-scenario" class="row gy-2 gx-3 align-items-center flex-wrap">
             <div class="col-auto">
                 <div class="input-group">
+                    <div class="input-group-text">Recipe</div>
+                    <select class="form-select" id="recipe-select" style="max-width: 13rem">
+                        <option value="">pick one…</option>
+                    </select>
+                    <button id="delete-recipe" class="btn btn-outline-danger" type="button"
+                            title="Delete the selected recipe" disabled>&times;</button>
+                </div>
+            </div>
+
+            <div class="col-auto">
+                <div class="input-group">
+                    <div class="input-group-text">Name</div>
+                    <input class="form-control" type="text" id="scenario-name" name="scenario-name" value="" placeholder="optional label" style="max-width: 11rem">
+                </div>
+            </div>
+
+            <div class="col-auto">
+                <div class="input-group">
                     <div class="input-group-text">Work per story</div>
                     <input class="form-control" type="text" id="workload" name="workload" value="dev: 1" placeholder="ux: 1, dev: 3, qa: 2">
                 </div>
@@ -28,14 +46,14 @@
             <div class="col-auto">
                 <div class="input-group">
                     <div class="input-group-text">WIP-limit</div>
-                    <input class="form-control" type="text" id="wip-limit" name="wip-limit" placeholder="none">
+                    <input class="form-control" type="text" id="wip-limit" name="wip-limit" placeholder="none" style="max-width: 4.5rem">
                 </div>
             </div>
 
             <div class="col-auto">
                 <div class="input-group">
                     <div class="input-group-text">#stories</div>
-                    <input class="form-control" type="text" id="numberOfStories" name="numberOfStories" placeholder="50">
+                    <input class="form-control" type="text" id="numberOfStories" name="numberOfStories" placeholder="50" style="max-width: 4.5rem">
                 </div>
             </div>
 
@@ -49,6 +67,19 @@
             <div class="col-auto">
                 <button id="create-scenario" class="btn btn-primary">Run</button>
             </div>
+
+            <div class="col-auto">
+                <div class="input-group">
+                    <div class="input-group-text">Developer cost</div>
+                    <input class="form-control" type="text" id="memberCost" name="memberCost" value="$100,000"
+                           inputmode="numeric" style="max-width: 7rem"
+                           title="Annual cost per team member — each run's price tag is headcount × this">
+                </div>
+            </div>
+
+            <div class="col-auto">
+                <button id="clear-runs" class="btn btn-outline-secondary" type="button" title="Clear all runs and charts; saved recipes are kept">Clear</button>
+            </div>
         </form>
     </div>
 </header>
@@ -59,6 +90,7 @@
         <div id="scenarios" class="d-flex flex-nowrap overflow-auto">
             <ul class="scenario legend col col-1">
                 <li class="scenario-title">&nbsp;</li>
+                <li class="teamCost">Team cost</li>
                 <li class="throughput">Throughput</li>
                 <li class="leadtime">Cycle Time</li>
                 <li class="wip">WIP</li>
@@ -94,6 +126,7 @@
 <template id="scenario-template">
     <ul class="scenario instance col col-1">
         <li class="scenario-title"></li>
+        <li class="teamCost"></li>
         <li class="throughput"></li>
         <li class="leadtime"></li>
         <li class="wip"></li>

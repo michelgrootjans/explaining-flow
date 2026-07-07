@@ -30,7 +30,7 @@ function parseWorkers(input: string) {
 function parseSkills(input: string): string[] {
     return input
         .split('+')
-        .map(skill => skill.trim());
+        .map(skill => skill.trim().toLowerCase());
 }
 
 function parseWorkload(input: string): Record<string, number> {
@@ -42,7 +42,7 @@ function parseWorkload(input: string): Record<string, number> {
             .split(":")
         )
         .reduce((work: Record<string, number>, pair) => {
-            work[pair[0]!.trim()] = parseInt(pair[1]!.trim());
+            work[pair[0]!.trim().toLowerCase()] = parseInt(pair[1]!.trim());
             return work;
         }, {})
 }

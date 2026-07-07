@@ -109,10 +109,13 @@ function initialize() {
     state = initialState()
   });
 
-  PubSub.subscribe('workitem.started', () => {
+  PubSub.subscribe('workitem.started', (topic: string, item: any) => {
     state!.runningWip.update(state!.wip);
     state!.wip++;
-    state!.maxWip = Math.max(state!.wip, state!.maxWip)
+    // Prefer the board's own concurrency sample over the delivery-order counter:
+    // late-delivered finish events can make the counter transiently overshoot.
+    const trueWip = item && Number.isFinite(item.inFlightAtStart) ? item.inFlightAtStart : state!.wip;
+    state!.maxWip = Math.max(trueWip, state!.maxWip)
     publishStats();
   });
 

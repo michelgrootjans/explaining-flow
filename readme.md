@@ -1,273 +1,109 @@
-# Kanban simulator
-With this project, you can simulate team structure and see the effect on your team's efficiency and effectiveness.
+# Flow Simulator — team topology experiments you can run
 
-The measurements you get for each simulation are:
-- Throughput: the number of stories the team finishes per unit of time. Typically referred to as team velocity.
-- Cycle Time: the average time taken from start to finish for a story 
-- WIP: the number of items in progress, started, but not done
+Every argument about team structure eventually collapses into dueling anecdotes: specialists vs. cross-skilled, more people vs. better flow, big batches vs. small. This simulator ends the anecdotes. Configure a team, press Run, and watch the physics — throughput, cycle time, and WIP, measured live while animated work items move across a board.
 
-Stakeholders and customers typically worry about throughput and cycle time. Throughput indicates how efficient a team is. Cycle Time indicates how long stakeholders have to wait for their ideas to be implemented, once work starts.
+**Run it here: https://hallmansm.github.io/explaining-flow/** — no install, and it comes pre-loaded with a full experiment series (below).
 
-## Using the simulator
-You can use the [online simulator](https://michelgrootjans.github.io/explaining-flow/)
+This is a fork of [Michel Grootjans' explaining-flow](https://github.com/michelgrootjans/explaining-flow), extended for live demos and coaching sessions. His original readme includes an excellent scenario-by-scenario lightning talk that remains the best gentle introduction to the tool's ideas.
 
-...or you can run it locally:
+## What it measures
+
+- **Throughput** — stories finished per day. What velocity wishes it were.
+- **Cycle time** — elapsed days from started to done, per story. The only number your customer feels.
+- **WIP** — stories in flight: started, not done.
+
+The three obey [Little's law](https://en.wikipedia.org/wiki/Little%27s_law) (`WIP = throughput × cycle time`) in every scenario — watching that hold while everything else changes is half the education.
+
+## The Banana Software Company experiment series
+
+The Recipe dropdown ships pre-loaded with eleven scenarios. They're a sequence, not a grab bag — pick each one, press Run, and read the walkthrough below as you go. Every scenario exists to answer one question, and the columns accumulate in the stats table so you can compare as you climb.
+
+### 1. Base Team — the org chart everyone starts with
+
+Seven people: a product owner, two UI designers, three developers, one tester. Each story needs all four specialties in order (po → ui → dev → qa), work per story averages po: 2, ui: 4, dev: 8, qa: 2, and nothing limits how much gets started. This is a completely normal, reasonably staffed team — which is the point.
+
+**Watch:** queues pile up between the specialties while everyone stays busy. Cycle time runs far beyond the ~16 days of actual work per story, because most of a story's life is spent waiting for the *next* specialist, not being worked. These are the baseline numbers everything else has to beat.
+
+### 2–4. 2x, 4x, 8x People — buying capacity
+
+The reflexive fix: "we need more people." These three scenarios buy the exact same team again — twice over, four times, eight times. Payroll scales perfectly linearly.
+
+**Watch:** throughput rises, but never by the multiple you paid for — divide throughput by team cost and **throughput-per-expense falls with every hire**. And the queues never leave; they just get bigger absolute numbers flowing into them. Capacity was never the constraint, so buying capacity buys disappointment at scale. This is the strategy the rest of the series competes against.
+
+### 5. WIP throttling only — the first free lever
+
+Back to the original seven people. One change, costing zero dollars: no more than 7 stories may be in flight at once — when the board is full, nobody starts anything new; they finish something instead.
+
+**Watch:** cycle time collapses while throughput barely moves. The work didn't speed up — the *waiting* was cut, because the queue between specialties was self-inflicted inventory. Stop starting, start finishing, priced: free.
+
+### 6. Cross-skilling only — the second free lever
+
+Original seven again, unlimited WIP, but now every person carries **two skills** — and the pairings are *pointed at the work*: dev is half of every story's effort, so four of the seven carry dev (dev+ui, dev+ui, dev+qa, dev+po, ui+po, ui+qa, qa+po). No hires — the same humans, more versatile, aimed where the demand is.
+
+**Watch:** the handoff blocking dissolves. When a story needs a tester and the tester is busy, someone else who *can* test picks it up — work routes to the best available person instead of waiting for the one designated specialist. Idle time converts directly into flow.
+
+**The trap worth knowing:** the pointing is not optional. Deal the same fourteen skill-slots out *without* watching where the work is (dev stuck at 3-of-7 coverage while dev is 50% of the demand) and this lever goes negative — busier than the specialist team and slower, because the scarce dev-capable people keep getting captured by other columns' work. Cross-training that doesn't add capacity at the constraint is a gym membership for the wrong muscle. Try it: rebuild the roster as `po+qa, po+ui, ui+dev, ui+qa, dev+ui, dev+qa, qa+ui` and watch a "free lever" lose to doing nothing.
+
+### 7. Cut Batch only — the third free lever
+
+Original seven, specialists, unlimited WIP — but every story is sliced in half (work per item drops to po: 1, ui: 2, dev: 4, qa: 1, and there are twice as many items for the same total work).
+
+**Watch:** the same amount of work flows noticeably smoother in smaller pieces. Queues form later and drain faster, feedback arrives sooner, and variance hurts less because each individual item risks less. Nothing about the team changed — only the size of the units of work.
+
+### 8–10. The combos — stacking all three levers
+
+Now the levers get combined, and the only thing that climbs from scenario to scenario is **how many skills each person carries**:
+
+- **WIP + cx2 skill + batch** — two-skilled people, WIP capped at 7, stories cut in half
+- **WIP + cx3 skill + batch** — three-skilled people, same cap, same small batches
+- **WIP + fullstack + batch** — four-skilled people (every skill), same cap, same batches
+
+**Watch:** each rung of the skill ladder raises throughput and tightens cycle time further, because every additional skill per person removes another class of "waiting for the right specialist." Then put the final column next to **2x People**: in typical runs the full combo **matches or beats the double-payroll team on throughput and crushes it on cycle time — with the original seven people.** That comparison is the entire series in one glance: the levers that cost nothing outperform the lever that cost a second payroll.
+
+### 11. Base Team (noVar) — the control
+
+The baseline team once more, but with Variable work switched off: every task takes exactly its average. Compare against scenario 1.
+
+**Watch:** how much better everything runs on *identical averages*. The difference between this and scenario 1 is the pure cost of randomness — queues form under variability even when the arithmetic says they shouldn't, which is why plans built on averages fail. (Goldratt called it dependent events plus statistical fluctuations; your Gantt chart calls it nothing, which is the problem.)
+
+---
+
+Recipes are saved in your browser (localStorage): edit one and re-run under the same name to update it, hit **×** to delete one, name a new configuration to add your own. Clearing them is permanent for your browser — fresh visitors always start with the full set.
+
+## Run it locally
+
 ```shell
-git clone git@github.com:michelgrootjans/explaining-flow.git
+git clone https://github.com/hallmansm/explaining-flow.git
 cd explaining-flow
 npm install
 npm run dev
 ```
 
-Then open [http://localhost:5173](http://localhost:5173) in your browser.
+Then open [http://localhost:5173](http://localhost:5173).
 
-## My lightning talk
-I'd like to share a few simulations showing the effects of team flow.
-These simulations show the different scenarios I run to illustrate the need to understand team flow.
+## What this fork adds
 
-The stats we're interested in are:
-- **Throughput**: this is what is typically measured under the name _velocity_. It's the number of user stories finished per unit of time.
-- **Cycle time**: the time taken for each story from the moment it has been taken out of the _todo_ column until it reaches the _done_ column.
-- **WIP**: Work In Progress. The number of user stories _in flight_. These stories have been started but are not done yet.
- ### A single developer working on a predictable backlog
-In this predictable scenario, a single developer works on 50 stories. Each story takes exactly 1 day to complete. So we expect a throughput of `1` story per day. We expect a cycle time of `1` since each story will be in progress for exactly 1 day. This means that we'll have an average of `1` story in progress at any given time.
+- **Scenario names** — label runs so five-deep comparisons stay readable
+- **Saved recipes** — the dropdown, with update-in-place, delete, and the baked-in demo series
+- **A Clear button** — reset runs and charts between audiences, keeping recipes
+- **A stable stats frame** — big teams (4x/8x) no longer shove the animation off-screen; the comparison table scrolls in place
+- Case-insensitive worker/skill parsing, and assorted demo-hardening fixes
 
-**Input**
-- Work per story: `dev: 1`
-- Workers: `dev`
+## Companion simulator
 
-**Expected Results**
-  - Throughput: **1 story/day**
-  - Cycle time: **1 day per story**
-  - WIP: **1 story**
+This sim has no rework loop — quality is assumed. For the other half of the story, the [Rework Backwash simulator](https://hallmansm.github.io/rework-sim/) shows what a defect rate does to a single team's flow: why 33% rework isn't "33% slower" but a queueing cliff.
 
-### A single developer working on a backlog with some randomness
-The developer now spends 1 day _on average_ for each story.
-This slight change shows that throughput and cycle time move in opposite directions.
-This is a direct illustration of [Little's law](https://en.wikipedia.org/wiki/Little%27s_law) which states that in a stable system, `throughput * cycle time = WIP`. This formula will be applicable to all the simulations.
+## Credits
 
-**Input**
-- Work per story: `dev: 1`
-- Workers: `dev`
-- Variable work: ☑️
-
-**Expected Results**
-- Throughput: **1 story/day**
-- Cycle time: **1 day per story**
-- WIP: **1 story**
-
-### Handover from development to QA
-Now both development and qa will spend 1 day _on average_ for each story.
-
-We expect the cycle time to be 2 on average now: 1 day of development, 1 day of qa. We also expect a Throughput of 1 story per day.
-
-However, if the simulation runs for long enough, a queue will start to appear between dev and qa, adding to the cycle time of the stories waiting in the queue.
-The reason is simple: As long as qa works faster than dev, everything will run smoothly. Once development starts going faster than qa, its output will wait in the queue.
-
-**Input**
-- Work per story: **dev: 1, qa: 1**
-- Workers: **dev, qa**
-- Variable work: ☑️
-
-**Example Results**
-- Throughput: **0.85 stories/day**
-- Cycle time: **3 days per story**
-- WIP: **about 2-3with peaks up to 5**
-
-### Adding UX to the process
-Let's accelerate the simulation. This allows us to see patterns we wouldn't recognise in the slow daily movements of stories on a board. From now on, we'll simulate with 200 user stories.
-
-Ux, development and qa will each spend 2 days _on average_ for each story. So each story will have 6 days of work on average (2 ux + 2 dev + 2 qa).
-
-**Input**
-- Work per story: **ux: 2, dev: 2, qa: 2**
-- Workers: **ux, dev, qa**
-- Variable work: ☑️
-
-**Example Results**
-- Throughput: **0.45 stories/day**
-- Cycle time: **20 days per story**
-- WIP: **9 stories with peaks of 16**
-
-### Let's stack the deck to make development the slowest in the process
-We're now going to shift the effort a little. The total amount of work for each story is still 6, but the distribution is now:
-- **1** day of ux on average
-- **3** days of dev on average
-- **2** days of qa on average
-
-The ideal cycle time is still 6 days (1 + 3 + 2). 
-
-Predictably, a big queue will appear in front of the dev column as dev has three times as much work as ux. The average velocity will go down significantly, and the cycle time will start to skyrocket.
-
-**Input**
-- Work per story: **ux: 1, dev: 3, qa: 2**
-- Workers: `ux, dev, qa`
-- Variable work: ☑️
-
-**Example Results**
-- Throughput: **0.30 stories/day**
-- Cycle time: **200 days per story**
-- WIP: **about 60 with a peak of 120**
-
-This is bad. The low velocity and high cycle time will make customers very unhappy. Let me remind you that each work item takes 6 days of work on average. Because they wait in a queue for most of their lifecycle, it takes 200 days on average to go from start to finish. This is one of the reasons why the amount of work for a task has no correlation to when it will be finished.
-
-How can we change the team structure to improve this?
-
-### Let's add an extra developer
-The usual reflex at this point is to add developers to speed things up. This will obviously raise the daily cost of the team. What would be the expected benefit? Twice the throughput? Let's try that out in the next simulation.
-
-**Input**
-- Work per story: `ux: 1, dev: 3, qa: 2`
-- Workers: ux, **dev, dev**, qa
-- Variable work: ☑️
-
-**Example Results**
-- Throughput: **0.45 stories/day**
-- Cycle time: **100 days per story**
-- WIP: **about 50 with a peak of 100**
-
-We have an improvement in throughput, but it's not the doubling we expected. Cycle time halved but is still disastrous.
-
-### Let's add an extra developer
-Since adding a developer improved matters, let's try by adding yet another developer
-
-**Input**
-- Work per story: **`ux: 1, dev: 3, qa: 2`**
-- Workers: ux, **dev, dev, dev**, qa
-- Variable work: ☑️
-
-**Example Results**
-- Throughput: **0.45 stories/day**
-- Cycle time: **100 days per story**
-- WIP: **about 50 with a peak of 100**
-
-Adding an extra developer had absolutely no effect on throughput or cycle time. This was obviously a bad strategy
-
-### Let's go back to the original team of 3 and introduce a WIP-limit instead
-We will simulate with the same team from scenario 5, but introduce a WIP-limit of 10. This means that no-one is allowed to start a new story as long as there are 10 stories _in flight_.
-
-**Input**
-- Work per story: **`ux: 1, dev: 3, qa: 2`**
-- Workers: `ux, dev, qa`
-- WIP-limit: **10**
-- Variable work: ☑️
-
-**Example Results**
-- Throughput: **0.30 stories/day**
-- Cycle time: **30 days per story**
-- WIP: **10 stories**
-
-With no extra cost, our throughput was unaffected, while our cycle time went from 200 days to 30 days.
-
-### Improve even more
-Since limiting WIP works so well, why not limit it to 5?
-
-**Input**
-- Work per story: **`ux: 1, dev: 3, qa: 2`**
-- Workers: `ux, dev, qa`
-- WIP-limit: **5**
-- Variable work: ☑️
-
-**Example Results**
-- Throughput: **0.30 stories/day**
-- Cycle time: **15 days per story**
-- WIP: **5 stories**
-
-Again, with no extra cost, our throughput was unaffected, while our cycle time halved yet again.
-
-### But you can go too far
-Let's try limiting WIP to 2 now.
-
-**Input**
-- Work per story: **`ux: 1, dev: 3, qa: 2`**
-- Workers: `ux, dev, qa`
-- WIP-limit: **2**
-- Variable work: ☑️
-
-**Example Results**
-- Throughput: **0.25 stories/day**
-- Cycle time: **7 days per story**
-- WIP: **2 stories**
-
-Now we start to see a drop in throughput. This might be a good tradeoff depending on your situation. If you care more about rapid feedback than feature delivery speed, you might choose this configuration.
-
-If you prefer higher throughput with longer feedback cycles, you went too far in limiting WIP.
-
-### Introducing multidisciplinary team members
-Now that we control our cycle time, is there anything we could do to improve the throughput while keeping lead time low? Let's introduce a tester that can also develop.
-
-**Input**
-- Work per story: **`ux: 1, dev: 3, qa: 2`**
-- Workers: ux, dev, **qa+dev**
-- WIP-limit: `5`
-- Variable work: ☑️
-
-**Example Results**
-- Throughput: **0.38 stories/day**
-- Cycle time: **15 days per story**
-- WIP: **5 stories**
-
-Now the throughput is higher. A throughput improvement from `0.30` to `0.38` means we finished our project of 200 work items in about 530 days instead of about 640 days.
-
-### The best solution: full stack developers
-**Input**
-- Work per story: **`ux: 1, dev: 3, qa: 2`**
-- Workers: `fullstack, fullstack, fullstack`
-- WIP-limit: ``
-- Variable work: ☑️
-
-**Example Results**
-- Throughput: **0.47 stories/day**
-- Cycle time: **6.2 days per story**
-- WIP: **3 stories**
-
-The throughput is approximately the same as scenario 6, without the cost of the extra developer. The cycle time is now very close to the ideal 6.
-
-This is the *ideal* situation, and will probably never be reached. Notice how the WIP is limited naturally by the number of team members.
-
-### Conclusion
-First: notice that [Little's law](https://en.wikipedia.org/wiki/Little%27s_law) applies to every scenario we saw:
-`throughput * cycle time = WIP` on average values.
-
-The ideal situation is to have a team of only full-stack developers. You will probably never reach this state. However, you can still aim for this state:
-
-Start by introducing WIP limits. When the WIP limit has been reached, some team members will have nothing to do. Try to encourage [swarming](https://blog.crisp.se/2009/06/26/henrikkniberg). Team members will then learn new skills and evolve towards becoming a full-stack developer. This will in turn improve the total throughput and cycle time.
-
-## Other experiments to try:
-Experiment with some hybrid setups and think about why some of these are better than others. For example, which worker setup do you expect to be better: `fullstack, dev, qa`, `ux, fullstack, qa` or `ux, dev, fullstack`? Verify your assumptions by running the simulation.
-
-
-You could try to add architecture, analysis, devops, ... I'm sure you'll quickly realize that the more handovers you introduce, the less effective the setup will become.
-
-## Roadmap
-This project is written in a RDD fashion: Readme Driven Development. This means that this readme is the only feature tracking tool I'm using.
-
-### Todo
-
-I welcome suggestions, especially if they come in the form of a pull request.
-- Introduce a cumulative flow diagram
-- Introduce quality, rework, bugs, collaboration, learning, ...
-- Introduce [swarming](https://blog.crisp.se/2009/06/26/henrikkniberg)
-- Introduce pairing
-- Introduce #mobprogramming
-- Introduce epics: one big epic goes through architecture and analysis, then generates a bunch of smaller stories
-
-### Done
-- Make a working board
-- Have a skill set per developer
-- Randomize workload per story
-- Randomize skill level for each developer
-- Add a graph for cycle times, throughput and WIP
-- Introduce WIP limits
-- Add stats for workers
-- Allow multiple developers with the same skill set
-- Compare 2 simulations
+Concept, model, and the original implementation: [Michel Grootjans](https://github.com/michelgrootjans/explaining-flow). Fork maintained by Steve Hallman ([The Agile Couch](https://theagilecouch.com)), with Claude doing the typing.
 
 # License
+
 Shield: [![CC BY 4.0][cc-by-shield]][cc-by]
 
 This work is licensed under a
-[Creative Commons Attribution 4.0 International License][cc-by].
+[Creative Commons Attribution 4.0 International License][cc-by],
+same as the upstream project it derives from.
 
 [![CC BY 4.0][cc-by-image]][cc-by]
 

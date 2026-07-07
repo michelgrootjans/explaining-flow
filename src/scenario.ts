@@ -27,7 +27,7 @@ const Scenario = (scenario: any) => {
   };
 
   const run = () => {
-    const board = new Board(columnNames());
+    const board = new Board(columnNames(), wipLimit);
     board.addWorkers(...(scenario.workers.map((workerDetails: any) => createWorker(workerDetails))));
     board.addWorkItems(...generateWorkItems(generateStory, scenario.stories.amount));
     return board;

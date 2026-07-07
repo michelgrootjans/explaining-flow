@@ -1,7 +1,7 @@
 import BoardFactory from './boardFactory';
 import PubSub from 'pubsub-js';
 
-let Board = function (workColumnNames: string[]) {
+let Board = function (workColumnNames: string[], initialWipLimit?: any) {
   let columns: any[] = [];
   const workers: any[] = [];
   const backlogColumn = () => columns[0];
@@ -14,6 +14,13 @@ let Board = function (workColumnNames: string[]) {
   const addWorkers = (...newWorkers: any[]) => newWorkers.forEach(worker => workers.push(worker));
   const addWorkItems = (...items: any[]) => items.forEach(item => backlogColumn().add(item));
   let allowNewWork = true;
+  // The limit must be known synchronously from the start: the deny/allow events
+  // from the WIP strategy arrive asynchronously, so during a burst (especially
+  // the opening flood of the backlog) the board must check the limit itself at
+  // assignment time or it overshoots by a card or two.
+  let wipLimit: number | null = Number.isFinite(Number(initialWipLimit)) && Number(initialWipLimit) > 0
+    ? Number(initialWipLimit) : null;
+  const inFlight = () => size() - backlogColumn().size() - doneColumn().size();
 
   const board = {
     addWorkers,
@@ -37,6 +44,8 @@ let Board = function (workColumnNames: string[]) {
   });
 
   PubSub.subscribe('board.allowNewWork', (topic: string, subject: any) => {
+    const limit = Number(subject && subject.limit);
+    if (Number.isFinite(limit) && limit > 0) wipLimit = limit;
     allowNewWork = true;
     assignNewWorkIfPossible();
   });
@@ -48,8 +57,10 @@ let Board = function (workColumnNames: string[]) {
       .filter(column => workers.some(worker => worker.canWorkOn(column.necessarySkill)))[0];
 
     if (columnWithWork) {
-      if (columnWithWork.inbox === backlogColumn() && !allowNewWork)
-        return;
+      if (columnWithWork.inbox === backlogColumn()) {
+        if (!allowNewWork) return;
+        if (wipLimit !== null && inFlight() >= wipLimit) return;
+      }
 
       const availableWorker = workers
         .filter(worker => worker.canWorkOn(columnWithWork.necessarySkill))
@@ -71,6 +82,10 @@ let Board = function (workColumnNames: string[]) {
   PubSub.subscribe('workitem.added', (topic: string, {item, column}: any) => {
     if (column.id === firstWorkColumn().id) {
       item.startTime = Date.now();
+      // True concurrency sampled from board state — event-delivery order can
+      // lag under browser timer clamping, so counters built from deliveries
+      // may transiently overshoot. This is the authoritative number.
+      item.inFlightAtStart = inFlight();
       PubSub.publish('workitem.started', item);
     }
     if (column.id === doneColumn().id) {

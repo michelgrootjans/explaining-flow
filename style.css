@@ -156,6 +156,30 @@
 
 
 
+#stats {
+    padding-top: 0.5rem;
+}
+
+#scenarios {
+    padding: 4px;
+    /* Fixed-height frame: tall enough to show a 2x team (~14 worker rows +
+       the stat rows) without scrolling. Taller scenario columns scroll
+       vertically INSIDE this frame instead of shoving the animation down
+       the page — the board below stays put no matter how big a team gets. */
+    max-height: 480px;
+    overflow-y: auto;
+    /* Columns must size to their CONTENT, not stretch to the frame: the
+       default flex stretch capped each ul's box at 480px, so the selection
+       outline stopped mid-list while the worker rows overflowed past it. */
+    align-items: flex-start;
+}
+
+.scenario-title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .scenario {
     list-style: none;
     padding: 0;
@@ -177,6 +201,12 @@
 }
 
 #throughput, #leadtime, #wip {
+    font-weight: bold;
+}
+
+.teamCost {
+    background-color: rgba(46, 125, 74, 0.1);
+    border: rgb(46, 125, 74) solid 1px;
     font-weight: bold;
 }
 

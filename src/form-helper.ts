@@ -4,14 +4,15 @@ const validateWorkers = ({workload, workers}: {workload?: string, workers: strin
   const validateWorkersFormat = () => /^(\s*(\w+)(\+\w+)*\s*)(,\s*(\w+)(\+\w+)*\s*)*$/gm.test(workers);
 
   const validateWorkLoadCanBeExecuted = () => {
-    if (workers.includes('fullstack')) return workers;
-    if (workers.includes('fs')) return workers;
+    const workersLC = workers.toLowerCase();
+    if (workersLC.includes('fullstack')) return workers;
+    if (workersLC.includes('fs')) return workers;
     if (!workload) return false;
 
-    const expectedWorkers = workload.split(',')
+    const expectedWorkers = workload.toLowerCase().split(',')
       .map(worker => worker.split(':')[0]!.trim());
 
-    return expectedWorkers.every(w => workers.includes(w))
+    return expectedWorkers.every(w => workersLC.includes(w))
   };
 
   return validateWorkersFormat() && validateWorkLoadCanBeExecuted();

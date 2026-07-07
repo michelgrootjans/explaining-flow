@@ -26,7 +26,12 @@ export function initialize() {
     startMs = Date.now();
     allItems = new Map();
     boardColumns = columns;
+    showLiveBoard();
   });
+
+  // The finished board must always be what's on screen at the end of a run —
+  // never a frozen preview left behind by a chart hover.
+  PubSub.subscribe('board.done', showLiveBoard);
 
   PubSub.subscribe('workitem.added', (topic: string, {item, column}: any) => {
     if (!item.columnHistory) item.columnHistory = [];
@@ -51,6 +56,13 @@ export function initialize() {
     preview.style.display = '';
     live.style.display = 'none';
   });
+}
+
+function showLiveBoard() {
+  const preview = document.getElementById('board-preview');
+  const live = document.getElementById('board');
+  if (preview) preview.style.display = 'none';
+  if (live) live.style.display = '';
 }
 
 function getStateAt(realTime: number): Map<number, any[]> {

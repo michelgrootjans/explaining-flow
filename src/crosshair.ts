@@ -110,19 +110,26 @@ const crosshairPlugin = {
   afterInit(chart: any) {
     charts.push(chart);
 
-    chart.canvas.addEventListener('mousemove', (e: MouseEvent) => {
+    const onMouseMove = (e: MouseEvent) => {
+      if (!charts.includes(chart) || !chart.canvas) return; // stale listener of a destroyed chart
       const rect = chart.canvas.getBoundingClientRect();
       const mouseX = e.clientX - rect.left;
       currentX = chart.scales.x.getValueForPixel(mouseX);
       charts.forEach(c => c.update('none'));
       PubSub.publish('crosshair.moved', {projectDay: currentX});
-    });
+    };
 
-    chart.canvas.addEventListener('mouseleave', () => {
+    const onMouseLeave = () => {
+      if (!charts.includes(chart)) return;
       currentX = null;
       charts.forEach(c => c.update('none'));
       PubSub.publish('crosshair.moved', {projectDay: null});
-    });
+    };
+
+    const canvas = chart.canvas;
+    canvas.addEventListener('mousemove', onMouseMove);
+    canvas.addEventListener('mouseleave', onMouseLeave);
+    chart.$crosshair = { canvas, onMouseMove, onMouseLeave };
   },
 
   afterDraw(chart: any) {
@@ -145,6 +152,11 @@ const crosshairPlugin = {
   beforeDestroy(chart: any) {
     const index = charts.indexOf(chart);
     if (index > -1) charts.splice(index, 1);
+    if (chart.$crosshair) {
+      chart.$crosshair.canvas.removeEventListener('mousemove', chart.$crosshair.onMouseMove);
+      chart.$crosshair.canvas.removeEventListener('mouseleave', chart.$crosshair.onMouseLeave);
+      delete chart.$crosshair;
+    }
   }
 };
 

@@ -28,23 +28,35 @@ const initialize = (currentSenarioId: string) => {
     });
   });
 
+  // PubSub delivers each publish on its own timer, and browser timer clamping
+  // can deliver a card's events out of publish order under load. The DOM must
+  // converge regardless: 'added' MOVES the existing card (creates only if
+  // absent), and 'removed' is ignored unless the card still sits in that
+  // event's column — a stale remove after the card moved on is a no-op.
   PubSub.subscribe('workitem.added', (topic: string, {column, item}: any) => {
-    const rotation = any(['left-2', 'left', 'none', 'right', 'right-2']);
-    let $card = createElement({
-      type: 'li',
-      className: `post-it rotate-${rotation}`,
-      attributes:{'data-card-id': item.id},
-      style: `background: ${item.color};`
-    })
+    let $column = document.querySelector(`#board [data-column-id="${column.id}"] .cards`);
+    if (!$column) return; // event from a previous run's board
 
-    let $column = document.querySelector(`[data-column-id="${column.id}"] .cards`);
-    if ($column) $column.append($card); // FIXME: this check should not happen
+    let $card = document.querySelector(`#board [data-card-id="${item.id}"]`);
+    if (!$card) {
+      const rotation = any(['left-2', 'left', 'none', 'right', 'right-2']);
+      $card = createElement({
+        type: 'li',
+        className: `post-it rotate-${rotation}`,
+        attributes:{'data-card-id': item.id},
+        style: `background: ${item.color};`
+      })
+    }
+    $column.append($card);
   });
 
   PubSub.subscribe('workitem.removed', (topic: string, {column, item}: any) => {
-    let selector = `[data-column-id="${column.id}"] [data-card-id="${item.id}"]`;
-    let $card = document.querySelector(selector);
-    if ($card) $card.remove(); // FIXME: this check should not happen
+    let $card = document.querySelector(`#board [data-card-id="${item.id}"]`);
+    if (!$card) return;
+    const currentColumn = $card.closest('[data-column-id]');
+    if (currentColumn && currentColumn.getAttribute('data-column-id') === String(column.id)) {
+      $card.remove();
+    }
   });
 
   const updateAmount = (topic: string, {column}: any) => {
